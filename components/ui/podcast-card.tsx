@@ -21,8 +21,6 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
     const coverSrc = coverUrl && coverUrl.trim() !== "" ? coverUrl : "/images/Logo.webp";
     const [subscribed, setSubscribed] = React.useState<boolean>(isSubscribed);
     React.useEffect(() => setSubscribed(isSubscribed), [isSubscribed]);
-
-    // console.log(categories)
     
     const content = (
       <div
