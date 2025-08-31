@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "src": "/images/screenshot1.webp",
+    "title": "Interface d'accueil",
+    "description": "Cet écran se compose de 3 parties.  Reprendre l'écoute : qui permet de retrouver des épisodes en cours. Ton espace : qui permet d'accéder à la bibliothèque et au playlists. Découvrir: qui permet d'accéder aux podcasts triés par thématique"
+  },
+  {
+    "id": 2,
+    "src": "/images/screenshot2.webp",
+    "title": "Thématique",
+    "description": "Cet écran présente une vue des podcasts triés par thématique"
+  },
+  {
+    "id": 3,
+    "src": "/images/screenshot3.webp",
+    "title": "Détail d'un podcast",
+    "description": "Cet écran présente le détail d'un podcast avec une première carte qui reprend le nom et l'image du podcast et une liste des épisodes."
+  },
+  {
+    "id": 4,
+    "src": "/images/screenshot4.webp",
+    "title": "Détail d'un épisode",
+    "description": "Cet écran présente le détail d'un épisode avec une photo, le titre, le status d'écoute, la durée et la description de l'épisode."
+  },
+  {
+    "id": 5,
+    "src": "/images/screenshot5.webp",
+    "title": "Paramètres parentaux",
+    "description": "Cet écran présente les paramètres parentaux avec un bouton d'accès à l'application, la gestion de profil et la gestion des paramètres de l'application."
+  }
+]
