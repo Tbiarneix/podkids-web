@@ -51,7 +51,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Connexion</CardTitle>
           <CardDescription>
             Entrez vos identifiants pour vous connecter
           </CardDescription>
@@ -64,7 +64,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@exemple.com"
+                  placeholder="moi@exemple.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -90,7 +90,7 @@ export function LoginForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Connexion..." : "Se conencter"}
+                {isLoading ? "Connexion..." : "Se connecter"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
