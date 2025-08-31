@@ -22,6 +22,8 @@ export default async function ProtectedPage() {
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
+      {/* Spacer to compensate BackToSettings not rendered on root */}
+      <div className="h-8" aria-hidden />
       <div className="w-full">
         <h1 className="text-3xl font-bold">Paramètres</h1>
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
