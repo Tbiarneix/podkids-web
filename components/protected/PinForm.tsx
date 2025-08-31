@@ -1,0 +1,236 @@
+"use client";
+
+import React, { useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+type PinFormProps = {
+  mode?: "create" | "update";
+  onSubmit?: (pin: string) => void; // will be wired to supabase later
+};
+
+const LENGTH = 5; // PIN must be exactly 5 digits
+
+export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
+  const router = useRouter();
+  const [current, setCurrent] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
+  const [pin, setPin] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
+  const [confirm, setConfirm] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const inputsCurrent = useRef<Array<HTMLInputElement | null>>([]);
+  const inputsPin = useRef<Array<HTMLInputElement | null>>([]);
+  const inputsConfirm = useRef<Array<HTMLInputElement | null>>([]);
+
+  const title = mode === "create" ? "Définissez votre code PIN" : "Modifiez votre code PIN";
+  const cta = mode === "create" ? "Créer" : "Mettre à jour";
+
+  const isComplete = useMemo(() => {
+    const base = pin.every(Boolean) && confirm.every(Boolean);
+    return mode === "update" ? base && current.every(Boolean) : base;
+  }, [pin, confirm, current, mode]);
+  const matches = useMemo(() => pin.join("") === confirm.join(""), [pin, confirm]);
+
+  function handleChange(
+    index: number,
+    value: string,
+    which: "current" | "pin" | "confirm",
+  ) {
+    const v = value.replace(/\D/g, ""); // keep digits only
+    if (v.length === 0) return;
+    const next = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+    next[index] = v[v.length - 1]; // only last digit
+    if (which === "pin") setPin(next);
+    else if (which === "confirm") setConfirm(next);
+    else setCurrent(next);
+
+    const refArray = which === "pin" ? inputsPin.current : which === "confirm" ? inputsConfirm.current : inputsCurrent.current;
+    if (index < LENGTH - 1) {
+      refArray[index + 1]?.focus();
+    } else {
+      // move to next group when a group is completed
+      if (which === "current") inputsPin.current[0]?.focus();
+      else if (which === "pin") inputsConfirm.current[0]?.focus();
+    }
+  }
+
+  function handleKeyDown(
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+    which: "current" | "pin" | "confirm",
+  ) {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      const next = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+      if (next[index]) {
+        next[index] = "";
+        if (which === "pin") setPin(next);
+        else if (which === "confirm") setConfirm(next);
+        else setCurrent(next);
+        return;
+      }
+      if (index > 0) {
+        const refArray = which === "pin" ? inputsPin.current : which === "confirm" ? inputsConfirm.current : inputsCurrent.current;
+        refArray[index - 1]?.focus();
+        const prev = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+        prev[index - 1] = "";
+        if (which === "pin") setPin(prev);
+        else if (which === "confirm") setConfirm(prev);
+        else setCurrent(prev);
+      }
+    }
+  }
+
+  function handlePaste(
+    e: React.ClipboardEvent<HTMLInputElement>,
+    which: "current" | "pin" | "confirm",
+  ) {
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, LENGTH);
+    if (!text) return;
+    e.preventDefault();
+    const arr = Array.from({ length: LENGTH }, (_, i) => text[i] ?? "");
+    if (which === "current") {
+      setCurrent(arr);
+      inputsPin.current[0]?.focus();
+    } else if (which === "pin") {
+      setPin(arr);
+      inputsConfirm.current[0]?.focus();
+    } else {
+      setConfirm(arr);
+    }
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!isComplete) {
+      setError("Veuillez saisir les 2 codes PIN complets.");
+      return;
+    }
+    if (!matches) {
+      setError("Les codes PIN ne correspondent pas.");
+      return;
+    }
+    const pinStr = pin.join("");
+    const currentStr = current.join("");
+    if (onSubmit) {
+      onSubmit(pinStr);
+      return;
+    }
+    // Default behavior: call our API
+    setLoading(true);
+    fetch("/api/pin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pin: pinStr, ...(mode === "update" ? { currentPin: currentStr } : {}) }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data?.error || "Erreur inconnue");
+        }
+        toast.success(mode === "create" ? "Code PIN créé" : "Code PIN mis à jour");
+        router.push("/protected");
+      })
+      .catch((err: unknown) => {
+        const code = err instanceof Error ? err.message : "unknown";
+        const map: Record<string, string> = {
+          invalid_current_pin: "Le code PIN actuel est incorrect.",
+          current_pin_required: "Veuillez saisir votre code PIN actuel.",
+          invalid_pin: "Le nouveau code PIN doit comporter exactement 5 chiffres.",
+          invalid_json: "Requête invalide.",
+          not_authenticated: "Vous devez être connecté pour effectuer cette action.",
+          unknown: "Une erreur est survenue.",
+        };
+        const friendly = map[code] ?? "Une erreur est survenue.";
+        setError(friendly);
+        toast.error(friendly);
+      })
+      .finally(() => setLoading(false));
+  }
+
+  return (
+    <form onSubmit={submit} className="bg-background w-full max-w-xl mx-auto">
+      <div className="space-y-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center">{title}</h2>
+
+        {mode === "update" && (
+          <div className="space-y-3">
+            <p className="text-sm text-foreground">Code PIN actuel</p>
+            <PinInputs
+              refArray={inputsCurrent}
+              values={current}
+              onChange={(i, v) => handleChange(i, v, "current")}
+              onKeyDown={(e, i) => handleKeyDown(e, i, "current")}
+              onPaste={(e) => handlePaste(e, "current")}
+            />
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <p className="text-sm text-foreground">Nouveau code PIN</p>
+          <PinInputs
+            refArray={inputsPin}
+            values={pin}
+            onChange={(i, v) => handleChange(i, v, "pin")}
+            onKeyDown={(e, i) => handleKeyDown(e, i, "pin")}
+            onPaste={(e) => handlePaste(e, "pin")}
+          />
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm text-foreground">Confirmez votre code PIN</p>
+          <PinInputs
+            refArray={inputsConfirm}
+            values={confirm}
+            onChange={(i, v) => handleChange(i, v, "confirm")}
+            onKeyDown={(e, i) => handleKeyDown(e, i, "confirm")}
+            onPaste={(e) => handlePaste(e, "confirm")}
+          />
+        </div>
+
+        {error && (
+          <p className="text-sm text-red-500 text-center">{error}</p>
+        )}
+
+        <Button type="submit" size="xl" className="w-full" disabled={loading}>
+          {loading ? "Veuillez patienter…" : cta}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function PinInputs(props: {
+  values: string[];
+  refArray: React.MutableRefObject<Array<HTMLInputElement | null>>;
+  onChange: (index: number, value: string) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
+  onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => void;
+}) {
+  const { values, refArray, onChange, onKeyDown, onPaste } = props;
+  return (
+    <div className="flex items-center justify-center gap-3">
+      {values.map((val, i) => (
+        <input
+          key={i}
+          ref={(el) => {
+            refArray.current[i] = el;
+          }}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-label={`Chiffre ${i + 1}`}
+          pattern="[0-9]*"
+          maxLength={1}
+          value={val}
+          onChange={(e) => onChange(i, e.target.value)}
+          onKeyDown={(e) => onKeyDown(e, i)}
+          onPaste={onPaste}
+          className="h-14 w-12 md:h-16 md:w-14 text-center text-xl md:text-2xl font-semibold rounded-md bg-input text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        />
+      ))}
+    </div>
+  );
+}
