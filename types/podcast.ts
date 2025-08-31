@@ -4,7 +4,7 @@ export enum EpisodeStatus {
   LISTENED = "listened"
 }
 
-export enum PodcastType {
+export enum Category {
   STORIES = "Histoires et Contes",
   HISTORY = "Histoire",
   MUSIC = "Musiques et Comptines",
@@ -25,7 +25,7 @@ export enum PodcastType {
   ENTERTAINMENT = "Amusement et divertissement"
 }
 
-export enum PodcastTypeDescription {
+export enum CategoryDescription {
   STORIES = "Contes de fées, histoires classiques, récits imaginaires et contes pour le coucher",
   HISTORY = "Contenus éducatifs sur l'histoire",
   MUSIC = "Chansons pour enfants, comptines et apprentissage de la musique",
@@ -74,7 +74,7 @@ export interface Podcast {
   cover: string;
   url: string;
   author: string;
-  types: PodcastType[];
+  categories: Category[];
   ageRanges: AgeRange[];
   subscription: boolean;
   episodes: Episode[];

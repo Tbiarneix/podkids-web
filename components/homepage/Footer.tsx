@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="bg-card p-8">
+    <footer className="bg-card w-full p-8">
       <div className="flex justify-between items-center max-w-[1200px] mx-auto px-8 max-[520px]:flex-col max-[520px]:gap-4">
         <div className="flex items-center gap-2">
           <Image
