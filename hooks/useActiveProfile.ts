@@ -28,6 +28,8 @@ function writeToLS(p: ActiveProfilePayload | null) {
   try {
     if (p) window.localStorage.setItem(LS_KEY, JSON.stringify(p));
     else window.localStorage.removeItem(LS_KEY);
+    // Notify same-tab listeners (storage event doesn't fire in same tab)
+    window.dispatchEvent(new CustomEvent("pk:active_profile_changed"));
   } catch {}
 }
 
@@ -43,8 +45,15 @@ export function useActiveProfile() {
         setActive(readFromLS());
       }
     };
+    const onSameTab = () => {
+      setActive(readFromLS());
+    };
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("pk:active_profile_changed", onSameTab as EventListener);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("pk:active_profile_changed", onSameTab as EventListener);
+    };
   }, []);
 
   // Initial fetch to hydrate from server (find active or leave null)
