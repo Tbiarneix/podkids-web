@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import PodcastsManager from "@/components/protected/PodcastsManager";
 
 export default async function PodcastsManagementPage() {
   const supabase = await createClient();
@@ -14,6 +15,7 @@ export default async function PodcastsManagementPage() {
     <div className="flex-1 w-full flex flex-col gap-8">
       <h1 className="text-3xl font-bold">Gérer les podcasts</h1>
       <p className="text-muted-foreground">Ajoutez, organisez et gérez vos podcasts et abonnements.</p>
+      <PodcastsManager />
     </div>
   );
 }

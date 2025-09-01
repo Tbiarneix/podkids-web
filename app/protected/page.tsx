@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings, KeyRound, Users, Podcast } from "lucide-react";
+import { Settings, KeyRound, Users, Podcast, Play } from "lucide-react";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -87,6 +87,15 @@ export default async function ProtectedPage() {
             </CardFooter>
           </Card>
 
+        </div>
+        
+        <div className="mt-12 flex justify-center">
+          <Button size="xl" asChild>
+            <Link href="/webplayer" className="inline-flex items-center gap-2">
+              <Play className="size-5" aria-hidden />
+              <span>Accéder au player web</span>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>
