@@ -140,7 +140,7 @@ export default function ProfilesManager() {
         {profiles.length === 0 ? (
           <p className="text-sm text-muted-foreground">Aucun profil pour le moment.</p>
         ) : (
-          <ul className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-2">
             {profiles.map((p) => (
               <li key={p.id} className="rounded-2xl border py-6 px-10 bg-card transform scale-x-[1.05]">
                 <div className="flex items-center gap-6">
