@@ -10,9 +10,15 @@ export type CategoryFilterProps<T> = {
   podcasts: T[]
   extractCategories: (podcast: T) => string[]
   onFiltered: (filtered: T[]) => void
+  variant?: 'block' | 'inline'
+  buttonClassName?: string
+  resetButtonClassName?: string
+  syncUrl?: boolean
+  selected?: string[]
+  onSelectedChange?: (selected: string[]) => void
 }
 
-export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: CategoryFilterProps<T>) {
+export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, variant = 'block', buttonClassName, resetButtonClassName, syncUrl = true, selected: controlledSelected, onSelectedChange }: CategoryFilterProps<T>) {
   const categoryEntries = Object.entries(Category) as [keyof typeof Category, string][]
   const categoryKeys = categoryEntries.map(([k]) => k)
   const keyByLabel = Object.fromEntries(categoryEntries.map(([k, v]) => [v, k])) as Record<string, string>
@@ -23,16 +29,21 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: C
     return k ?? null
   }
 
-  const [selected, setSelected] = useState<string[]>([])
+  const [selectedInternal, setSelectedInternal] = useState<string[]>([])
+  const selected = controlledSelected ?? selectedInternal
   const isAll = selected.length === 0
 
-  const toggleAll = () => setSelected([])
+  const toggleAll = () => {
+    if (controlledSelected !== undefined) onSelectedChange?.([])
+    else setSelectedInternal([])
+  }
   const toggleCategory = (key: string) => {
-    setSelected((prev) => {
-      const s = new Set(prev)
-      s.has(key) ? s.delete(key) : s.add(key)
-      return Array.from(s)
-    })
+    const prev = selected
+    const s = new Set(prev)
+    s.has(key) ? s.delete(key) : s.add(key)
+    const next = Array.from(s)
+    if (controlledSelected !== undefined) onSelectedChange?.(next)
+    else setSelectedInternal(next)
   }
 
   const router = useRouter()
@@ -40,6 +51,7 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: C
   const searchParams = useSearchParams()
 
   const catsFromUrl = useMemo(() => {
+    if (!syncUrl) return [] as string[]
     const raw = searchParams.get('cats')
     if (!raw) return [] as string[]
     const keys = raw
@@ -47,26 +59,31 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: C
       .map((s) => decodeURIComponent(s))
       .filter(Boolean)
     return keys.filter((k) => categoryKeys.includes(k as any))
-  }, [searchParams])
+  }, [searchParams, syncUrl])
 
   useEffect(() => {
+    if (!syncUrl) return
     const a = catsFromUrl
     const b = selected
     const equal = a.length === b.length && a.every((v) => b.includes(v))
-    if (!equal) setSelected(a)
+    if (!equal) {
+      if (controlledSelected !== undefined) onSelectedChange?.(a)
+      else setSelectedInternal(a)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catsFromUrl.join('|')])
+  }, [catsFromUrl.join('|'), syncUrl, controlledSelected])
 
   useEffect(() => {
+    if (!syncUrl) return
     const current = searchParams.toString()
     const params = new URLSearchParams(current)
     if (selected.length === 0) params.delete('cats')
     else params.set('cats', selected.map((s) => encodeURIComponent(s)).join(','))
     const next = params.toString()
     if (next === current) return
-    const url = `${pathname}?${next}`
+    const url = next ? `${pathname}?${next}` : pathname
     router.replace(url, { scroll: false })
-  }, [selected, router, pathname, searchParams])
+  }, [selected, router, pathname, searchParams, syncUrl])
 
   useEffect(() => {
     if (!podcasts) return
@@ -142,11 +159,11 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: C
   }, [open])
 
   return (
-    <div className="mb-6">
+    <div className={variant === 'inline' ? '' : 'mb-6'}>
       <div className="flex items-center gap-3">
         <Button
           variant="outline"
-          className="rounded-full border-white text-white hover:bg-white/10 hover:text-white"
+          className={buttonClassName ?? "rounded-full border-white text-white hover:bg-white/10 hover:text-white"}
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
           aria-expanded={open}
@@ -158,7 +175,7 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered }: C
         {!isAll && (
           <Button
             variant="ghost"
-            className="text-white hover:bg-white/10 hover:text-white"
+            className={resetButtonClassName ?? "text-white hover:bg-white/10 hover:text-white"}
             onClick={toggleAll}
           >
             Réinitialiser

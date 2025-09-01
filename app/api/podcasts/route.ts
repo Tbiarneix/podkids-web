@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
     if (!rssUrl || typeof rssUrl !== "string") {
       return NextResponse.json({ error: "invalid_url" }, { status: 400 });
     }
-
     const url = rssUrl.trim();
     if (!/^https?:\/\//i.test(url)) {
       return NextResponse.json({ error: "url_must_be_http_or_https" }, { status: 400 });
@@ -141,6 +140,39 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, podcastId, isPublic });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || "server_error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const podcastId: number | undefined = body?.podcastId;
+    if (!podcastId || Number.isNaN(Number(podcastId))) {
+      return NextResponse.json({ error: "invalid_podcast_id" }, { status: 400 });
+    }
+
+    const supabaseServer = await createServerSupabase();
+    const {
+      data: { user },
+      error: userErr,
+    } = await supabaseServer.auth.getUser();
+    if (userErr || !user) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+
+    const supabaseAdmin = createAdminClient();
+    const { error: delErr } = await supabaseAdmin
+      .from("private_podcast")
+      .delete()
+      .eq("podcast_id", podcastId)
+      .eq("user_id", user.id);
+    if (delErr) {
+      return NextResponse.json({ error: delErr.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "server_error" }, { status: 500 });
   }
