@@ -9,8 +9,6 @@ import { AgeRange } from "@/types/podcast";
 import { ageRangeToLabel, formatAgeRanges } from "@/utils/ageRange";
 import type { ProfileFormData } from "@/types/profile";
 
-// Labels moved to utils/ageRange.ts for a single source of truth
-
 const ORDERED_AGE_RANGES: AgeRange[] = [
   AgeRange.UNDER_3,
   AgeRange.BETWEEN_4_AND_6,
@@ -66,8 +64,6 @@ export default function ProfilesManager() {
       setOpen(false);
       setEditingId(null);
       await fetchProfiles();
-      // Optionnel: reset du formulaire après succès
-      // resetForm();
     } catch (e: any) {
       const msg = e?.message ? String(e.message) : "Erreur lors de l'enregistrement";
       toast.error(msg);
@@ -131,7 +127,6 @@ export default function ProfilesManager() {
 
   return (
     <div className="w-full">
-      {/* Liste des profils */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Profils</h2>
@@ -171,14 +166,12 @@ export default function ProfilesManager() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* backdrop */}
           <div
             className="absolute inset-0 bg-black/60"
             onClick={() => setOpen(false)}
             aria-hidden
           />
 
-          {/* modal */}
           <div className="relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-2xl font-bold">Ajouter un profil</h2>
@@ -191,7 +184,6 @@ export default function ProfilesManager() {
               </button>
             </div>
 
-            {/* Name field */}
             <div className="space-y-2 mb-6">
               <label className="text-sm">Nom</label>
               <Input
@@ -202,7 +194,6 @@ export default function ProfilesManager() {
               />
             </div>
 
-            {/* Avatars */}
             <div className="space-y-3 mb-6">
               <p className="text-sm">Choisir un avatar</p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -235,7 +226,6 @@ export default function ProfilesManager() {
               </div>
             </div>
 
-            {/* Age ranges */}
             <div className="space-y-3 mb-8">
               <p className="text-sm">Tranche d'âge</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -261,7 +251,6 @@ export default function ProfilesManager() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex justify-end gap-3">
               <Button variant="secondary" onClick={() => { if (!submitting) { resetForm(); setOpen(false); } }} disabled={submitting}>
                 Annuler

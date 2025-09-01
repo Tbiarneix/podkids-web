@@ -30,7 +30,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    // Normalize incoming UI enums to DB enum codes
     const AGE_RANGE_CODE_MAP: Record<string, string> = {
       [AgeRange.UNDER_3]: "UNDER_3",
       [AgeRange.BETWEEN_4_AND_6]: "BETWEEN_4_AND_6",
@@ -52,7 +51,6 @@ export async function POST(req: NextRequest) {
       ? categories.map((v) => CATEGORY_CODE_MAP[v] ?? v).filter(Boolean)
       : [];
 
-    // 1) Find or create podcast by URL (table name: public.podcast)
     const { data: existingList, error: findErr } = await supabaseAdmin
       .from("podcast")
       .select("id, public")
@@ -69,7 +67,6 @@ export async function POST(req: NextRequest) {
       podcastId = existingList[0].id;
       isPublic = !!existingList[0].public;
     } else {
-      // Create private podcast shell (name/author/cover/description can be filled later by RSS fetcher)
       const { data: created, error: insertErr } = await supabaseAdmin
         .from("podcast")
         .insert({
@@ -81,7 +78,6 @@ export async function POST(req: NextRequest) {
         .select("id")
         .single();
       if (insertErr) {
-        // If unique constraint on URL triggers, fetch again
         if ((insertErr as any).code === "23505") {
           const { data: retryList, error: retryErr } = await supabaseAdmin
             .from("podcast")
@@ -106,7 +102,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "podcast_id_missing" }, { status: 500 });
     }
 
-    // 2) If not public, ensure private link exists for the user (without relying on DB unique constraint)
     if (!isPublic) {
       const { data: linkExistsList, error: linkFindErr } = await supabaseAdmin
         .from("private_podcast")
@@ -128,14 +123,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fire-and-forget hydration (do not await)
     try {
-      // run outside the request lifecycle
       void hydratePodcast(podcastId).catch((e) => {
         console.error("hydratePodcast error", e);
       });
     } catch (e) {
-      // swallow scheduling errors to avoid impacting client response
       console.error("hydratePodcast schedule failed", e);
     }
 

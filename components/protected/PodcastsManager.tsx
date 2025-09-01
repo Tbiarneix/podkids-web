@@ -95,10 +95,8 @@ export default function PodcastsManager() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* backdrop */}
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-hidden />
 
-          {/* modal */}
           <div className="relative z-10 w-[92vw] max-w-3xl rounded-2xl bg-background p-6 shadow-xl max-h-[90vh] overflow-y-auto md:max-h-none md:overflow-visible">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-2xl font-bold">Ajouter un podcast</h2>
@@ -111,12 +109,10 @@ export default function PodcastsManager() {
               </button>
             </div>
 
-            {/* Intro text */}
             <p className="text-sm text-muted-foreground mb-4">
               Pour ajouter un podcast, veuillez  renseigner l’URL du flux rss du podcast et choisir une tranche d’âge et une thématique.
             </p>
 
-            {/* URL field */}
             <div className="space-y-2 mb-4">
               <label className="text-sm">Url du podcast</label>
               <Input
@@ -128,7 +124,6 @@ export default function PodcastsManager() {
               />
             </div>
 
-            {/* Age ranges */}
             <div className="space-y-3 mb-4">
               <p className="text-sm">Tranches d'âge</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -154,7 +149,6 @@ export default function PodcastsManager() {
               </div>
             </div>
 
-            {/* Categories (3 per row on larger screens) */}
             <div className="space-y-3 mb-6">
               <p className="text-sm">Thématiques</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -180,7 +174,6 @@ export default function PodcastsManager() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex justify-end gap-3">
               <Button
                 variant="secondary"

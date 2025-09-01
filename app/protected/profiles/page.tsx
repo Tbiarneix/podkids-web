@@ -14,7 +14,6 @@ export default async function ProfilesManagementPage() {
     redirect("/auth/login");
   }
 
-  // Vérifie si un code PIN est défini pour cet utilisateur
   const userId = (data as any)?.claims?.sub as string | undefined;
   let hasPin = false;
   if (userId) {

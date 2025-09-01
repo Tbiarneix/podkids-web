@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 
 type PinFormProps = {
   mode?: "create" | "update";
-  onSubmit?: (pin: string) => void; // will be wired to supabase later
+  onSubmit?: (pin: string) => void;
 };
 
-const LENGTH = 5; // PIN must be exactly 5 digits
+const LENGTH = 5;
 
 export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
   const router = useRouter();
@@ -38,10 +38,10 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
     value: string,
     which: "current" | "pin" | "confirm",
   ) {
-    const v = value.replace(/\D/g, ""); // keep digits only
+    const v = value.replace(/\D/g, "");
     if (v.length === 0) return;
     const next = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
-    next[index] = v[v.length - 1]; // only last digit
+    next[index] = v[v.length - 1];
     if (which === "pin") setPin(next);
     else if (which === "confirm") setConfirm(next);
     else setCurrent(next);
@@ -50,7 +50,6 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
     if (index < LENGTH - 1) {
       refArray[index + 1]?.focus();
     } else {
-      // move to next group when a group is completed
       if (which === "current") inputsPin.current[0]?.focus();
       else if (which === "pin") inputsConfirm.current[0]?.focus();
     }
@@ -119,7 +118,6 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
       onSubmit(pinStr);
       return;
     }
-    // Default behavior: call our API
     setLoading(true);
     fetch("/api/pin", {
       method: "POST",

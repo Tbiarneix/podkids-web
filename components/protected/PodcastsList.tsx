@@ -16,7 +16,7 @@ type DbPodcast = {
   author: string | null;
   description: string | null;
   cover_url: string | null;
-  categories: string[] | null; // DB enum keys e.g. ["STORIES", "SCIENCE"]
+  categories: string[] | null;
   public: boolean | null;
   episodes_count: number | null;
 };
@@ -46,7 +46,6 @@ export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPod
       }, 0);
       return () => window.clearTimeout(t);
     } else {
-      // restore focus on close
       prevFocusRef.current?.focus?.();
     }
   }, [confirmId]);
@@ -150,13 +149,12 @@ export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPod
                     ))}
                   </div>
                 ) : null}
-                {/* Bouton de suppression déplacé en haut à droite */
-                }
               </div>
             </div>
           );
         })}
       </div>
+      
       {/* Confirmation Modal */}
       {confirmId !== null ? (
         <div

@@ -4,7 +4,6 @@ import { parsePodcastFeed } from "./parse";
 export async function hydratePodcast(podcastId: number) {
   const supabaseAdmin = createAdminClient();
 
-  // 1) Load podcast to get URL
   const { data: podcast, error: podcastErr } = await supabaseAdmin
     .from("podcast")
     .select("id, url")
@@ -14,17 +13,14 @@ export async function hydratePodcast(podcastId: number) {
     throw new Error(podcastErr?.message || "podcast_not_found_or_no_url");
   }
 
-  // 2) Fetch RSS
   const res = await fetch(podcast.url);
   if (!res.ok) {
     throw new Error(`rss_fetch_failed:${res.status}`);
   }
   const xml = await res.text();
 
-  // 3) Parse
   const { meta, episodes } = parsePodcastFeed(xml);
 
-  // 4) Update podcast metadata (only provided fields)
   const metaUpdate: any = {};
   if (meta.name) metaUpdate.name = meta.name;
   if (meta.author) metaUpdate.author = meta.author;
@@ -39,9 +35,7 @@ export async function hydratePodcast(podcastId: number) {
     if (updErr) throw new Error(`podcast_update_failed:${updErr.message}`);
   }
 
-  // 5) Upsert episodes (idempotent using (podcast_id, url) uniqueness at logic level)
   for (const ep of episodes) {
-    // existence check
     const { data: existing, error: findEpErr } = await supabaseAdmin
       .from("episode")
       .select("id")
@@ -69,7 +63,6 @@ export async function hydratePodcast(podcastId: number) {
     if (insErr) throw new Error(`episode_insert_failed:${insErr.message}`);
   }
 
-  // 6) Update episodes_count on podcast
   const { count, error: countErr } = await supabaseAdmin
     .from("episode")
     .select("id", { count: "exact", head: true })

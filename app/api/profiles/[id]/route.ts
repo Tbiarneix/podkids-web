@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Reuse mapping from list/create route
 const FRONT_TO_DB_AGE: Record<string, string> = {
   "under 3": "UNDER_3",
   "between 4 and 6": "BETWEEN_4_AND_6",

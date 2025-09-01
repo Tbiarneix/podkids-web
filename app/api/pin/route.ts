@@ -45,7 +45,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_pin" }, { status: 400 });
   }
 
-  // Check if there is already a PIN for this user; if so, update the latest one.
   const { data: rows, error: selErr } = await supabase
     .from("pin")
     .select("id, created_at, pin_code")
@@ -58,7 +57,6 @@ export async function POST(req: Request) {
   }
 
   if (rows && rows.length > 0) {
-    // Update flow requires verifying the current PIN
     if (!isFiveDigits(currentPin ?? "")) {
       return NextResponse.json({ error: "current_pin_required" }, { status: 400 });
     }

@@ -11,16 +11,15 @@ export interface ParsedEpisode {
   name: string;
   description?: string;
   cover?: string;
-  url: string; // audio url
-  duration?: number; // seconds
-  publication_date?: string; // ISO date (YYYY-MM-DD)
+  url: string; 
+  duration?: number; 
+  publication_date?: string; 
 }
 
 function toISODate(d?: string | number | Date): string | undefined {
   if (!d) return undefined;
   const date = new Date(d);
   if (isNaN(date.getTime())) return undefined;
-  // Return only the date component as YYYY-MM-DD for Postgres date
   return date.toISOString().slice(0, 10);
 }
 
@@ -32,7 +31,7 @@ export function parseDurationToSeconds(value?: string | number): number | undefi
   if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10));
   const parts = s.split(":").map((p) => parseInt(p, 10));
   if (parts.some((n) => isNaN(n))) return undefined;
-  while (parts.length < 3) parts.unshift(0); // to [hh, mm, ss]
+  while (parts.length < 3) parts.unshift(0); 
   const [hh, mm, ss] = parts;
   return hh * 3600 + mm * 60 + ss;
 }
@@ -41,12 +40,10 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
-    // preserve order not needed; we target common fields
   });
   const json = parser.parse(xmlText);
 
-  // Try known roots: rss/channel, feed (atom)
-  const channel = (json && json.rss && json.rss.channel) || (json && json.feed); // atom uses feed
+  const channel = (json && json.rss && json.rss.channel) || (json && json.feed); 
 
   const getPath = (obj: any, path: string[]): any => {
     let cur = obj;
@@ -89,7 +86,6 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
     const epTitle = pickFirst(item && item.title);
     const enclosureUrl = pickFirst(getPath(item, ["enclosure", "@_url"]), getPath(item, ["enclosure", "url"]));
 
-    // Some feeds put audio URL in links with rel="enclosure"
     let linkAudio: string | undefined;
     if (!enclosureUrl && Array.isArray(item && item.link)) {
       const enc = (item as any).link.find(
@@ -97,12 +93,11 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
       );
       linkAudio = enc && enc["@_href"];
     } else if (!enclosureUrl && getPath(item, ["link", "@_rel"]) === "enclosure") {
-      // single link object
       linkAudio = getPath(item, ["link", "@_href"]);
     }
 
     const audioUrl = pickFirst(enclosureUrl, linkAudio);
-    if (!epTitle || !audioUrl) continue; // skip if essential fields missing
+    if (!epTitle || !audioUrl) continue;
 
     const epDescription = pickFirst(getPath(item, ["itunes:summary"]), item && item.description, item && item.summary);
 

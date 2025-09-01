@@ -45,11 +45,7 @@ export default function Screenshot() {
       
       if (items.length > 0 && items[currentIndex]) {
         const item = items[currentIndex];
-        
-        // Calcul de la position pour centrer l'élément actif
         const scrollLeft = item.offsetLeft - (container.clientWidth / 2) + (item.offsetWidth / 2);
-        
-        // Utiliser scrollTo avec behavior: 'smooth' pour une animation fluide
         container.scrollTo({
           left: scrollLeft,
           behavior: 'smooth'

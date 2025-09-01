@@ -11,7 +11,6 @@ export default async function PinSettingsPage() {
     redirect("/auth/login");
   }
 
-  // Detect if a PIN already exists for this user to choose create vs update
   const userId = (data as any)?.claims?.sub as string | undefined;
   let mode: "create" | "update" = "create";
   if (userId) {
