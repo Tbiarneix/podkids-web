@@ -1,9 +1,6 @@
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-
-import { hasEnvVars } from "@/lib/utils";
 import Image from "next/image";
 import { Footer } from "@/components/homepage/Footer";
+import { NavActions } from "@/components/webplayer/NavActions";
 
 export default function ProtectedLayout({
   children,
@@ -25,7 +22,7 @@ export default function ProtectedLayout({
               />
               <span className="text-[1.8rem] font-bold text-primary">Podkids</span>
             </div>
-            {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
+            <NavActions />
           </div>
         </nav>
         <div className="w-full">

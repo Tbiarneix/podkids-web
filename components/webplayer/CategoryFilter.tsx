@@ -85,16 +85,39 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
     router.replace(url, { scroll: false })
   }, [selected, router, pathname, searchParams, syncUrl])
 
-  useEffect(() => {
-    if (!podcasts) return
-    const filtered = (podcasts ?? []).filter((p) => {
+  const filtered = useMemo(() => {
+    if (!podcasts) return [] as T[]
+    return (podcasts ?? []).filter((p) => {
       if (selected.length === 0) return true
       const cats: string[] = extractCategories(p) ?? []
       const keys = cats.map((c) => toKey(c)).filter((v): v is string => Boolean(v))
       return keys.some((k) => selected.includes(k))
     })
-    onFiltered(filtered)
-  }, [podcasts, selected, extractCategories, onFiltered])
+  }, [podcasts, selected, extractCategories])
+
+  const onFilteredRef = useRef(onFiltered)
+  useEffect(() => {
+    onFilteredRef.current = onFiltered
+  }, [onFiltered])
+
+  // Keep previous filtered value (non-null) to compare and avoid unnecessary updates
+  const prevFilteredRef = useRef<T[]>(filtered)
+
+  useEffect(() => {
+    // Only notify when the filtered array meaningfully changes
+    const arraysShallowEqual = (a: T[], b: T[]) => {
+      if (a === b) return true
+      if (a.length !== b.length) return false
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false
+      }
+      return true
+    }
+    if (!arraysShallowEqual(prevFilteredRef.current, filtered)) {
+      prevFilteredRef.current = filtered
+      onFilteredRef.current(filtered)
+    }
+  }, [filtered])
 
   const [open, setOpen] = useState(false)
   const drawerRef = useRef<HTMLDivElement | null>(null)

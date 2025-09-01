@@ -18,7 +18,8 @@ type PodcastCardProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
   ({ className, name, author, episodesCount, coverUrl, categories, href, isSubscribed = false, onSubscribe, ...rest }, ref) => {
-    const coverSrc = coverUrl && coverUrl.trim() !== "" ? coverUrl : "/images/Logo.webp";
+    const direct = coverUrl && coverUrl.trim() !== "" ? coverUrl.trim() : "";
+    const coverSrc = direct ? `/api/image-proxy?src=${encodeURIComponent(direct)}` : "/images/Logo.webp";
     const [subscribed, setSubscribed] = React.useState<boolean>(isSubscribed);
     React.useEffect(() => setSubscribed(isSubscribed), [isSubscribed]);
     
@@ -39,6 +40,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
             width={96}
             height={96}
             className="h-20 w-20 rounded-xl object-cover sm:h-24 sm:w-24"
+            unoptimized
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
