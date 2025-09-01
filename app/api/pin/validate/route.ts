@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 function isFiveDigits(pin: unknown): pin is string {
@@ -6,6 +7,10 @@ function isFiveDigits(pin: unknown): pin is string {
 }
 
 export async function POST(req: Request) {
+  const MAX_ATTEMPTS = 3;
+  const BLOCK_MS = 60_000; // 1 minute
+  const COOKIE_KEY = "pk_pin_block";
+
   const supabase = await createClient();
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr || !userData.user) {
@@ -22,6 +27,34 @@ export async function POST(req: Request) {
   const pin = body?.pin;
   if (!isFiveDigits(pin)) {
     return NextResponse.json({ error: "invalid_pin" }, { status: 400 });
+  }
+
+  // Read throttle cookie (scoped per browser)
+  const jar = await cookies();
+  let attempts = 0;
+  let until: number | null = null;
+  try {
+    const raw = jar.get(COOKIE_KEY)?.value;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        attempts = Number(parsed.attempts) || 0;
+        until = typeof parsed.until === "number" ? parsed.until : null;
+      }
+    }
+  } catch {}
+
+  if (until && until > Date.now()) {
+    const res = NextResponse.json({ error: "too_many_attempts", retryAt: until }, { status: 429 });
+    // refresh cookie to ensure it persists until 'until'
+    const maxAge = Math.max(1, Math.ceil((until - Date.now()) / 1000));
+    res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts, until }), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge,
+    });
+    return res;
   }
 
   const { data: rows, error } = await supabase
@@ -41,8 +74,30 @@ export async function POST(req: Request) {
 
   const stored = rows[0].pin_code;
   if (Number(pin) !== Number(stored)) {
-    return NextResponse.json({ error: "wrong_pin" }, { status: 403 });
+    const nextAttempts = attempts + 1;
+    if (nextAttempts >= MAX_ATTEMPTS) {
+      const blockUntil = Date.now() + BLOCK_MS;
+      const res = NextResponse.json({ error: "too_many_attempts", retryAt: blockUntil }, { status: 429 });
+      res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts: 0, until: blockUntil }), {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: Math.ceil(BLOCK_MS / 1000),
+      });
+      return res;
+    }
+    const res = NextResponse.json({ error: "wrong_pin" }, { status: 403 });
+    res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts: nextAttempts, until: null }), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60, // keep attempts state up to 1h
+    });
+    return res;
   }
 
-  return NextResponse.json({ ok: true });
+  // Success: clear throttle cookie
+  const res = NextResponse.json({ ok: true });
+  res.cookies.delete(COOKIE_KEY);
+  return res;
 }
