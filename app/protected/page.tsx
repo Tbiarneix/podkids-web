@@ -85,16 +85,6 @@ export default async function ProtectedPage() {
               </Button>
             </CardFooter>
           </Card>
-
-        </div>
-        
-        <div className="mt-12 flex justify-center">
-          <Button size="xl" asChild>
-            <Link href="/api/pin/clear" className="inline-flex items-center gap-2">
-              <Play className="size-5" aria-hidden />
-              <span>Accéder au player web</span>
-            </Link>
-          </Button>
         </div>
       </div>
     </div>
