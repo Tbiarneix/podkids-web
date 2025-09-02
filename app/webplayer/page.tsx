@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { CategoryFilter } from '@/components/webplayer/CategoryFilter'
 import { useActiveProfile } from '@/hooks/useActiveProfile'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 const AGE_RANGE_CODE_MAP: Record<AgeRange, string> = {
   [AgeRange.UNDER_3]: 'UNDER_3',
@@ -27,6 +28,8 @@ export default function WebPlayer() {
   const supabase = useMemo(() => createClient(), [])
   const { active } = useActiveProfile()
   const [subscribedSet, setSubscribedSet] = useState<Set<number>>(new Set())
+  const LS_KEY_ONLY_SUBS = 'pk_only_subscribed'
+  const [onlySubs, setOnlySubs] = useState<boolean>(false)
 
   useEffect(() => {
     const getData = async () => {
@@ -36,7 +39,18 @@ export default function WebPlayer() {
     getData()
   }, [supabase])
 
-  // Load subscriptions for the active profile
+  useEffect(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem(LS_KEY_ONLY_SUBS) : null
+      if (raw != null) setOnlySubs(raw === '1')
+    } catch {}
+  }, [])
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') window.localStorage.setItem(LS_KEY_ONLY_SUBS, onlySubs ? '1' : '0')
+    } catch {}
+  }, [onlySubs])
+
   useEffect(() => {
     let mounted = true
     const loadSubs = async () => {
@@ -71,12 +85,12 @@ export default function WebPlayer() {
   const firstSentence = (raw?: string | null): string | undefined => {
     if (!raw) return undefined
     const text = String(raw)
-      .replace(/<[^>]+>/g, ' ') // strip HTML
-      .replace(/&[^;]+;/g, ' ') // basic entity removal
-      .replace(/\s+/g, ' ') // collapse spaces
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&[^;]+;/g, ' ')
+      .replace(/\s+/g, ' ')
       .trim()
     if (!text) return undefined
-    const match = text.match(/^[^.!?\n\r]{10,}?[.!?](\s|$)/) // take first sentence with a minimum length
+    const match = text.match(/^[^.!?\n\r]{10,}?[.!?](\s|$)/)
     return (match ? match[0] : text).trim()
   }
 
@@ -111,20 +125,38 @@ export default function WebPlayer() {
     setFiltered(allowedByAge)
   }, [allowedByAge])
 
+  const displayed: PodcastRow[] = useMemo(() => {
+    const base = filtered
+    if (!onlySubs) return base
+    return base.filter((p) => subscribedSet.has(Number(p.id)))
+  }, [filtered, onlySubs, subscribedSet])
+
   return (
     <div className="w-full">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <Suspense fallback={null}>
-          <CategoryFilter
-            podcasts={allowedByAge}
-            extractCategories={(p: PodcastRow) => (Array.isArray(p.categories) ? p.categories : [])}
-            onFiltered={setFiltered}
-            selected={selectedCats}
-            onSelectedChange={setSelectedCats}
-          />
-        </Suspense>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <Suspense fallback={null}>
+            <CategoryFilter
+              podcasts={allowedByAge}
+              extractCategories={(p: PodcastRow) => (Array.isArray(p.categories) ? p.categories : [])}
+              onFiltered={setFiltered}
+              selected={selectedCats}
+              onSelectedChange={setSelectedCats}
+            />
+          </Suspense>
+          <Button
+            type="button"
+            variant={onlySubs ? 'default' : 'outline'}
+            size="md"
+            onClick={() => setOnlySubs((v) => !v)}
+            disabled={!active?.id}
+            title={onlySubs ? 'Voir tous les podcasts' : 'Voir mes abonnements'}
+          >
+            {onlySubs ? 'Voir tous les podcasts' : 'Voir mes abonnements'}
+          </Button>
+        </div>
         <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {filtered.map((podcast) => (
+          {displayed.map((podcast) => (
             <div key={podcast.id} className="h-full">
               <PodcastCard
                 {...toCardProps(podcast)}
