@@ -10,6 +10,8 @@ import { sanitizeHtml } from "@/utils/sanitize"
 import { slugify } from "@/utils/slugify"
 import { cn } from "@/lib/utils"
 import { Category } from "@/types/podcast"
+import { useActiveProfile } from "@/hooks/useActiveProfile"
+import { useSubscription } from "@/hooks/useSubscription"
 
 type PodcastRow = any
 
@@ -39,11 +41,13 @@ export default function PodcastDetailsPage() {
   const authorSlug = slugify(decodeURIComponent(String(params?.author ?? "")))
 
   const supabase = useMemo(() => createClient(), [])
+  const { active } = useActiveProfile()
 
   const [podcast, setPodcast] = useState<PodcastRow | null>(null)
   const [episodes, setEpisodes] = useState<EpisodeRow[]>([])
   const [loading, setLoading] = useState(true)
   const [subscribed, setSubscribed] = useState<boolean>(false)
+  const { toggle, loading: subLoading } = useSubscription(podcast?.id)
 
   useEffect(() => {
     let active = true
@@ -107,6 +111,29 @@ export default function PodcastDetailsPage() {
     }
   }, [slug, authorSlug, supabase])
 
+  // Load initial subscription status for the active profile
+  useEffect(() => {
+    let mounted = true
+    const fetchStatus = async () => {
+      try {
+        if (!podcast?.id || !active?.id) return
+        const profileId = Number(active.id)
+        if (Number.isNaN(profileId)) return
+        const { data, error } = await supabase
+          .from('podcast_subscriptions')
+          .select('profile_id')
+          .eq('profile_id', profileId)
+          .eq('podcast_id', podcast.id)
+          .limit(1)
+        if (!mounted) return
+        if (error) return
+        setSubscribed(!!(Array.isArray(data) && data.length > 0))
+      } catch {}
+    }
+    fetchStatus()
+    return () => { mounted = false }
+  }, [podcast?.id, active?.id, supabase])
+
   const direct = podcast?.cover_url && String(podcast.cover_url).trim() !== "" ? String(podcast.cover_url).trim() : ""
   const coverSrc = direct ? `/api/image-proxy?src=${encodeURIComponent(direct)}` : "/images/Logo.webp"
 
@@ -160,7 +187,13 @@ export default function PodcastDetailsPage() {
               "absolute right-0 top-0 inline-flex h-10 w-10 items-center justify-center rounded-full",
               "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             )}
-            onClick={() => setSubscribed((s) => !s)}
+            disabled={subLoading}
+            onClick={async () => {
+              const next = !subscribed
+              setSubscribed(next)
+              const ok = await toggle(next)
+              if (!ok) setSubscribed(!next)
+            }}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill={subscribed ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -202,7 +235,6 @@ export default function PodcastDetailsPage() {
               const epCover = ep.cover ? `/api/image-proxy?src=${encodeURIComponent(ep.cover)}` : coverSrc
               return (
                 <li key={ep.id} className="relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm">
-                  {/* Actions: add to playlist (+) and play */}
                   <div className="absolute right-4 top-4 flex items-center">
                     <button
                       type="button"

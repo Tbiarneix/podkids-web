@@ -9,6 +9,7 @@ import { Tables } from '@/types/supabase'
 import Image from 'next/image'
 import { CategoryFilter } from '@/components/webplayer/CategoryFilter'
 import { useActiveProfile } from '@/hooks/useActiveProfile'
+import { cn } from '@/lib/utils'
 
 const AGE_RANGE_CODE_MAP: Record<AgeRange, string> = {
   [AgeRange.UNDER_3]: 'UNDER_3',
@@ -25,6 +26,7 @@ export default function WebPlayer() {
   const [podcasts, setPodcasts] = useState<PodcastRow[] | null>(null)
   const supabase = useMemo(() => createClient(), [])
   const { active } = useActiveProfile()
+  const [subscribedSet, setSubscribedSet] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     const getData = async () => {
@@ -33,6 +35,31 @@ export default function WebPlayer() {
     }
     getData()
   }, [supabase])
+
+  // Load subscriptions for the active profile
+  useEffect(() => {
+    let mounted = true
+    const loadSubs = async () => {
+      try {
+        if (!active?.id) {
+          setSubscribedSet(new Set())
+          return
+        }
+        const profileId = Number(active.id)
+        if (Number.isNaN(profileId)) return
+        const { data, error } = await supabase
+          .from('podcast_subscriptions')
+          .select('podcast_id')
+          .eq('profile_id', profileId)
+        if (!mounted) return
+        if (error) return
+        const ids = new Set<number>((data ?? []).map((r: any) => Number(r.podcast_id)))
+        setSubscribedSet(ids)
+      } catch {}
+    }
+    loadSubs()
+    return () => { mounted = false }
+  }, [active?.id, supabase])
 
   const categoryEntries = Object.entries(Category) as [keyof typeof Category, string][]
   const labelByKey = Object.fromEntries(categoryEntries) as Record<string, string>
@@ -62,7 +89,7 @@ export default function WebPlayer() {
       ? podcast.categories.map((c) => toLabel(c))
       : [],
     href: `/webplayer/podcast/${slugify(podcast.author)}/${slugify(podcast.name)}?id=${encodeURIComponent(String(podcast.id))}`,
-    isSubscribed: Boolean(podcast.subscription ?? podcast.is_subscribed ?? false),
+    isSubscribed: subscribedSet.has(Number(podcast.id)),
     description: firstSentence((podcast as any).description ?? undefined),
   })
 
@@ -101,6 +128,33 @@ export default function WebPlayer() {
             <div key={podcast.id} className="h-full">
               <PodcastCard
                 {...toCardProps(podcast)}
+                onSubscribe={async (next) => {
+                  if (!active?.id) return
+                  const profileId = Number(active.id)
+                  const podcastId = Number(podcast.id)
+                  if (Number.isNaN(profileId) || Number.isNaN(podcastId)) return
+                  // optimistic update of local set
+                  setSubscribedSet((prev) => {
+                    const s = new Set(prev)
+                    if (next) s.add(podcastId); else s.delete(podcastId)
+                    return s
+                  })
+                  try {
+                    const res = await fetch('/api/subscriptions', {
+                      method: next ? 'POST' : 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ profileId, podcastId }),
+                    })
+                    if (!res.ok) throw new Error('request_failed')
+                  } catch {
+                    // revert on failure
+                    setSubscribedSet((prev) => {
+                      const s = new Set(prev)
+                      if (next) s.delete(podcastId); else s.add(podcastId)
+                      return s
+                    })
+                  }
+                }}
                 onCategoryClick={(label) => {
                   const key = keyByLabel[label]
                   if (key) setSelectedCats([key])
