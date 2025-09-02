@@ -8,18 +8,15 @@ import Image from "next/image";
 export default function Screenshot() {
   const containerRef = useRef<HTMLUListElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const total = screenshotData.length;
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === screenshotData.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex === total - 1 ? 0 : prevIndex + 1));
+  }, [total]);
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? screenshotData.length - 1 : prevIndex - 1
-    );
-  };
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? total - 1 : prevIndex - 1));
+  }, [total]);
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);

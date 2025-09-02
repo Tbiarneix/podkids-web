@@ -125,7 +125,7 @@ export default function PodcastsManager() {
             </div>
 
             <div className="space-y-3 mb-4">
-              <p className="text-sm">Tranches d'âge</p>
+              <p className="text-sm">Tranches d&apos;âge</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {ORDERED_AGE_RANGES.map((ar) => {
                   const selected = ageRanges.includes(ar);

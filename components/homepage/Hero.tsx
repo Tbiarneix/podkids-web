@@ -10,7 +10,7 @@ export function Hero() {
       <div className="w-full max-w-full lg:max-w-[50%]">
         <h1 className="text-[3rem] lg:text-[4rem]">Podkids</h1>
         <h2 className="text-foreground font-medium text-2xl lg:text-3xl mb-6 max-w-[600px] leading-snug mx-0">
-          L'application de podcast sécurisée pour les enfants
+          L&apos;application de podcast sécurisée pour les enfants
         </h2>
         <p className="text-foreground text-xl mb-8 max-w-[500px] leading-relaxed mx-0">
           Une application simple, accessible et sans pub !

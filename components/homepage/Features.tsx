@@ -25,7 +25,7 @@ export function Features() {
                 <h4 className="text-primary text-xl font-semibold mb-4">Gestion des profils</h4>
                 <p className="text-foreground leading-relaxed">
                   Créez des profils individuels pour chaque enfant avec ajout
-                  d'un mot de passe.
+                  d&apos;un mot de passe.
                 </p>
               </div>
               <div className="bg-card rounded-[16px] pt-7 px-7 pb-3 transition-transform duration-300 shadow-[0_8px_16px_rgba(0,0,0,0.1)] hover:-translate-y-[5px] hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] h-full min-h-[9rem]">
@@ -38,8 +38,8 @@ export function Features() {
               <div className="bg-card rounded-[16px] pt-7 px-7 pb-3 transition-transform duration-300 shadow-[0_8px_16px_rgba(0,0,0,0.1)] hover:-translate-y-[5px] hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] h-full min-h-[9rem]">
                 <h4 className="text-primary text-xl font-semibold mb-4">Ajout manuel</h4>
                 <p className="text-foreground leading-relaxed">
-                  Ajoutez manuellement des podcasts pour enrichir l'expérience
-                  d'écoute.
+                  Ajoutez manuellement des podcasts pour enrichir l&apos;expérience
+                  d&apos;écoute.
                 </p>
               </div>
               <div className="bg-card rounded-[16px] pt-7 px-7 pb-3 transition-transform duration-300 shadow-[0_8px_16px_rgba(0,0,0,0.1)] hover:-translate-y-[5px] hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] h-full min-h-[9rem]">

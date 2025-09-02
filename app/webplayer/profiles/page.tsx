@@ -23,10 +23,10 @@ export default function ProfilesSelectPage() {
         const res = await fetch("/api/profiles");
         const data = await res.json().catch(() => ({}));
         if (res.ok && Array.isArray(data?.profiles)) {
-          mounted && setProfiles(data.profiles);
+          if (mounted) setProfiles(data.profiles);
         }
       } finally {
-        mounted && setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
     return () => {
@@ -40,7 +40,6 @@ export default function ProfilesSelectPage() {
   }
 
   async function handleSubmitPin(pin: string) {
-    // Validate against API; throw to show error in PinModal
     const res = await fetch("/api/pin/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

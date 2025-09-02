@@ -151,7 +151,6 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     } catch (err: any) {
       const message = typeof err === "string" ? err : err?.message;
       setError(message || "Erreur lors de la validation.");
-      // Track attempts and possibly block
       const next = attempts + 1;
       if (next >= MAX_ATTEMPTS) {
         const until = Date.now() + BLOCK_MS;
@@ -230,7 +229,7 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
           ))}
         </div>
         {blockedUntil ? (
-          <p className="mt-3 text-sm text-red-500">Trop d'essais, réessayez dans {remaining}s.</p>
+          <p className="mt-3 text-sm text-red-500">Trop d&apos;essais, réessayez dans {remaining}s.</p>
         ) : error ? (
           <p className="mt-3 text-sm text-red-500">{error}</p>
         ) : null}

@@ -3,8 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Category } from '@/types/podcast'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
 export type CategoryFilterProps<T> = {
   podcasts: T[]
@@ -13,21 +12,20 @@ export type CategoryFilterProps<T> = {
   variant?: 'block' | 'inline'
   buttonClassName?: string
   resetButtonClassName?: string
-  syncUrl?: boolean
   selected?: string[]
   onSelectedChange?: (selected: string[]) => void
 }
 
-export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, variant = 'block', buttonClassName, resetButtonClassName, syncUrl = true, selected: controlledSelected, onSelectedChange }: CategoryFilterProps<T>) {
+export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, variant = 'block', buttonClassName, resetButtonClassName, selected: controlledSelected, onSelectedChange }: CategoryFilterProps<T>) {
   const categoryEntries = Object.entries(Category) as [keyof typeof Category, string][]
   const categoryKeys = categoryEntries.map(([k]) => k)
   const keyByLabel = Object.fromEntries(categoryEntries.map(([k, v]) => [v, k])) as Record<string, string>
 
-  const toKey = (value: string): string | null => {
+  const toKey = useCallback((value: string): string | null => {
     if (categoryKeys.includes(value as any)) return value
     const k = keyByLabel[value]
     return k ?? null
-  }
+  }, [categoryKeys, keyByLabel])
 
   const [selectedInternal, setSelectedInternal] = useState<string[]>([])
   const selected = controlledSelected ?? selectedInternal
@@ -40,50 +38,17 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
   const toggleCategory = (key: string) => {
     const prev = selected
     const s = new Set(prev)
-    s.has(key) ? s.delete(key) : s.add(key)
+    if (s.has(key)) {
+      s.delete(key)
+    } else {
+      s.add(key)
+    }
     const next = Array.from(s)
     if (controlledSelected !== undefined) onSelectedChange?.(next)
     else setSelectedInternal(next)
   }
 
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  const catsFromUrl = useMemo(() => {
-    if (!syncUrl) return [] as string[]
-    const raw = searchParams.get('cats')
-    if (!raw) return [] as string[]
-    const keys = raw
-      .split(',')
-      .map((s) => decodeURIComponent(s))
-      .filter(Boolean)
-    return keys.filter((k) => categoryKeys.includes(k as any))
-  }, [searchParams, syncUrl])
-
-  useEffect(() => {
-    if (!syncUrl) return
-    const a = catsFromUrl
-    const b = selected
-    const equal = a.length === b.length && a.every((v) => b.includes(v))
-    if (!equal) {
-      if (controlledSelected !== undefined) onSelectedChange?.(a)
-      else setSelectedInternal(a)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catsFromUrl.join('|'), syncUrl, controlledSelected])
-
-  useEffect(() => {
-    if (!syncUrl) return
-    const current = searchParams.toString()
-    const params = new URLSearchParams(current)
-    if (selected.length === 0) params.delete('cats')
-    else params.set('cats', selected.map((s) => encodeURIComponent(s)).join(','))
-    const next = params.toString()
-    if (next === current) return
-    const url = next ? `${pathname}?${next}` : pathname
-    router.replace(url, { scroll: false })
-  }, [selected, router, pathname, searchParams, syncUrl])
+  // URL synchronization removed: filters are no longer persisted in the URL
 
   const filtered = useMemo(() => {
     if (!podcasts) return [] as T[]
@@ -93,18 +58,16 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
       const keys = cats.map((c) => toKey(c)).filter((v): v is string => Boolean(v))
       return keys.some((k) => selected.includes(k))
     })
-  }, [podcasts, selected, extractCategories])
+  }, [podcasts, selected, extractCategories, toKey])
 
   const onFilteredRef = useRef(onFiltered)
   useEffect(() => {
     onFilteredRef.current = onFiltered
   }, [onFiltered])
 
-  // Keep previous filtered value (non-null) to compare and avoid unnecessary updates
   const prevFilteredRef = useRef<T[]>(filtered)
 
   useEffect(() => {
-    // Only notify when the filtered array meaningfully changes
     const arraysShallowEqual = (a: T[], b: T[]) => {
       if (a === b) return true
       if (a.length !== b.length) return false
@@ -134,7 +97,6 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
-  // Focus 
   useEffect(() => {
     if (open) {
       lastActiveRef.current = (document.activeElement as HTMLElement) ?? null
@@ -148,7 +110,6 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
     }
   }, [open])
 
-  // Focus trap
   const onKeyDownTrap = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!open || e.key !== 'Tab') return
     const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
@@ -171,7 +132,6 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
     }
   }
 
-  // Scroll lock
   useEffect(() => {
     if (!open) return
     const prev = document.body.style.overflow

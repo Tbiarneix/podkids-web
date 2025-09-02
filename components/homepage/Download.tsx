@@ -1,75 +1,75 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import Image from "next/image";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export default function Download() {
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isFocused, setIsFocused] = useState(false);
+  // const [honeypot, setHoneypot] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
 
-    if (honeypot) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      toast.success(
-        "Super ! Tu fais maintenant partie de la liste d'attente.",
-        {
-          description:
-            "On te tient au courant dès que l'application est disponible !",
-          duration: 5000,
-        }
-      );
+  //   if (honeypot) {
+  //     await new Promise(resolve => setTimeout(resolve, 500));
+  //     toast.success(
+  //       "Super ! Tu fais maintenant partie de la liste d'attente.",
+  //       {
+  //         description:
+  //           "On te tient au courant dès que l'application est disponible !",
+  //         duration: 5000,
+  //       }
+  //     );
       
-      setEmail("");
-      return;
-    }
+  //     setEmail("");
+  //     return;
+  //   }
     
-    try {
-      const response = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+  //   try {
+  //     const response = await fetch("/api/subscribe", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email }),
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Erreur lors de l'inscription");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Erreur lors de l'inscription");
+  //     }
 
-      toast.success(
-        "Super ! Tu fais maintenant partie de la liste d'attente.",
-        {
-          description:
-            "On te tient au courant dès que l'application est disponible !",
-          duration: 5000,
-        }
-      );
+  //     toast.success(
+  //       "Super ! Tu fais maintenant partie de la liste d'attente.",
+  //       {
+  //         description:
+  //           "On te tient au courant dès que l'application est disponible !",
+  //         duration: 5000,
+  //       }
+  //     );
 
-      setEmail("");
-    } catch (error) {
-      console.error(error);
-      toast.error("Oups ! Une erreur est survenue.", {
-        description:
-          "Merci de réessayer plus tard ou de nous contacter directement.",
-        duration: 5000,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //     setEmail("");
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Oups ! Une erreur est survenue.", {
+  //       description:
+  //         "Merci de réessayer plus tard ou de nous contacter directement.",
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   return (
     <section id="download" className="py-20 md:py-20 bg-background">
       <div className="max-w-[1000px] mx-auto px-8 text-center">
         <h2 className="text-[2.5rem] text-primary font-bold mb-6">Télécharge Podkids</h2>
         <p className="text-[1.3rem] text-foreground mb-8 leading-[1.5]">
-          Offre à ton enfant une expérience d'écoute sécurisée et enrichissante&nbsp;!
+          Offre à ton enfant une expérience d&apos;écoute sécurisée et enrichissante&nbsp;!
         </p>
 
         {/* <div className="mb-10">

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { toast } from "sonner";
 import { AgeRange } from "@/types/podcast";
-import { ageRangeToLabel, formatAgeRanges } from "@/utils/ageRange";
+import { ageRangeToLabel } from "@/utils/ageRange";
 import type { ProfileFormData } from "@/types/profile";
 
 const ORDERED_AGE_RANGES: AgeRange[] = [
@@ -227,7 +227,7 @@ export default function ProfilesManager() {
             </div>
 
             <div className="space-y-3 mb-8">
-              <p className="text-sm">Tranche d'âge</p>
+              <p className="text-sm">Tranche d&apos;âge</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {ORDERED_AGE_RANGES.map((ar) => {
                   const selected = ageRanges.includes(ar);

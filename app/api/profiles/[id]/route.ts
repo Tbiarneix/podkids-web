@@ -43,7 +43,7 @@ function isValidAgeRanges(ageRanges: unknown): ageRanges is string[] {
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: unknown
 ) {
   const supabase = await createClient();
   const { data: userData, error: userErr } = await supabase.auth.getUser();
@@ -51,6 +51,7 @@ export async function PATCH(
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  const { params } = (context as { params?: { id?: string } }) ?? {};
   const id = params?.id;
   if (!id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
 
@@ -95,13 +96,14 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  context: unknown
 ) {
   const supabase = await createClient();
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr || !userData.user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  const { params } = (context as { params?: { id?: string } }) ?? {};
   const id = params?.id;
   if (!id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
 

@@ -82,7 +82,6 @@ export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPod
           extractCategories={extractCats}
           onFiltered={handleFiltered}
           variant="inline"
-          syncUrl={false}
           buttonClassName="rounded-full border-primary text-primary hover:bg-primary/10"
           resetButtonClassName="text-muted-foreground hover:bg-accent hover:text-foreground"
         />

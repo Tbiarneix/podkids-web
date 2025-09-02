@@ -57,6 +57,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (e: any) {
+    console.error(e);
     return fallbackImage();
   }
 }
@@ -65,7 +66,9 @@ async function fallbackImage() {
   try {
     const filePath = path.join(process.cwd(), "public", "images", "Logo.webp");
     const data = await readFile(filePath);
-    return new Response(data, {
+    // Ensure BodyInit compatibility (avoid Node Buffer type mismatch)
+    const body = new Uint8Array(data);
+    return new Response(body, {
       status: 200,
       headers: {
         "Content-Type": "image/webp",

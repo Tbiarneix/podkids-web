@@ -23,7 +23,7 @@ export default async function Page({
               <CardContent>
                 {params?.error ? (
                   <p className="text-sm text-muted-foreground">
-                    Code d'erreur: {params.error}
+                    Code d&apos;erreur: {params.error}
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">

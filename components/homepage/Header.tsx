@@ -143,7 +143,7 @@ export function Header () {
               href="#screenshots"
               onClick={() => setMenuOpen(false)}
             >
-              Captures d'écran
+              Captures d&apos;écran
             </a>
           </li>
           <li>

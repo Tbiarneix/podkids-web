@@ -68,7 +68,7 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
     getPath(channel, ["itunes:subtitle"])
   );
 
-  let cover: string | undefined = pickFirst(
+  const cover: string | undefined = pickFirst(
     getPath(channel, ["itunes:image", "@_href"]),
     getPath(channel, ["image", "url"])
   );

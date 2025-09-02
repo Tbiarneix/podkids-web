@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Footer } from "@/components/homepage/Footer";
 import { NavActions } from "@/components/webplayer/NavActions";
 import { ActiveProfileInitializer } from "@/components/webplayer/ActiveProfileInitializer";
