@@ -48,8 +48,6 @@ export function CategoryFilter<T>({ podcasts, extractCategories, onFiltered, var
     else setSelectedInternal(next)
   }
 
-  // URL synchronization removed: filters are no longer persisted in the URL
-
   const filtered = useMemo(() => {
     if (!podcasts) return [] as T[]
     return (podcasts ?? []).filter((p) => {

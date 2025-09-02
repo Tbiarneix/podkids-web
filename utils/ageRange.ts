@@ -1,6 +1,5 @@
 import { AgeRange } from "@/types/podcast";
 
-// French display labels for AgeRange values
 export const AGE_RANGE_LABELS: Record<AgeRange, string> = {
   [AgeRange.UNDER_3]: "0/3 ans",
   [AgeRange.BETWEEN_4_AND_6]: "3/6 ans",

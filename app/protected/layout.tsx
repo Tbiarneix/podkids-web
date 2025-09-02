@@ -1,7 +1,5 @@
-import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
 
-import { hasEnvVars } from "@/lib/utils";
 import Image from "next/image";
 import { Footer } from "@/components/homepage/Footer";
 import BackToSettings from "@/components/protected/BackToSettings";
@@ -13,7 +11,6 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fallback guard in case middleware didn't run for any reason
   const jar = await cookies();
   const pinOk = jar.get("pk_pin_ok");
   if (!pinOk) {
@@ -34,7 +31,7 @@ export default async function ProtectedLayout({
               />
               <span className="text-[1.8rem] font-bold text-primary">Podkids</span>
             </div>
-            {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
+            <AuthButton />
           </div>
         </nav>
         <div className="flex-1 flex flex-col gap-8 max-w-5xl pt-6 pb-12 px-5 min-h-[calc(100vh-4rem)]">

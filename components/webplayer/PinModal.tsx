@@ -26,7 +26,7 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
   const prevFocusRef = React.useRef<HTMLElement | null>(null);
 
   const MAX_ATTEMPTS = 3;
-  const BLOCK_MS = 60_000; // 1 minute
+  const BLOCK_MS = 60_000;
   const LS_KEY = "pk_pin_block";
 
   function readBlockState() {
@@ -59,7 +59,6 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     }
   }, [open]);
 
-  // Initialize attempts and blocked state when opening
   React.useEffect(() => {
     if (!open) return;
     const st = readBlockState();
@@ -69,12 +68,10 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     } else {
       setBlockedUntil(null);
       setAttempts(st?.attempts ?? 0);
-      // clear expired state
       if (st?.until) writeBlockState(null, 0);
     }
   }, [open]);
 
-  // Countdown for remaining time while blocked
   React.useEffect(() => {
     if (!blockedUntil) {
       setRemaining(0);
@@ -138,7 +135,6 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
       setError("Entrez 5 chiffres.");
       return;
     }
-    // Check local block
     if (blockedUntil && blockedUntil > Date.now()) {
       setError("Trop d'essais, réessayez dans " + remaining + "s.");
       return;

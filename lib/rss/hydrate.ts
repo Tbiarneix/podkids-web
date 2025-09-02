@@ -45,7 +45,6 @@ export async function hydratePodcast(podcastId: number) {
     if (findEpErr) throw new Error(`episode_select_failed:${findEpErr.message}`);
 
     if (existing && existing.length > 0) {
-      // Optional: update existing (skip for now or implement partial update)
       continue;
     }
 

@@ -28,7 +28,6 @@ function writeToLS(p: ActiveProfilePayload | null) {
   try {
     if (p) window.localStorage.setItem(LS_KEY, JSON.stringify(p));
     else window.localStorage.removeItem(LS_KEY);
-    // Notify same-tab listeners (storage event doesn't fire in same tab)
     window.dispatchEvent(new CustomEvent("pk:active_profile_changed"));
   } catch {}
 }
@@ -38,7 +37,6 @@ export function useActiveProfile() {
   const [loading, setLoading] = useState(false);
   const pendingRef = useRef<string | null>(null);
 
-  // Sync across tabs
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === LS_KEY) {
@@ -56,7 +54,6 @@ export function useActiveProfile() {
     };
   }, []);
 
-  // Initial fetch to hydrate from server (find active or leave null)
   const hydrateFromServer = useCallback(async () => {
     setLoading(true);
     try {
@@ -77,7 +74,7 @@ export function useActiveProfile() {
         writeToLS(payload);
         setActive(payload);
       } else {
-        // none active on server; keep existing LS (user will choose later)
+        // none active on server; (user will choose later)
       }
     } finally {
       setLoading(false);
@@ -85,17 +82,14 @@ export function useActiveProfile() {
   }, []);
 
   useEffect(() => {
-    // hydrate once on mount
     hydrateFromServer();
   }, [hydrateFromServer]);
 
   const setActiveProfile = useCallback(async (p: { id: string; name: string; avatar: number; ageRanges: string[] }) => {
-    // optimistic update
     const payload: ActiveProfilePayload = { ...p, updatedAt: Date.now(), version: 1 } as any;
     writeToLS(payload);
     setActive(payload);
 
-    // server sync
     pendingRef.current = p.id;
     try {
       const res = await fetch("/api/profiles/activate", {
@@ -105,7 +99,7 @@ export function useActiveProfile() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "activate_failed");
-      // trust server result
+      
       const prof: Profile | undefined = data?.profile;
       if (prof) {
         const fromServer: ActiveProfilePayload = {
@@ -120,7 +114,6 @@ export function useActiveProfile() {
         setActive(fromServer);
       }
     } catch (e) {
-      // revert? keep LS for now; caller may show toast
     } finally {
       pendingRef.current = null;
     }

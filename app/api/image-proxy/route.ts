@@ -66,7 +66,6 @@ async function fallbackImage() {
   try {
     const filePath = path.join(process.cwd(), "public", "images", "Logo.webp");
     const data = await readFile(filePath);
-    // Ensure BodyInit compatibility (avoid Node Buffer type mismatch)
     const body = new Uint8Array(data);
     return new Response(body, {
       status: 200,

@@ -8,7 +8,7 @@ function isFiveDigits(pin: unknown): pin is string {
 
 export async function POST(req: Request) {
   const MAX_ATTEMPTS = 3;
-  const BLOCK_MS = 60_000; // 1 minute
+  const BLOCK_MS = 60_000;
   const COOKIE_KEY = "pk_pin_block";
 
   const supabase = await createClient();
@@ -29,7 +29,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_pin" }, { status: 400 });
   }
 
-  // Read throttle cookie (scoped per browser)
   const jar = await cookies();
   let attempts = 0;
   let until: number | null = null;
@@ -46,7 +45,6 @@ export async function POST(req: Request) {
 
   if (until && until > Date.now()) {
     const res = NextResponse.json({ error: "too_many_attempts", retryAt: until }, { status: 429 });
-    // refresh cookie to ensure it persists until 'until'
     const maxAge = Math.max(1, Math.ceil((until - Date.now()) / 1000));
     res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts, until }), {
       httpOnly: true,
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60, // keep attempts state up to 1h
+      maxAge: 60 * 60,
     });
     return res;
   }

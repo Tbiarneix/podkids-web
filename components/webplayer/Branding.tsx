@@ -10,16 +10,13 @@ export function Branding() {
   const [fadeIn, setFadeIn] = useState(true);
   useEffect(() => setMounted(true), []);
 
-  // Trigger a tiny fade/scale whenever the displayed identity changes
   const isProfile = mounted && !!active;
   useEffect(() => {
-    // reset then enable to trigger transition
     setFadeIn(false);
     const id = requestAnimationFrame(() => setFadeIn(true));
     return () => cancelAnimationFrame(id);
   }, [isProfile, active?.avatar, active?.name]);
 
-  // SSR-safe: fallback is rendered until mounted
   return (
     <div className="flex items-center font-semibold">
       {isProfile ? (

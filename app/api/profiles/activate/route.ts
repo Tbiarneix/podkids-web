@@ -44,7 +44,6 @@ export async function POST(req: Request) {
   const id = body?.id;
   if (!id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
 
-  // Reset all active_profile for this user to false
   const { error: resetErr } = await supabase
     .from("profile")
     .update({ active_profile: false })
@@ -53,7 +52,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: resetErr.message }, { status: 500 });
   }
 
-  // Set the requested id to active
   const { data, error } = await supabase
     .from("profile")
     .update({ active_profile: true })

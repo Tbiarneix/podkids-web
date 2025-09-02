@@ -37,7 +37,6 @@ export function NavActions() {
 
   const canShowChangeProfile = (profilesCount ?? 0) > 1;
 
-  // restore focus after closing modals
   React.useEffect(() => {
     if (!pinOpen) {
       prevFocusRef.current?.focus?.();
@@ -46,7 +45,6 @@ export function NavActions() {
     }
   }, [pinOpen]);
 
-  // Focus management for confirm switch modal
   React.useEffect(() => {
     if (confirmSwitchOpen) {
       prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);

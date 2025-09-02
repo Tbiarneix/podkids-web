@@ -10,12 +10,10 @@ export function ActiveProfileInitializer() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // ensure hydration happens when layout mounts
     hydrateFromServer();
   }, [hydrateFromServer]);
 
   useEffect(() => {
-    // After hydration: if no active profile and not already on selection page, redirect
     if (!loading && !active) {
       if (pathname !== "/webplayer/profiles") {
         router.replace("/webplayer/profiles");

@@ -25,7 +25,6 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-        /* Additional semantic colors for easy usage */
         ink: "hsl(var(--text-secondary))", // secondary text (#001D3D)
         tertiary: "hsl(var(--text-tertiary))", // tertiary text/accent (#FFC107)
         border: "hsl(var(--border))",

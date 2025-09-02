@@ -5,15 +5,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PinModal } from "@/components/webplayer/PinModal";
 
 export default function PinGatePage() {
+  return (
+    <React.Suspense fallback={null}>
+      <PinGateContent />
+    </React.Suspense>
+  );
+}
+
+function PinGateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
 
   const redirect = searchParams.get("redirect") || "/protected";
 
   async function validatePin(pin: string) {
-    setError(null);
     const res = await fetch("/api/pin/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,8 +42,6 @@ export default function PinGatePage() {
       } catch {}
       throw new Error(message);
     }
-    // On success, middleware will see the cookie and allow access
-    // Use hard navigation to ensure cookies are included
     window.location.href = redirect;
   }
 
@@ -47,7 +51,6 @@ export default function PinGatePage() {
         open={open}
         onClose={() => {
           setOpen(false);
-          // If user cancels, return to home or previous page
           router.push("/");
         }}
         title="Accès parent"
