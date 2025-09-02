@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { CategoryFilter } from "@/components/webplayer/CategoryFilter";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types/podcast";
+import { sanitizeHtml } from "@/utils/sanitize";
 import { toast } from "sonner";
 
 type DbPodcast = {
@@ -137,7 +138,10 @@ export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPod
                   </p>
                 </div>
                 {p.description ? (
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{p.description}</p>
+                  <div
+                    className="line-clamp-3 text-sm text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(p.description)) }}
+                  />
                 ) : null}
                 {cats.length > 0 ? (
                   <div className="mt-1 flex flex-wrap items-center gap-3">

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 
 type PodcastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   name: string;
@@ -66,7 +67,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
             unoptimized
           />
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 pr-[4%]">
           <div className="min-w-0">
             <h2 className="truncate text-lg font-semibold sm:text-2xl">{name}</h2>
             <p className="mt-0.5 truncate text-sm text-muted-foreground sm:text-base">
@@ -74,9 +75,10 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
               <span className="mx-1">•</span> {episodesCount} épisodes
             </p>
             {description ? (
-              <p className="mt-1 truncate text-sm text-muted-foreground">
-                {description}
-              </p>
+              <div
+                className="mt-1 text-sm text-muted-foreground line-clamp-1"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+              />
             ) : null}
           </div>
           <div className="flex flex-col items-start gap-5">

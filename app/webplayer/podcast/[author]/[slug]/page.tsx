@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
+import { sanitizeHtml } from "@/utils/sanitize"
 import { slugify } from "@/utils/slugify"
 import { cn } from "@/lib/utils"
 import { Category } from "@/types/podcast"
@@ -50,7 +51,6 @@ export default function PodcastDetailsPage() {
       try {
         let match: any | undefined
 
-        // 1) If we have an id in the URL, fetch directly by id (most reliable)
         if (idFromQuery) {
           const { data: byId } = await supabase
             .from('podcast')
@@ -62,7 +62,6 @@ export default function PodcastDetailsPage() {
           }
         }
 
-        // 2) Fallback: fetch all and resolve by slugs
         if (!match) {
           const { data: list } = await supabase
             .from("podcast")
@@ -72,9 +71,7 @@ export default function PodcastDetailsPage() {
             console.debug("[PodcastDetail] Params:", { authorSlug, slug, idFromQuery })
             console.debug("[PodcastDetail] Items count:", items.length)
           }
-          // Primary: exact match name+author
           match = (items as any[]).find((p) => slugify(p.name) === slug && slugify(p.author) === authorSlug)
-          // Secondary: filter by name, pick best author match
           const byName = (items as any[]).filter((p) => slugify(p.name) === slug)
           if (!match && byName.length > 0) {
             match = byName.find((p) => slugify(p.author) === authorSlug)
@@ -91,7 +88,6 @@ export default function PodcastDetailsPage() {
         }
         if (!active) return
         setPodcast(match)
-        // Keep local toggle only for now; backend wiring later
 
         const { data: eps } = await supabase
           .from("episode")
@@ -143,7 +139,16 @@ export default function PodcastDetailsPage() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-5xl sm:px-6">
+        {/* Back to list */}
+        <div className="mb-12">
+          <Link href="/webplayer" className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            <span>Retour à la liste des podcasts</span>
+          </Link>
+        </div>
         <div className={cn("relative flex items-start gap-6 p-0")}> 
           {/* Heart toggle, like in PodcastCard */}
           <button
@@ -172,9 +177,10 @@ export default function PodcastDetailsPage() {
               {podcast.author} <span className="mx-1">•</span> {Number(podcast.episodes_count || 0)} épisodes
             </p>
             {podcast.description ? (
-              <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
-                {String(podcast.description)}
-              </p>
+              <div
+                className="mt-3 text-sm text-muted-foreground space-y-2"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(podcast.description)) }}
+              />
             ) : null}
 
             {categories.length > 0 ? (
@@ -195,21 +201,43 @@ export default function PodcastDetailsPage() {
             {episodes.map((ep) => {
               const epCover = ep.cover ? `/api/image-proxy?src=${encodeURIComponent(ep.cover)}` : coverSrc
               return (
-                <li key={ep.id} className="flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm">
+                <li key={ep.id} className="relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm">
+                  {/* Actions: add to playlist (+) and play */}
+                  <div className="absolute right-4 top-4 flex items-center">
+                    <button
+                      type="button"
+                      title="Ajouter à une playlist"
+                      aria-label="Ajouter à une playlist"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: brancher playlist */ }}
+                    >
+                      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                      <span className="sr-only">Ajouter à une playlist</span>
+                    </button>
+                    <button
+                      type="button"
+                      title="Lecture"
+                      aria-label="Lecture"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: brancher lecteur */ }}
+                    >
+                      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <span className="sr-only">Lire</span>
+                    </button>
+                  </div>
                   <Image src={epCover} alt={ep.name} width={80} height={80} className="h-20 w-20 shrink-0 rounded-lg object-cover" unoptimized />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-base font-semibold sm:text-lg">{ep.name}</h3>
-                    {ep.publication_date ? (
-                      <p className="text-xs text-muted-foreground">{ep.publication_date}</p>
-                    ) : null}
                     {ep.description ? (
-                      <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{ep.description}</p>
+                      <div
+                        className="mt-1 text-sm text-muted-foreground space-y-2"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(ep.description)) }}
+                      />
                     ) : null}
-                    <div className="mt-2">
-                      <Link href={ep.url} className="text-sm font-semibold text-yellow-400 hover:underline" prefetch={false}>
-                        Écouter ➜
-                      </Link>
-                    </div>
                   </div>
                 </li>
               )

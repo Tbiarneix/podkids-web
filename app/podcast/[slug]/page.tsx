@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import { sanitizeHtml } from "@/utils/sanitize"
 import { Category } from "@/types/podcast"
 
 type PodcastRow = any
@@ -118,9 +119,10 @@ export default function PodcastDetailsPage() {
                 {podcast.author} <span className="mx-1">•</span> {Number(podcast.episodes_count || 0)} épisodes
               </p>
               {podcast.description ? (
-                <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
-                  {String(podcast.description)}
-                </p>
+                <div
+                  className="mt-3 text-sm text-muted-foreground space-y-2"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(podcast.description)) }}
+                />
               ) : null}
 
               {categories.length > 0 ? (
@@ -160,11 +162,12 @@ export default function PodcastDetailsPage() {
                   <Image src={epCover} alt={ep.name} width={80} height={80} className="h-20 w-20 shrink-0 rounded-lg object-cover" unoptimized />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-base font-semibold sm:text-lg">{ep.name}</h3>
-                    {ep.publication_date ? (
-                      <p className="text-xs text-muted-foreground">{ep.publication_date}</p>
-                    ) : null}
+                    {ep.publication_date ? null : null}
                     {ep.description ? (
-                      <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{ep.description}</p>
+                      <div
+                        className="mt-1 text-sm text-muted-foreground space-y-2"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(ep.description)) }}
+                      />
                     ) : null}
                     <div className="mt-2">
                       <Link href={ep.url} className="text-sm font-semibold text-yellow-400 hover:underline" prefetch={false}>
