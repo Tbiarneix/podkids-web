@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings, KeyRound, Users, Podcast, Play } from "lucide-react";
+import { Settings, KeyRound, Users, Podcast } from "lucide-react";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();

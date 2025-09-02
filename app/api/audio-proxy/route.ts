@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       status: upstream.status,
       headers: resHeaders,
     });
-  } catch (e) {
+  } catch {
     return bad("proxy_error", 502);
   }
 }
