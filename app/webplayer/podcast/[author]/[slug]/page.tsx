@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { Category } from "@/types/podcast"
 import { useActiveProfile } from "@/hooks/useActiveProfile"
 import { useSubscription } from "@/hooks/useSubscription"
+import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider"
 
 type PodcastRow = any
 
@@ -41,6 +42,7 @@ export default function PodcastDetailsPage() {
 
   const supabase = useMemo(() => createClient(), [])
   const { active } = useActiveProfile()
+  const { play } = useAudioPlayer()
 
   const [podcast, setPodcast] = useState<PodcastRow | null>(null)
   const [episodes, setEpisodes] = useState<EpisodeRow[]>([])
@@ -229,6 +231,7 @@ export default function PodcastDetailsPage() {
           <ul className="flex flex-col gap-4">
             {episodes.map((ep) => {
               const epCover = ep.cover ? `/api/image-proxy?src=${encodeURIComponent(ep.cover)}` : coverSrc
+              const audioSrc = `/api/audio-proxy?src=${encodeURIComponent(ep.url)}`
               return (
                 <li key={ep.id} className="relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm">
                   <div className="absolute right-4 top-4 flex items-center">
@@ -249,7 +252,18 @@ export default function PodcastDetailsPage() {
                       title="Lecture"
                       aria-label="Lecture"
                       className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        play({
+                          id: ep.id,
+                          name: ep.name,
+                          url: audioSrc,
+                          cover: epCover,
+                          podcastName: podcast.name,
+                          duration: ep.duration ?? null,
+                        });
+                      }}
                     >
                       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
                         <path d="M8 5v14l11-7z" />
