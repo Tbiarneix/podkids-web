@@ -96,8 +96,13 @@ export async function POST(req: Request) {
     return res;
   }
 
-  // Success: clear throttle cookie
   const res = NextResponse.json({ ok: true });
+  res.cookies.set("pk_pin_ok", "1", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/protected",
+    maxAge: 5 * 60,
+  });
   res.cookies.delete(COOKIE_KEY);
   return res;
 }

@@ -90,7 +90,7 @@ export default async function ProtectedPage() {
         
         <div className="mt-12 flex justify-center">
           <Button size="xl" asChild>
-            <Link href="/webplayer" className="inline-flex items-center gap-2">
+            <Link href="/api/pin/clear" className="inline-flex items-center gap-2">
               <Play className="size-5" aria-hidden />
               <span>Accéder au player web</span>
             </Link>

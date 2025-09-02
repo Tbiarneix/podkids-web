@@ -5,12 +5,20 @@ import { hasEnvVars } from "@/lib/utils";
 import Image from "next/image";
 import { Footer } from "@/components/homepage/Footer";
 import BackToSettings from "@/components/protected/BackToSettings";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function ProtectedLayout({
+export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Fallback guard in case middleware didn't run for any reason
+  const jar = await cookies();
+  const pinOk = jar.get("pk_pin_ok");
+  if (!pinOk) {
+    redirect("/auth/pin?redirect=/protected");
+  }
   return (
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col gap-0 items-center">
