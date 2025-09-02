@@ -6,10 +6,8 @@ import { Suspense, useEffect, useMemo, useState } from 'react'
 import { PodcastCard } from '@/components/ui/podcast-card'
 import { AgeRange, Category } from '@/types/podcast'
 import { Tables } from '@/types/supabase'
-import Image from 'next/image'
 import { CategoryFilter } from '@/components/webplayer/CategoryFilter'
 import { useActiveProfile } from '@/hooks/useActiveProfile'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 const AGE_RANGE_CODE_MAP: Record<AgeRange, string> = {
@@ -165,7 +163,6 @@ export default function WebPlayer() {
                   const profileId = Number(active.id)
                   const podcastId = Number(podcast.id)
                   if (Number.isNaN(profileId) || Number.isNaN(podcastId)) return
-                  // optimistic update of local set
                   setSubscribedSet((prev) => {
                     const s = new Set(prev)
                     if (next) s.add(podcastId); else s.delete(podcastId)
@@ -179,7 +176,6 @@ export default function WebPlayer() {
                     })
                     if (!res.ok) throw new Error('request_failed')
                   } catch {
-                    // revert on failure
                     setSubscribedSet((prev) => {
                       const s = new Set(prev)
                       if (next) s.delete(podcastId); else s.add(podcastId)

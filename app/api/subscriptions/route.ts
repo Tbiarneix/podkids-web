@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 
-// POST /api/subscriptions
-// Body: { profileId: string|number, podcastId: string|number }
-// Effect: subscribe (upsert) the profile to the podcast
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -27,7 +24,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    // RLS will ensure the user can only insert for their own profile_id
     const { error: upsertErr } = await supabase
       .from("podcast_subscriptions")
       .upsert({ profile_id, podcast_id }, { onConflict: "profile_id,podcast_id", ignoreDuplicates: true });
@@ -42,9 +38,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE /api/subscriptions
-// Body: { profileId: string|number, podcastId: string|number }
-// Effect: unsubscribe (delete) the row
 export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -68,7 +61,6 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    // RLS will ensure the user can only delete for their own profile_id
     const { error: delErr } = await supabase
       .from("podcast_subscriptions")
       .delete()

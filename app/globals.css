@@ -32,7 +32,6 @@
     @apply bg-background text-foreground;
   }
   h1 {
-    /* 4rem size, bold, tertiary color (#FFC107), margin-bottom 1rem */
     @apply text-[4rem] font-bold text-tertiary mb-4;
   }
 }
@@ -63,7 +62,6 @@ a {
   text-decoration: none;
 }
 
-/* Styled links used inside sanitized descriptions */
 .desc-link {
   color: hsl(var(--text-tertiary)); /* #FFC107 via tailwind config */
   text-decoration: underline;

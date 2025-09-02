@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { sanitizeHtml } from "@/utils/sanitize"
@@ -34,7 +34,6 @@ const toLabel = (value: string): string => labelByKey[value] ?? value
 
 export default function PodcastDetailsPage() {
   const params = useParams<{ author: string; slug: string }>()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const idFromQuery = searchParams?.get('id') ?? undefined
   const slug = slugify(decodeURIComponent(String(params?.slug ?? "")))
@@ -111,7 +110,6 @@ export default function PodcastDetailsPage() {
     }
   }, [slug, authorSlug, supabase])
 
-  // Load initial subscription status for the active profile
   useEffect(() => {
     let mounted = true
     const fetchStatus = async () => {
@@ -167,7 +165,6 @@ export default function PodcastDetailsPage() {
   return (
     <div className="w-full">
       <div className="mx-auto max-w-5xl sm:px-6">
-        {/* Back to list */}
         <div className="mb-12">
           <Link href="/webplayer" className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300">
             <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -177,7 +174,6 @@ export default function PodcastDetailsPage() {
           </Link>
         </div>
         <div className={cn("relative flex items-start gap-6 p-0")}> 
-          {/* Heart toggle, like in PodcastCard */}
           <button
             type="button"
             aria-label={subscribed ? "Se désabonner" : "S'abonner"}
@@ -241,7 +237,7 @@ export default function PodcastDetailsPage() {
                       title="Ajouter à une playlist"
                       aria-label="Ajouter à une playlist"
                       className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: brancher playlist */ }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     >
                       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 5v14M5 12h14" />
@@ -253,7 +249,7 @@ export default function PodcastDetailsPage() {
                       title="Lecture"
                       aria-label="Lecture"
                       className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: brancher lecteur */ }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     >
                       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
                         <path d="M8 5v14l11-7z" />

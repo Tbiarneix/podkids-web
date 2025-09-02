@@ -35,7 +35,6 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
         )}
         {...rest}
       >
-        {/* Heart subscribe toggle */}
         <button
           type="button"
           aria-label={subscribed ? "Se désabonner" : "S'abonner"}
@@ -100,7 +99,6 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
                 ))}
               </div>
             ) : (
-              // Reserve space when there are no categories to keep height uniform (two rows)
               <div className="h-[72px]" />
             )}
           </div>

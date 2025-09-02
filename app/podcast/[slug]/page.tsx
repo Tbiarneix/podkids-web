@@ -54,7 +54,6 @@ export default function PodcastDetailsPage() {
     let active = true
     const load = async () => {
       try {
-        // Fetch minimal fields for all podcasts (name + id) to resolve slug
         const { data: list } = await supabase
           .from("podcast")
           .select("id, name, author, cover_url, categories, episodes_count, description, subscription, is_subscribed")

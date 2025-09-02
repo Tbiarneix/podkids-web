@@ -1,9 +1,3 @@
-// Simple HTML sanitizer for client components
-// - Removes disallowed tags/attributes
-// - Forces <a> to open in new tab with rel attributes
-// - Blocks javascript: and data: (except data:image for img)
-// NOTE: Intended for client-side usage only (relies on DOM APIs)
-
 const ALLOWED_TAGS = new Set<string>([
   'a',
   'p',
@@ -49,10 +43,8 @@ function isSafeUrl(url: string, forImg = false) {
     const trimmed = url.trim()
     if (trimmed.startsWith('javascript:')) return false
     if (trimmed.startsWith('data:')) {
-      // Only allow data:image/* for <img>
       return forImg && /^data:image\//i.test(trimmed)
     }
-    // Allow http/https/mailto
     return /^(https?:|mailto:)/i.test(trimmed)
   } catch {
     return false
@@ -64,13 +56,11 @@ function cleanNode(node: Node) {
     const el = node as HTMLElement
     const tag = el.tagName.toLowerCase()
 
-    // Remove event handler attributes like onClick, onload, etc.
     for (const attr of Array.from(el.attributes)) {
       if (attr.name.startsWith('on')) el.removeAttribute(attr.name)
     }
 
     if (!isAllowedTag(tag)) {
-      // Replace disallowed element with its text content (flatten)
       const parent = el.parentNode
       if (!parent) return
       while (el.firstChild) parent.insertBefore(el.firstChild, el)
@@ -78,7 +68,6 @@ function cleanNode(node: Node) {
       return
     }
 
-    // Validate allowed attributes and sanitize URLs
     for (const attr of Array.from(el.attributes)) {
       const name = attr.name.toLowerCase()
       if (!isAllowedAttr(tag, name)) {
@@ -95,7 +84,6 @@ function cleanNode(node: Node) {
         } else {
           el.setAttribute('target', '_blank')
           el.setAttribute('rel', 'noopener noreferrer')
-          // Ensure styled link class is applied
           const existing = el.getAttribute('class') || ''
           const classes = new Set(existing.split(/\s+/).filter(Boolean))
           classes.add('desc-link')
@@ -109,18 +97,15 @@ function cleanNode(node: Node) {
       }
     }
 
-    // Recurse into children after cleaning this element
     for (const child of Array.from(el.childNodes)) cleanNode(child)
   } else if (node.nodeType === Node.COMMENT_NODE) {
     node.parentNode?.removeChild(node)
   } else {
-    // Text nodes are fine
   }
 }
 
 export function sanitizeHtml(input: string): string {
   if (!input) return ''
-  // Create a sandbox container and set HTML
   const container = document.createElement('div')
   container.innerHTML = input
   for (const child of Array.from(container.childNodes)) {
