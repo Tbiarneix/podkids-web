@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,10 +13,12 @@ type PodcastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   href?: string;
   isSubscribed?: boolean;
   onSubscribe?: (next: boolean) => void;
+  description?: string;
+  onCategoryClick?: (label: string) => void;
 };
 
 const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
-  ({ className, name, author, episodesCount, coverUrl, categories, href, isSubscribed = false, onSubscribe, ...rest }, ref) => {
+  ({ className, name, author, episodesCount, coverUrl, categories, href, isSubscribed = false, onSubscribe, description, onCategoryClick, ...rest }, ref) => {
     const direct = coverUrl && coverUrl.trim() !== "" ? coverUrl.trim() : "";
     const coverSrc = direct ? `/api/image-proxy?src=${encodeURIComponent(direct)}` : "/images/Logo.webp";
     const [subscribed, setSubscribed] = React.useState<boolean>(isSubscribed);
@@ -27,12 +28,34 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
       <div
         ref={ref}
         className={cn(
-          "group flex h-full w-full items-stretch gap-8 rounded-2xl border bg-card/95 text-card-foreground shadow-sm transition-colors hover:bg-card",
+          "group relative flex h-full w-full items-stretch gap-8 rounded-2xl border bg-card/95 text-card-foreground shadow-sm transition-colors hover:bg-card",
           "p-4 sm:p-6",
           className,
         )}
         {...rest}
       >
+        {/* Heart subscribe toggle */}
+        <button
+          type="button"
+          aria-label={subscribed ? "Se désabonner" : "S'abonner"}
+          title={subscribed ? "Se désabonner" : "S'abonner"}
+          aria-pressed={subscribed}
+          className={cn(
+            "absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full",
+            "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          )}
+          onClick={(e) => {
+            e.preventDefault();
+            const next = !subscribed;
+            setSubscribed(next);
+            onSubscribe?.(next);
+          }}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill={subscribed ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+          <span className="sr-only">{subscribed ? "Se désabonner" : "S'abonner"}</span>
+        </button>
         <div className="shrink-0">
           <Image
             src={coverSrc}
@@ -50,38 +73,34 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
               {author} 
               <span className="mx-1">•</span> {episodesCount} épisodes
             </p>
+            {description ? (
+              <p className="mt-1 truncate text-sm text-muted-foreground">
+                {description}
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-col items-start gap-5">
-            <Button
-              variant={subscribed ? "default" : "outline"}
-              className={cn(
-                "rounded-full px-4 py-2 font-semibold",
-                subscribed
-                  ? "bg-white text-slate-900 hover:bg-white/90"
-                  : "border-white text-white hover:bg-white/10 hover:text-white",
-              )}
-              aria-pressed={subscribed}
-              onClick={(e) => {
-                e.preventDefault();
-                const next = !subscribed;
-                setSubscribed(next);
-                onSubscribe?.(next);
-              }}
-            >
-              {subscribed ? "Abonné" : "S'abonner"}
-            </Button>
             {Array.isArray(categories) && categories.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-2 overflow-hidden h-[72px]">
                 {categories.map((cat) => (
-                  <span
+                  <button
                     key={cat}
-                    className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400"
+                    type="button"
+                    className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400 hover:bg-yellow-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onCategoryClick?.(cat);
+                    }}
                   >
                     {cat}
-                  </span>
+                  </button>
                 ))}
               </div>
-            ) : null}
+            ) : (
+              // Reserve space when there are no categories to keep height uniform (two rows)
+              <div className="h-[72px]" />
+            )}
           </div>
         </div>
       </div>

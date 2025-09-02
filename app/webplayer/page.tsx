@@ -1,10 +1,12 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { slugify } from '@/utils/slugify'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { PodcastCard } from '@/components/ui/podcast-card'
 import { AgeRange, Category } from '@/types/podcast'
 import { Tables } from '@/types/supabase'
+import Image from 'next/image'
 import { CategoryFilter } from '@/components/webplayer/CategoryFilter'
 import { useActiveProfile } from '@/hooks/useActiveProfile'
 
@@ -34,8 +36,21 @@ export default function WebPlayer() {
 
   const categoryEntries = Object.entries(Category) as [keyof typeof Category, string][]
   const labelByKey = Object.fromEntries(categoryEntries) as Record<string, string>
+  const keyByLabel = Object.fromEntries(categoryEntries.map(([k, v]) => [v, k])) as Record<string, string>
   const toLabel = (value: string): string => {
     return labelByKey[value] ?? value
+  }
+
+  const firstSentence = (raw?: string | null): string | undefined => {
+    if (!raw) return undefined
+    const text = String(raw)
+      .replace(/<[^>]+>/g, ' ') // strip HTML
+      .replace(/&[^;]+;/g, ' ') // basic entity removal
+      .replace(/\s+/g, ' ') // collapse spaces
+      .trim()
+    if (!text) return undefined
+    const match = text.match(/^[^.!?\n\r]{10,}?[.!?](\s|$)/) // take first sentence with a minimum length
+    return (match ? match[0] : text).trim()
   }
 
   const toCardProps = (podcast: PodcastRow) => ({
@@ -46,8 +61,9 @@ export default function WebPlayer() {
     categories: Array.isArray(podcast.categories)
       ? podcast.categories.map((c) => toLabel(c))
       : [],
-    href: `/podcast/${podcast.id}`,
+    href: `/webplayer/podcast/${slugify(podcast.author)}/${slugify(podcast.name)}?id=${encodeURIComponent(String(podcast.id))}`,
     isSubscribed: Boolean(podcast.subscription ?? podcast.is_subscribed ?? false),
+    description: firstSentence((podcast as any).description ?? undefined),
   })
 
   const allowedByAge: PodcastRow[] = useMemo(() => {
@@ -63,6 +79,7 @@ export default function WebPlayer() {
   }, [podcasts, active])
 
   const [filtered, setFiltered] = useState<PodcastRow[]>([])
+  const [selectedCats, setSelectedCats] = useState<string[]>([])
   useEffect(() => {
     setFiltered(allowedByAge)
   }, [allowedByAge])
@@ -75,12 +92,20 @@ export default function WebPlayer() {
             podcasts={allowedByAge}
             extractCategories={(p: PodcastRow) => (Array.isArray(p.categories) ? p.categories : [])}
             onFiltered={setFiltered}
+            selected={selectedCats}
+            onSelectedChange={setSelectedCats}
           />
         </Suspense>
-        <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-2">
           {filtered.map((podcast) => (
             <div key={podcast.id} className="h-full">
-              <PodcastCard {...toCardProps(podcast)} />
+              <PodcastCard
+                {...toCardProps(podcast)}
+                onCategoryClick={(label) => {
+                  const key = keyByLabel[label]
+                  if (key) setSelectedCats([key])
+                }}
+              />
             </div>
           ))}
         </div>
