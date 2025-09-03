@@ -1,105 +1,151 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
+<a href="https://podkids-web.vercel.app">
+  <img alt="Podkids" src="/images/podkids.png">
+  <h1 align="center">Podkids</h1>
 </a>
 
 <p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
+  Podkids l'application de podcasts pour les enfants, pensée par les parents.
 </p>
 <br/>
 
-## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+# Podkids
 
-## Demo
+Podkids est une application de gestion et d’écoute de podcasts pensée pour les enfants, avec un contrôle parental simple et une interface adaptée. Les parents peuvent sélectionner des podcasts, créer des profils enfants et sécuriser l’accès via un code PIN.
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- Sans publicité, orientée sécurité et respect de la vie privée
+- Interface simple, accessible et agréable pour les enfants
+- Contrôle parental: sélection des contenus, profils, PIN
+- Existe en application mobile et version web
 
-## Deploy to Vercel
+## Démo rapide
 
-Vercel deployment will guide you through creating a Supabase account and project.
+- Accueil: `app/page.tsx` affiche `Hero`, `About`, `Features`, des captures et un bouton d’accès à la version web (`AuthButton`).
+- Espace protégé (après connexion): gestion et liste des podcasts via `app/protected/podcasts/page.tsx`.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+## Présentation technique
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+- Framework: Next.js (App Router)
+- Auth & backend: Supabase via `@supabase/ssr` et `@supabase/supabase-js`
+- UI: Tailwind CSS + lucide-react
+- Player audio: provider maison (`components/webplayer/AudioPlayerProvider.tsx`) avec play/pause/seek et barre de player
+- Parsing RSS: `fast-xml-parser` (voir `lib/rss/parse.ts`)
+- Routage protégé: dossiers `app/protected/*` + intégration Supabase côté serveur (`lib/supabase/*`, `middleware.ts`)
+- Accessibilité (travail en cours)
+- TypeScript
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+Arborescence (extraits)
 
-## Clone and run locally
+- `app/`: pages App Router (auth, protected, routing dynamique)
+- `components/`: UI réutilisables, homepage, player, protected
+- `lib/`: `supabase/` (client, admin, middleware), `rss/` (hydrate/parse)
+- `utils/`: utilitaires (slugify, sanitize, ageRange, etc.)
+- `types/`: types `podcast`, `profile`, `supabase`
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+---
 
-2. Create a Next.js app using the Supabase Starter template npx command
+## Prérequis
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+- Node.js 18+
+- npm (ou pnpm/yarn)
+- Un projet Supabase (URL + clé publishable/anon)
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+---
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+## Installation et démarrage
 
-3. Use `cd` to change into the app's directory
+1) Cloner et installer
 
-   ```bash
-   cd with-supabase-app
-   ```
+```bash
+git clone <repo>
+cd podkids-web
+npm install
+```
 
-4. Rename `.env.example` to `.env.local` and update the following:
+2) Variables d’environnement
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+Créer un fichier `.env.local` à la racine avec:
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
 
-5. You can now run the Next.js local development server:
+Ces valeurs sont disponibles dans le Dashboard Supabase > Project Settings > API.
 
-   ```bash
-   npm run dev
-   ```
+3) Lancer en local
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+```bash
+npm run dev
+```
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+Ouvrir http://localhost:3000
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+4) Scripts utiles
 
-## Feedback and issues
+- `dev`: Next.js avec Turbopack
+- `build`: build de production
+- `start`: serveur de prod
+- `lint`: ESLint
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+---
 
-## More Supabase examples
+## Fonctionnalités clés
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- Auth Supabase (email/password, magic link, reset)
+  - Pages: `app/auth/*` (login, sign-up, confirm, forgot/update password, pin)
+- Contrôle parental & profils
+  - PIN modal et gestion: `components/webplayer/PinModal.tsx`, routes sous `app/protected/pin`
+  - Profil actif: `hooks/useActiveProfile.ts`, `components/webplayer/ActiveProfileInitializer.tsx`
+- Gestion des podcasts
+  - Page de gestion: `app/protected/podcasts/page.tsx` + `components/protected/PodcastsManager.tsx` et `PodcastsList.tsx`
+  - Public/privé: jointures `podcast` / `private_podcast` côté Supabase
+  - Parsing des flux RSS: `lib/rss/parse.ts` (titre, auteur, cover, épisodes, durée, date)
+- Lecture audio
+  - Contexte player: `components/webplayer/AudioPlayerProvider.tsx` (play, toggle, seek)
+  - UI: `components/webplayer/PlayerBar.tsx`, `components/webplayer/NavActions.tsx`
+
+---
+
+## Configuration Supabase (guide rapide)
+
+1. Créer un projet Supabase et récupérer:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+2. Schéma indicatif :
+   - Voir dans supabase > Table
+3. SSR/middleware: `@supabase/ssr` avec session via cookies
+4. Clients:
+   - Navigateur: `lib/supabase/client.ts`
+   - Serveur: `lib/supabase/server.ts` (si présent) et `middleware.ts`
+
+---
+
+## Déploiement
+
+- Vercel recommandé (support natif Next.js)
+- Ajouter les variables env dans le dashboard Vercel
+- Build: `npm run build` puis `npm run start` en prod (autres hébergeurs)
+- Assets publics: `public/` (images, icônes, avatars)
+
+---
+
+## Dépannage
+
+- 401/redirect sur pages protégées: vérifier cookies Supabase et config `@supabase/ssr`
+- Player ne lit pas l’audio:
+  - Vérifier l’URL d’enclosure dans le flux RSS
+  - CORS/headers côté source audio
+- Parsing RSS échoue:
+  - Inspecter le flux via `lib/rss/parse.ts` (certains feeds Atom utilisent `link rel="enclosure"`)
+
+---
+
+## Licence
+
+Projet propriétaire. Icônes/images: voir `public/icons/` et `public/images/`.
+
