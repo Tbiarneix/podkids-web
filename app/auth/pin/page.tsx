@@ -32,7 +32,7 @@ function PinGateContent() {
           router.replace(`/protected/pin?redirect=${encodeURIComponent(redirect)}`);
           return;
         }
-      } catch (e: any) {
+      } catch {
         try {
           const resp = await fetch("/api/pin", { method: "GET", credentials: "include", cache: "no-store" });
           if (resp.status === 401 && mounted) {
