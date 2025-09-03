@@ -1,14 +1,3 @@
-<a href="https://podkids-web.vercel.app">
-  <img alt="Podkids" src="/images/podkids.png">
-  <h1 align="center">Podkids</h1>
-</a>
-
-<p align="center">
-  Podkids l'application de podcasts pour les enfants, pensée par les parents.
-</p>
-<br/>
-
-
 # Podkids
 
 Podkids est une application de gestion et d’écoute de podcasts pensée pour les enfants, avec un contrôle parental simple et une interface adaptée. Les parents peuvent sélectionner des podcasts, créer des profils enfants et sécuriser l’accès via un code PIN.
@@ -147,5 +136,5 @@ Ouvrir http://localhost:3000
 
 ## Licence
 
-Projet propriétaire. Icônes/images: voir `public/icons/` et `public/images/`.
+Projet propriétaire.
 
