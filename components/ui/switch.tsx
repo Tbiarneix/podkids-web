@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useCallback} from "react";
 import { cn } from "@/lib/utils";
 
 export interface SwitchProps
@@ -11,7 +11,7 @@ export interface SwitchProps
 
 export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
   ({ checked, onCheckedChange, className, id, onKeyDown, ...props }, ref) => {
-    const toggle = React.useCallback(() => {
+    const toggle = useCallback(() => {
       onCheckedChange?.(!checked);
     }, [checked, onCheckedChange]);
 

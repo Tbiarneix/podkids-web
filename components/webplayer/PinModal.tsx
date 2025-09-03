@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 interface PinModalProps {
@@ -13,17 +13,17 @@ interface PinModalProps {
 }
 
 export function PinModal({ open, title = "Accès parent", description = "Saisissez votre code PIN.", onClose, onSubmit, submitLabel = "Valider" }: PinModalProps) {
-  const [pinDigits, setPinDigits] = React.useState<string[]>(Array.from({ length: 5 }, () => ""));
-  const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [attempts, setAttempts] = React.useState(0);
-  const [blockedUntil, setBlockedUntil] = React.useState<number | null>(null);
-  const [remaining, setRemaining] = React.useState<number>(0);
+  const [pinDigits, setPinDigits] = useState<string[]>(Array.from({ length: 5 }, () => ""));
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [blockedUntil, setBlockedUntil] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState<number>(0);
 
-  const inputsRef = React.useRef<Array<HTMLInputElement | null>>([]);
-  const cancelBtnRef = React.useRef<HTMLButtonElement | null>(null);
-  const submitBtnRef = React.useRef<HTMLButtonElement | null>(null);
-  const prevFocusRef = React.useRef<HTMLElement | null>(null);
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+  const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
+  const submitBtnRef = useRef<HTMLButtonElement | null>(null);
+  const prevFocusRef = useRef<HTMLElement | null>(null);
 
   const MAX_ATTEMPTS = 3;
   const BLOCK_MS = 60_000;
@@ -47,7 +47,7 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     } catch {}
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
       const t = window.setTimeout(() => {
@@ -59,7 +59,7 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     }
   }, [open]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) return;
     const st = readBlockState();
     if (st?.until && st.until > Date.now()) {
@@ -72,7 +72,7 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
     }
   }, [open]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!blockedUntil) {
       setRemaining(0);
       return;

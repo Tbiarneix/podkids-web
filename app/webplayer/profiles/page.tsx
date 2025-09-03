@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PinModal } from "@/components/webplayer/PinModal";
@@ -8,14 +8,14 @@ import { useActiveProfile } from "@/hooks/useActiveProfile";
 import type { Profile } from "@/types/profile";
 
 export default function ProfilesSelectPage() {
-  const [profiles, setProfiles] = React.useState<Profile[]>([]);
-  const [loading, setLoading] = React.useState(false);
-  const [selecting, setSelecting] = React.useState<Profile | null>(null);
-  const [pinOpen, setPinOpen] = React.useState(false);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selecting, setSelecting] = useState<Profile | null>(null);
+  const [pinOpen, setPinOpen] = useState(false);
   const router = useRouter();
   const { setActiveProfile } = useActiveProfile();
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     (async () => {
       setLoading(true);

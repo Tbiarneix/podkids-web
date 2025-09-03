@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,8 +22,8 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
   ({ className, name, author, episodesCount, coverUrl, categories, href, isSubscribed = false, onSubscribe, description, onCategoryClick, ...rest }, ref) => {
     const direct = coverUrl && coverUrl.trim() !== "" ? coverUrl.trim() : "";
     const coverSrc = direct ? `/api/image-proxy?src=${encodeURIComponent(direct)}` : "/images/Logo.webp";
-    const [subscribed, setSubscribed] = React.useState<boolean>(isSubscribed);
-    React.useEffect(() => setSubscribed(isSubscribed), [isSubscribed]);
+    const [subscribed, setSubscribed] = useState<boolean>(isSubscribed);
+    useEffect(() => setSubscribed(isSubscribed), [isSubscribed]);
     
     const content = (
       <div

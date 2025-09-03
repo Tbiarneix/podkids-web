@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Category } from "@/types/podcast";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { toast } from "sonner";
+import React from "react";
 
 type DbPodcast = {
   id: number;
@@ -23,23 +24,23 @@ type DbPodcast = {
 };
 
 export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPodcast[]; privateIds: number[] }) {
-  const [onlyPrivate, setOnlyPrivate] = React.useState(false);
-  const privateSet = React.useMemo(() => new Set(privateIds), [privateIds]);
+  const [onlyPrivate, setOnlyPrivate] = useState(false);
+  const privateSet = useMemo(() => new Set(privateIds), [privateIds]);
   const router = useRouter();
-  const [confirmId, setConfirmId] = React.useState<number | null>(null);
-  const cancelBtnRef = React.useRef<HTMLButtonElement | null>(null);
-  const prevFocusRef = React.useRef<HTMLElement | null>(null);
-  const deleteBtnRef = React.useRef<HTMLButtonElement | null>(null);
-  const [catFiltered, setCatFiltered] = React.useState<DbPodcast[]>(podcasts ?? []);
-  React.useEffect(() => {
+  const [confirmId, setConfirmId] = useState<number | null>(null);
+  const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
+  const prevFocusRef = useRef<HTMLElement | null>(null);
+  const deleteBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [catFiltered, setCatFiltered] = useState<DbPodcast[]>(podcasts ?? []);
+  useEffect(() => {
     setCatFiltered(podcasts ?? []);
   }, [podcasts]);
-  const handleFiltered = React.useCallback((f: DbPodcast[]) => {
+  const handleFiltered = useCallback((f: DbPodcast[]) => {
     setCatFiltered(f);
   }, []);
-  const extractCats = React.useCallback((p: DbPodcast) => p.categories ?? [], []);
+  const extractCats = useCallback((p: DbPodcast) => p.categories ?? [], []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (confirmId !== null) {
       prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
       const t = window.setTimeout(() => {
@@ -51,7 +52,7 @@ export default function PodcastsList({ podcasts, privateIds }: { podcasts: DbPod
     }
   }, [confirmId]);
 
-  const filtered = React.useMemo(() => {
+  const filtered = useMemo(() => {
     const base = catFiltered ?? podcasts ?? [];
     return base.filter((p) => (onlyPrivate ? privateSet.has(p.id) : true));
   }, [catFiltered, podcasts, onlyPrivate, privateSet]);

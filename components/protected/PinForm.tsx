@@ -3,7 +3,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type PinFormProps = {
   mode?: "create" | "update";
@@ -14,11 +14,14 @@ const LENGTH = 5;
 
 export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [current, setCurrent] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
   const [pin, setPin] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
   const [confirm, setConfirm] = useState<string[]>(Array.from({ length: LENGTH }, () => ""));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const redirectTo = searchParams?.get("redirect") || "/protected";
 
   const inputsCurrent = useRef<Array<HTMLInputElement | null>>([]);
   const inputsPin = useRef<Array<HTMLInputElement | null>>([]);
@@ -130,7 +133,7 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
           throw new Error(data?.error || "Erreur inconnue");
         }
         toast.success(mode === "create" ? "Code PIN créé" : "Code PIN mis à jour");
-        router.push("/protected");
+        router.push(redirectTo);
       })
       .catch((err: unknown) => {
         const code = err instanceof Error ? err.message : "unknown";

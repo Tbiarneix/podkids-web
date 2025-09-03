@@ -83,5 +83,14 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true });
+  // After creating/updating the PIN, set a short-lived cookie to bypass the
+  // PIN gate so the user can continue to the protected area immediately.
+  res.cookies.set("pk_pin_ok", "1", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/protected",
+    maxAge: 5 * 60,
+  });
+  return res;
 }

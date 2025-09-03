@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PinModal } from "@/components/webplayer/PinModal";
 import { useRouter } from "next/navigation";
 import { Users, KeyRound } from "lucide-react";
 
 function useProfilesCount() {
-  const [count, setCount] = React.useState<number | null>(null);
-  React.useEffect(() => {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
     let mounted = true;
     fetch("/api/profiles")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -28,16 +28,16 @@ function useProfilesCount() {
 export function NavActions() {
   const router = useRouter();
   const profilesCount = useProfilesCount();
-  const [pinOpen, setPinOpen] = React.useState(false);
-  const [confirmSwitchOpen, setConfirmSwitchOpen] = React.useState(false);
-  const openBtnRef = React.useRef<HTMLButtonElement | null>(null);
-  const prevFocusRef = React.useRef<HTMLElement | null>(null);
-  const confirmCancelRef = React.useRef<HTMLButtonElement | null>(null);
-  const confirmGoRef = React.useRef<HTMLButtonElement | null>(null);
+  const [pinOpen, setPinOpen] = useState(false);
+  const [confirmSwitchOpen, setConfirmSwitchOpen] = useState(false);
+  const openBtnRef = useRef<HTMLButtonElement | null>(null);
+  const prevFocusRef = useRef<HTMLElement | null>(null);
+  const confirmCancelRef = useRef<HTMLButtonElement | null>(null);
+  const confirmGoRef = useRef<HTMLButtonElement | null>(null);
 
   const canShowChangeProfile = (profilesCount ?? 0) > 1;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!pinOpen) {
       prevFocusRef.current?.focus?.();
     } else {
@@ -45,7 +45,7 @@ export function NavActions() {
     }
   }, [pinOpen]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (confirmSwitchOpen) {
       prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
       const t = window.setTimeout(() => {

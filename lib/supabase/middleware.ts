@@ -44,16 +44,17 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {
-    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  // PIN gating: require a valid PIN session to access /protected and its subpages.
-  // Skip gating for the PIN gate page itself to avoid loops.
   const path = request.nextUrl.pathname;
-  if (path.startsWith("/protected") && !path.startsWith("/auth/pin")) {
+  if (
+    path.startsWith("/protected") &&
+    !path.startsWith("/auth/pin") &&
+    !path.startsWith("/protected/pin")
+  ) {
     const hasPinCookie = request.cookies.get("pk_pin_ok");
     if (!hasPinCookie) {
       const url = request.nextUrl.clone();
