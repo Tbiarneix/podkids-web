@@ -9,6 +9,8 @@ import { Tables } from '@/types/supabase'
 import { CategoryFilter } from '@/components/webplayer/CategoryFilter'
 import { useActiveProfile } from '@/hooks/useActiveProfile'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 const AGE_RANGE_CODE_MAP: Record<AgeRange, string> = {
   [AgeRange.UNDER_3]: 'UNDER_3',
@@ -28,6 +30,7 @@ export default function WebPlayer() {
   const [subscribedSet, setSubscribedSet] = useState<Set<number>>(new Set())
   const LS_KEY_ONLY_SUBS = 'pk_only_subscribed'
   const [onlySubs, setOnlySubs] = useState<boolean>(false)
+  const router = useRouter()
 
   useEffect(() => {
     const getData = async () => {
@@ -36,6 +39,23 @@ export default function WebPlayer() {
     }
     getData()
   }, [supabase])
+
+  useEffect(() => {
+    let cancelled = false
+    const checkProfiles = async () => {
+      try {
+        const res = await fetch('/api/profiles', { cache: 'no-store' })
+        const data = await res.json().catch(() => ({}))
+        const list = Array.isArray(data?.profiles) ? data.profiles : []
+        if (!cancelled && list.length === 0) {
+          toast.message('Veuillez créer un profil au minimum pour accéder au webplayer')
+          router.replace('/webplayer/onboarding')
+        }
+      } catch {}
+    }
+    checkProfiles()
+    return () => { cancelled = true }
+  }, [router])
 
   useEffect(() => {
     try {
@@ -195,3 +215,4 @@ export default function WebPlayer() {
     </div>
   );
 }
+
