@@ -209,7 +209,7 @@ export default function PodcastDetailsPage() {
             title={subscribed ? "Se désabonner" : "S'abonner"}
             aria-pressed={subscribed}
             className={cn(
-              "absolute right-0 top-0 inline-flex h-10 w-10 items-center justify-center rounded-full",
+              "absolute right-0 top-0 hidden h-10 w-10 items-center justify-center rounded-full md:inline-flex",
               "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
             disabled={subLoading}
@@ -244,6 +244,39 @@ export default function PodcastDetailsPage() {
               className="h-32 w-32 rounded-xl object-cover sm:h-40 sm:w-40"
               unoptimized
             />
+            <div className="mt-3 flex justify-center md:hidden">
+              <button
+                type="button"
+                aria-label={subscribed ? "Se désabonner" : "S'abonner"}
+                title={subscribed ? "Se désabonner" : "S'abonner"}
+                aria-pressed={subscribed}
+                className={cn(
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full",
+                  "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
+                disabled={subLoading}
+                onClick={async () => {
+                  const next = !subscribed;
+                  setSubscribed(next);
+                  const ok = await toggle(next);
+                  if (!ok) setSubscribed(!next);
+                }}
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-6 w-6"
+                  fill={subscribed ? "currentColor" : "none"}
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                <span className="sr-only">{subscribed ? "Se désabonner" : "S'abonner"}</span>
+              </button>
+            </div>
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-2xl font-bold sm:text-3xl">{podcast.name}</h1>
