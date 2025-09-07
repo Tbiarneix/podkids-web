@@ -35,9 +35,11 @@ export default async function ProtectedPage() {
               </CardDescription>
             </CardHeader>
             <CardFooter className="justify-center mt-auto">
-              <Button asChild>
-                <Link href="/protected/account">Gérer</Link>
-              </Button>
+              <span title="Paramètres indisponibles pour l'instant" className="inline-block" aria-label="Paramètres indisponibles pour l'instant">
+                <Button disabled aria-disabled>
+                  Gérer
+                </Button>
+              </span>
             </CardFooter>
           </Card>
 
