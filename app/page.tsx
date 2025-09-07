@@ -19,7 +19,7 @@ export default function Home() {
       <Screenshots />
       <Download />
       <div className="flex flex-col items-center mb-16">
-        <p className="text-[1.1rem] text-foreground mb-8 leading-[1.5]">
+        <p className="text-[1.1rem] text-foreground m-8 leading-[1.5]">
           Pour l&apos;instant les téléchargement sont suspendus, mais tu peux utiliser la version web&nbsp;:
         </p>
         <AuthButton />
