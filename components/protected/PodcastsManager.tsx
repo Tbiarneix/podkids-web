@@ -93,7 +93,7 @@ export default function PodcastsManager() {
         <h2 className="text-2xl font-semibold">Podcasts</h2>
         <Button
           variant="outline"
-          className="inline-flex items-center gap-2 rounded-full bg-card max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
+          className="inline-flex items-center gap-2 rounded-full max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
           onClick={() => setOpen(true)}
           aria-label="Ajouter un podcast"
         >

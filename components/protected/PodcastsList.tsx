@@ -11,6 +11,7 @@ import { Category } from "@/types/podcast";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { toast } from "sonner";
 import React from "react";
+import { X } from "lucide-react";
 
 type DbPodcast = {
   id: number;
@@ -134,24 +135,11 @@ export default function PodcastsList({
                   aria-label="Supprimer le podcast"
                   title="Supprimer le podcast"
                   variant="default"
-                  size="icon"
-                  className="absolute right-3 top-3 h-10 w-10 rounded-full bg-red-600 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-2 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:p-0"
                   onClick={() => setConfirmId(p.id)}
                 >
-                  <span className="sr-only">Supprimer ce podcast</span>
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
+                  <X className="size-4" aria-hidden />
+                  <span className="max-[768px]:sr-only">Supprimer ce podcast</span>
                 </Button>
               ) : null}
               <div className="flex items-stretch gap-6">
@@ -159,15 +147,15 @@ export default function PodcastsList({
                   <Image
                     src={coverSrc}
                     alt={p.name || "Podcast"}
-                    width={128}
-                    height={128}
-                    className="h-32 w-32 rounded-xl object-cover"
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 rounded-xl object-cover"
                     unoptimized
                   />
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <div className="flex min-w-0 flex-1 flex-col gap-2 pr-[4%]">
                   <div className="min-w-0">
-                    <h2 className="break-words text-lg font-semibold sm:text-xl">
+                    <h2 className="break-words pr-5 text-lg font-semibold sm:text-xl">
                       {p.name || "Sans titre"}
                     </h2>
                     <p className="text-muted-foreground mt-0.5 flex flex-wrap truncate text-sm">
