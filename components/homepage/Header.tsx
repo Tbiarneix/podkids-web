@@ -96,7 +96,7 @@ export function Header () {
       
       <button 
         ref={burgerButtonRef}
-        className={`hidden max-[520px]:flex flex-col justify-between w-[30px] h-[21px] bg-transparent border-0 p-0 cursor-pointer z-[110]`}
+        className={`hidden max-[768px]:flex flex-col justify-between w-[30px] h-[21px] bg-transparent border-0 p-0 cursor-pointer z-[110]`}
         onClick={toggleMenu}
         aria-expanded={menuOpen}
         aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
@@ -120,17 +120,18 @@ export function Header () {
       <nav 
         ref={navRef}
         className={
-          `max-[520px]:fixed max-[520px]:top-0 max-[520px]:right-[-100%] max-[520px]:w-full max-[520px]:h-screen max-[520px]:bg-background max-[520px]:p-8 max-[520px]:pt-24 max-[520px]:shadow-[-5px_0_15px_rgba(0,0,0,0.1)] max-[520px]:transition-[right] max-[520px]:duration-300 z-[100] ` +
-          (menuOpen ? 'max-[520px]:right-0' : '')
+          `z-[100] ` +
+          `max-[768px]:fixed max-[768px]:inset-0 max-[768px]:left-auto max-[768px]:w-full max-[768px]:h-screen max-[768px]:bg-background max-[768px]:p-8 max-[768px]:pt-24 max-[768px]:shadow-[-5px_0_15px_rgba(0,0,0,0.1)] max-[768px]:transition-transform max-[768px]:duration-300 max-[768px]:transform ` +
+          (menuOpen ? 'max-[768px]:translate-x-0' : 'max-[768px]:translate-x-full')
         }
         aria-label="Navigation principale" 
         role="navigation"
         id="main-menu"
       >
-        <ul className="flex list-none gap-8 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-6">
+        <ul className="flex list-none gap-8 max-[768px]:flex-col max-[768px]:items-start max-[768px]:gap-8">
           <li>
             <a
-              className="text-foreground font-medium transition-colors duration-300 hover:text-primary"
+              className="text-foreground font-medium transition-colors duration-300 hover:text-primary max-[768px]:text-2xl max-[768px]:block max-[768px]:py-2"
               href="#features"
               onClick={() => setMenuOpen(false)}
             >
@@ -139,7 +140,7 @@ export function Header () {
           </li>
           <li>
             <a
-              className="text-foreground font-medium transition-colors duration-300 hover:text-primary"
+              className="text-foreground font-medium transition-colors duration-300 hover:text-primary max-[768px]:text-2xl max-[768px]:block max-[768px]:py-2"
               href="#screenshots"
               onClick={() => setMenuOpen(false)}
             >
@@ -148,7 +149,7 @@ export function Header () {
           </li>
           <li>
             <a
-              className="text-foreground font-medium transition-colors duration-300 hover:text-primary"
+              className="text-foreground font-medium transition-colors duration-300 hover:text-primary max-[768px]:text-2xl max-[768px]:block max-[768px]:py-2"
               href="#download"
               onClick={() => setMenuOpen(false)}
             >
