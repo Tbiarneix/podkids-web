@@ -9,10 +9,10 @@ export function Hero() {
     >
       <div className="flex flex-col items-center lg:items-start w-full max-w-full lg:max-w-full">
         <h1 className="text-[3rem] lg:text-[4rem]">Podkids</h1>
-        <h2 className="text-foreground font-medium text-2xl lg:text-3xl mb-6 max-w-[600px] leading-snug mx-0">
+        <h2 className="text-foreground font-medium text-2xl text-center lg:text-left lg:text-3xl mb-6 leading-snug mx-0">
           L&apos;application de podcast sécurisée pour les enfants
         </h2>
-        <p className="text-foreground text-xl mb-8 max-w-[500px] leading-relaxed mx-0">
+        <p className="text-foreground text-xl text-center lg:text-left mb-8 leading-relaxed mx-0">
           Une application simple, accessible et sans pub !
         </p>
         <div className="mt-8">

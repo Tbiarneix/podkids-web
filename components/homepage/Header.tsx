@@ -153,7 +153,7 @@ export function Header () {
               href="#download"
               onClick={() => setMenuOpen(false)}
             >
-              Télécharger / Se connecter
+              Télécharger
             </a>
           </li>
         </ul>
