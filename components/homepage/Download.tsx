@@ -71,6 +71,9 @@ export default function Download() {
         <p className="text-[1.3rem] text-foreground mb-8 leading-[1.5]">
           Offre à ton enfant une expérience d&apos;écoute sécurisée et enrichissante&nbsp;!
         </p>
+        <p className="text-[1.1rem] text-foreground m-8 leading-[1.5]">
+          Pour l&apos;instant les téléchargement sont suspendus, mais tu es déjà inscris, tu peux utiliser la version web.
+        </p>
 
         {/* <div className="mb-10">
           <p className="text-muted-foreground leading-[1.6] text-[1.1rem]">Bientôt disponible sur iOS et Android. Inscris-toi pour être informé du lancement.</p>
