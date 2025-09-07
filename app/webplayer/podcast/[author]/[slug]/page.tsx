@@ -317,10 +317,10 @@ export default function PodcastDetailsPage() {
               return (
                 <li
                   key={ep.id}
-                  className="relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm"
+                  className="group relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm"
                 >
                   <div className="absolute right-4 top-4 flex items-center">
-                    <button
+                    {/* <button
                       type="button"
                       title="Ajouter à une playlist"
                       aria-label="Ajouter à une playlist"
@@ -343,12 +343,22 @@ export default function PodcastDetailsPage() {
                         <path d="M12 5v14M5 12h14" />
                       </svg>
                       <span className="sr-only">Ajouter à une playlist</span>
-                    </button>
+                    </button> */}
+                  </div>
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
+                    <Image
+                      src={epCover}
+                      alt={ep.name}
+                      width={80}
+                      height={80}
+                      className="h-full w-full object-cover"
+                      unoptimized
+                    />
                     <button
                       type="button"
                       title="Lecture"
                       aria-label="Lecture"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="absolute inset-0 flex items-center justify-center opacity-100 transition-opacity duration-200 focus:opacity-100 md:opacity-0 md:group-hover:opacity-100"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -362,25 +372,19 @@ export default function PodcastDetailsPage() {
                         });
                       }}
                     >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-6 w-6"
-                        fill="currentColor"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span className="sr-only">Lire</span>
+                      <span className="inline-flex items-center justify-center rounded-full bg-black/60 text-yellow-400 h-10 w-10 md:h-10 md:w-10 md:group-hover:h-14 md:group-hover:w-14 transition-all duration-200">
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          className="h-6 w-6 md:h-8 md:w-8 md:group-hover:h-10 md:group-hover:w-10"
+                          fill="currentColor"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <span className="sr-only">Lire</span>
+                      </span>
                     </button>
                   </div>
-                  <Image
-                    src={epCover}
-                    alt={ep.name}
-                    width={80}
-                    height={80}
-                    className="h-20 w-20 shrink-0 rounded-lg object-cover"
-                    unoptimized
-                  />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-base font-semibold sm:text-lg">{ep.name}</h3>
                     {ep.description ? (
