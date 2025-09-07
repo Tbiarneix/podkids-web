@@ -47,7 +47,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
       <div
         ref={ref}
         className={cn(
-          "group relative flex h-full w-full items-stretch gap-8 rounded-2xl border bg-card/95 text-card-foreground shadow-sm transition-colors hover:bg-card",
+          "group relative flex h-full w-full flex-col items-stretch justify-between gap-8 rounded-2xl border bg-card/95 text-card-foreground shadow-sm transition-colors hover:bg-card",
           "p-4 sm:p-6",
           className,
         )}
@@ -83,52 +83,54 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
           </svg>
           <span className="sr-only">{subscribed ? "Se désabonner" : "S'abonner"}</span>
         </button>
-        <div className="shrink-0">
-          <Image
-            src={coverSrc}
-            alt={name}
-            width={96}
-            height={96}
-            className="h-20 w-20 rounded-xl object-cover sm:h-24 sm:w-24"
-            unoptimized
-          />
+        <div className="flex flex-row items-start gap-5">
+          <div className="shrink-0">
+            <Image
+              src={coverSrc}
+              alt={name}
+              width={96}
+              height={96}
+              className="h-20 w-20 rounded-xl object-cover sm:h-24 sm:w-24"
+              unoptimized
+            />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 pr-[4%]">
+            <div className="min-w-0">
+              <h2 className="break-words pr-5 text-lg font-semibold sm:text-2xl">{name}</h2>
+              <p className="text-muted-foreground mt-0.5 truncate text-sm sm:text-base">
+                {author}
+                <span className="mx-1">•</span> {episodesCount} épisodes
+              </p>
+              {description ? (
+                <div
+                  className="text-muted-foreground mt-1 line-clamp-1 text-sm"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 pr-[4%]">
-          <div className="min-w-0">
-            <h2 className="truncate text-lg font-semibold sm:text-2xl">{name}</h2>
-            <p className="text-muted-foreground mt-0.5 truncate text-sm sm:text-base">
-              {author}
-              <span className="mx-1">•</span> {episodesCount} épisodes
-            </p>
-            {description ? (
-              <div
-                className="text-muted-foreground mt-1 line-clamp-1 text-sm"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
-              />
-            ) : null}
-          </div>
-          <div className="flex flex-col items-start gap-5">
-            {Array.isArray(categories) && categories.length > 0 ? (
-              <div className="flex h-[72px] flex-wrap items-center gap-2 overflow-hidden">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400 hover:bg-yellow-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onCategoryClick?.(cat);
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="h-[72px]" />
-            )}
-          </div>
+        <div className="flex flex-col items-start gap-5">
+          {Array.isArray(categories) && categories.length > 0 ? (
+            <div className="flex h-auto flex-wrap items-center gap-2 overflow-hidden">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400 hover:bg-yellow-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onCategoryClick?.(cat);
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="h-[72px]" />
+          )}
         </div>
       </div>
     );
@@ -137,7 +139,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
       return (
         <Link
           href={href}
-          className="focus-visible:ring-ring block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="focus-visible:ring-ring block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           {content}
         </Link>
