@@ -85,24 +85,24 @@ export function NavActions() {
       {canShowChangeProfile ? (
         <Button
           variant="outline"
-          className="bg-card rounded-full inline-flex items-center gap-2"
+          className="bg-card rounded-full inline-flex items-center gap-2 max-[768px]:w-10 max-[768px]:h-10 max-[768px]:p-0 max-[768px]:justify-center max-[768px]:bg-primary max-[768px]:text-primary-foreground max-[768px]:border-0 max-[768px]:shadow max-[768px]:hover:bg-primary/90"
           onClick={() => {
             setConfirmSwitchOpen(true);
           }}
         >
           <Users className="size-4" aria-hidden />
-          <span>Changer de profil</span>
+          <span className="max-[768px]:sr-only">Changer de profil</span>
         </Button>
       ) : null}
 
       <Button
         variant="outline"
-        className="bg-card rounded-full inline-flex items-center gap-2"
+        className="bg-card rounded-full inline-flex items-center gap-2 max-[768px]:w-10 max-[768px]:h-10 max-[768px]:p-0 max-[768px]:justify-center max-[768px]:bg-primary max-[768px]:text-primary-foreground max-[768px]:border-0 max-[768px]:shadow max-[768px]:hover:bg-primary/90"
         ref={openBtnRef}
         onClick={() => setPinOpen(true)}
       >
         <KeyRound className="size-4" aria-hidden />
-        <span>Accès parent</span>
+        <span className="max-[768px]:sr-only">Accès parent</span>
       </Button>
 
       <PinModal
