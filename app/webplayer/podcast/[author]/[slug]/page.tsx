@@ -181,7 +181,7 @@ export default function PodcastDetailsPage() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-5xl sm:px-6">
+      <div className="mx-auto max-w-5xl px-4 md:px-6">
         <div className="mb-12">
           <Link
             href="/webplayer"
