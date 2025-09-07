@@ -29,7 +29,10 @@ function mapDbToFront(row: any) {
 }
 
 function isValidName(name: unknown): name is string {
-  return typeof name === "string" && name.trim().length >= 1 && name.trim().length <= 80;
+  if (typeof name !== "string") return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 1 || trimmed.length > 80) return false;
+  return /^[A-Za-z0-9_-]+$/.test(trimmed);
 }
 
 function isValidAvatar(avatar: unknown): avatar is number {
@@ -88,11 +91,13 @@ export async function POST(req: Request) {
 
   const dbAges = ageRanges.map((v: string) => FRONT_TO_DB_AGE[v]);
 
+  const safeName = String(name).trim();
+
   const { data, error } = await supabase
     .from("profile")
     .insert({
       user_id: userData.user.id,
-      name: String(name).trim(),
+      name: safeName,
       avatar: String(avatar),
       age_range: dbAges,
     })

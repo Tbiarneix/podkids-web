@@ -30,6 +30,10 @@ export default function ProfilesManager() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const canSubmit = useMemo(() => name.trim().length > 0 && avatar !== null && ageRanges.length > 0, [name, avatar, ageRanges]);
 
+  function sanitizeName(value: string) {
+    return value.replace(/[^A-Za-z0-9_-]/g, "");
+  }
+
   function resetForm() {
     setName("");
     setAvatar(null);
@@ -44,7 +48,7 @@ export default function ProfilesManager() {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     const payload: ProfileFormData = {
-      name: name.trim(),
+      name: sanitizeName(name).trim(),
       avatar: avatar as number,
       ageRanges,
     };
@@ -92,7 +96,7 @@ export default function ProfilesManager() {
 
   function openEdit(p: any) {
     setEditingId(p.id);
-    setName(p.name ?? "");
+    setName(sanitizeName(p.name ?? ""));
     setAvatar(p.avatar ?? null);
     setAgeRanges(Array.isArray(p.ageRanges) ? p.ageRanges : []);
     setOpen(true);
@@ -165,15 +169,15 @@ export default function ProfilesManager() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex justify-center items-start p-4 md:items-center">
           <div
             className="absolute inset-0 bg-black/60"
             onClick={() => setOpen(false)}
             aria-hidden
           />
 
-          <div className="relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl">
-            <div className="flex items-start justify-between mb-4">
+          <div className="relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl h-max-[95vh] overflow-hidden">
+            <div className="flex items-start justify-between mb-4 shrink-0">
               <h2 className="text-2xl font-bold">Ajouter un profil</h2>
               <button
                 onClick={() => setOpen(false)}
@@ -183,75 +187,79 @@ export default function ProfilesManager() {
                 ✕
               </button>
             </div>
+            <div className="min-h-0 max-h-[74dvh] overflow-y-auto overscroll-contain custom-scrollbar py-3 pr-3">
+              <div className="space-y-2 mb-6">
+                <label className="text-sm">Nom</label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(sanitizeName(e.target.value))}
+                  placeholder="Nom de l'enfant"
+                  autoFocus
+                  inputMode="text"
+                  pattern="[A-Za-z0-9_-]*"
+                  title="Seules les lettres, chiffres, _ et - sont autorisés"
+                />
+              </div>
 
-            <div className="space-y-2 mb-6">
-              <label className="text-sm">Nom</label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nom de l'enfant"
-                autoFocus
-              />
-            </div>
+              <div className="space-y-3 mb-6">
+                <p className="text-sm">Choisir un avatar</p>
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  {Array.from({ length: 7 }, (_, i) => i + 1).map((id) => {
+                    const selected = avatar === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setAvatar(id)}
+                        className={
+                          "rounded-full p-1 transition-colors focus:outline-none focus:ring-2 " +
+                          (selected
+                            ? "ring-primary border-2 border-primary bg-primary/10"
+                            : "border border-muted/40 hover:border-primary/50 bg-muted/10 hover:bg-muted/20 focus:ring-primary/40")
+                        }
+                        aria-pressed={selected}
+                        aria-label={`Avatar ${id}`}
+                      >
+                        <Image
+                          src={`/avatar/avatar-${id}.webp`}
+                          alt={`Avatar ${id}`}
+                          width={75}
+                          height={75}
+                          className="rounded-full"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-            <div className="space-y-3 mb-6">
-              <p className="text-sm">Choisir un avatar</p>
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                {Array.from({ length: 7 }, (_, i) => i + 1).map((id) => {
-                  const selected = avatar === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setAvatar(id)}
-                      className={
-                        "rounded-full p-1 transition-colors focus:outline-none focus:ring-2 " +
-                        (selected
-                          ? "ring-primary border-2 border-primary bg-primary/10"
-                          : "border border-muted/40 hover:border-primary/50 bg-muted/10 hover:bg-muted/20 focus:ring-primary/40")
-                      }
-                      aria-pressed={selected}
-                      aria-label={`Avatar ${id}`}
-                    >
-                      <Image
-                        src={`/avatar/avatar-${id}.webp`}
-                        alt={`Avatar ${id}`}
-                        width={75}
-                        height={75}
-                        className="rounded-full"
-                      />
-                    </button>
-                  );
-                })}
+              <div className="space-y-3 mb-8">
+                <p className="text-sm">Tranche d&apos;âge</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {ORDERED_AGE_RANGES.map((ar) => {
+                    const selected = ageRanges.includes(ar);
+                    return (
+                      <button
+                        key={ar}
+                        type="button"
+                        onClick={() => toggleAgeRange(ar)}
+                        className={
+                          "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
+                          (selected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                        }
+                        aria-pressed={selected}
+                      >
+                        {ageRangeToLabel(ar)}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3 mb-8">
-              <p className="text-sm">Tranche d&apos;âge</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {ORDERED_AGE_RANGES.map((ar) => {
-                  const selected = ageRanges.includes(ar);
-                  return (
-                    <button
-                      key={ar}
-                      type="button"
-                      onClick={() => toggleAgeRange(ar)}
-                      className={
-                        "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
-                        (selected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
-                      }
-                      aria-pressed={selected}
-                    >
-                      {ageRangeToLabel(ar)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-2 shrink-0">
               <Button variant="secondary" onClick={() => { if (!submitting) { resetForm(); setOpen(false); } }} disabled={submitting}>
                 Annuler
               </Button>

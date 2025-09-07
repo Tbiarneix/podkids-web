@@ -94,11 +94,11 @@ export default function PodcastsManager() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex justify-center items-start p-4 md:items-center">
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-hidden />
 
-          <div className="relative z-10 w-[92vw] max-w-3xl rounded-2xl bg-background p-6 shadow-xl max-h-[90vh] overflow-y-auto md:max-h-none md:overflow-visible">
-            <div className="flex items-start justify-between mb-4">
+          <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-background p-6 shadow-xl h-[95vh] overflow-hidden">
+            <div className="flex items-start justify-between mb-4 shrink-0">
               <h2 className="text-2xl font-bold">Ajouter un podcast</h2>
               <button
                 onClick={() => setOpen(false)}
@@ -108,73 +108,74 @@ export default function PodcastsManager() {
                 ✕
               </button>
             </div>
+            <div className="min-h-0 max-h-[74dvh] overflow-y-auto overscroll-contain custom-scrollbar py-3 pr-3">
+              <p className="text-sm text-muted-foreground mb-4">
+                Pour ajouter un podcast, veuillez  renseigner l’URL du flux rss du podcast et choisir une tranche d’âge et une thématique.
+              </p>
 
-            <p className="text-sm text-muted-foreground mb-4">
-              Pour ajouter un podcast, veuillez  renseigner l’URL du flux rss du podcast et choisir une tranche d’âge et une thématique.
-            </p>
+              <div className="space-y-2 mb-4">
+                <label className="text-sm">Url du podcast</label>
+                <Input
+                  value={rssUrl}
+                  onChange={(e) => setRssUrl(e.target.value)}
+                  placeholder="https://exemple.com/flux.rss"
+                  autoFocus
+                  inputMode="url"
+                />
+              </div>
 
-            <div className="space-y-2 mb-4">
-              <label className="text-sm">Url du podcast</label>
-              <Input
-                value={rssUrl}
-                onChange={(e) => setRssUrl(e.target.value)}
-                placeholder="https://exemple.com/flux.rss"
-                autoFocus
-                inputMode="url"
-              />
-            </div>
+              <div className="space-y-3 mb-6">
+                <p className="text-sm">Tranches d&apos;âge</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {ORDERED_AGE_RANGES.map((ar) => {
+                    const selected = ageRanges.includes(ar);
+                    return (
+                      <button
+                        key={ar}
+                        type="button"
+                        onClick={() => toggleAgeRange(ar)}
+                        className={
+                          "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
+                          (selected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                        }
+                        aria-pressed={selected}
+                      >
+                        {ageRangeToLabel(ar)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-            <div className="space-y-3 mb-4">
-              <p className="text-sm">Tranches d&apos;âge</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {ORDERED_AGE_RANGES.map((ar) => {
-                  const selected = ageRanges.includes(ar);
-                  return (
-                    <button
-                      key={ar}
-                      type="button"
-                      onClick={() => toggleAgeRange(ar)}
-                      className={
-                        "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
-                        (selected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
-                      }
-                      aria-pressed={selected}
-                    >
-                      {ageRangeToLabel(ar)}
-                    </button>
-                  );
-                })}
+              <div className="space-y-3 mb-6">
+                <p className="text-sm">Thématiques</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {ORDERED_CATEGORIES.map((cat) => {
+                    const selected = categories.includes(cat);
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => toggleCategory(cat)}
+                        className={
+                          "rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors " +
+                          (selected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                        }
+                        aria-pressed={selected}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <p className="text-sm">Thématiques</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {ORDERED_CATEGORIES.map((cat) => {
-                  const selected = categories.includes(cat);
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => toggleCategory(cat)}
-                      className={
-                        "rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors " +
-                        (selected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
-                      }
-                      aria-pressed={selected}
-                    >
-                      {cat}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-4 shrink-0">
               <Button
                 variant="secondary"
                 onClick={() => {
