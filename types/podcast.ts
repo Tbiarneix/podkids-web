@@ -1,7 +1,7 @@
 export enum EpisodeStatus {
   TO_LISTEN = "to listen",
   LISTENING = "listening",
-  LISTENED = "listened"
+  LISTENED = "listened",
 }
 
 export enum Category {
@@ -22,7 +22,7 @@ export enum Category {
   GAMES = "Jeux et divertissement",
   HEROES = "Héros et Légendes",
   SOCIETY = "Société, actualités et Informations",
-  ENTERTAINMENT = "Amusement et divertissement"
+  ENTERTAINMENT = "Amusement et divertissement",
 }
 
 export enum CategoryDescription {
@@ -43,7 +43,7 @@ export enum CategoryDescription {
   GAMES = "Discussions sur les jeux de société, les jeux vidéo adaptés aux enfants et les activités de récréation et loisirs",
   HEROES = "Histoires de héros célèbres, légendes mythologiques, super-héros et personnages historiques inspirants",
   SOCIETY = "Pour mieux comprendre la société et décortiquer les actualités et les informations du quotidien",
-  ENTERTAINMENT = "Emissions de divertissement, de loisirs et de récréation"
+  ENTERTAINMENT = "Emissions de divertissement, de loisirs et de récréation",
 }
 
 export enum AgeRange {
@@ -52,7 +52,7 @@ export enum AgeRange {
   BETWEEN_7_AND_9 = "between 7 and 9",
   BETWEEN_10_AND_12 = "between 10 and 12",
   BETWEEN_13_AND_15 = "between 13 and 15",
-  OVER_15 = "over 15"
+  OVER_15 = "over 15",
 }
 
 export interface Episode {

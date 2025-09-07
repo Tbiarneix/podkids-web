@@ -5,25 +5,19 @@ import { Branding } from "@/components/webplayer/Branding";
 import { AudioPlayerProvider } from "@/components/webplayer/AudioPlayerProvider";
 import { PlayerBar } from "@/components/webplayer/PlayerBar";
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="min-h-screen flex flex-col items-center">
+    <main className="flex min-h-screen flex-col items-center">
       <AudioPlayerProvider>
-        <div className="flex-1 w-full flex flex-col gap-20 items-center pb-24">
+        <div className="flex w-full flex-1 flex-col items-center gap-20 pb-24">
           <ActiveProfileInitializer />
-          <nav className="w-full bg-card flex justify-center border-b border-b-foreground/10 h-16">
-            <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+          <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10 bg-card">
+            <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
               <Branding />
               <NavActions />
             </div>
           </nav>
-          <div className="w-full">
-            {children}
-          </div>
+          <div className="w-full">{children}</div>
         </div>
         <PlayerBar />
       </AudioPlayerProvider>

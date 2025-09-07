@@ -88,17 +88,21 @@ export default function PodcastsManager() {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Podcasts</h2>
         <Button onClick={() => setOpen(true)}>Ajouter un podcast</Button>
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex justify-center items-start p-4 md:items-center">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-hidden />
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 md:items-center">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
 
-          <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-background p-6 shadow-xl h-[95vh] overflow-hidden">
-            <div className="flex items-start justify-between mb-4 shrink-0">
+          <div className="relative z-10 h-[95vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-background p-6 shadow-xl">
+            <div className="mb-4 flex shrink-0 items-start justify-between">
               <h2 className="text-2xl font-bold">Ajouter un podcast</h2>
               <button
                 onClick={() => setOpen(false)}
@@ -108,12 +112,13 @@ export default function PodcastsManager() {
                 ✕
               </button>
             </div>
-            <div className="min-h-0 max-h-[74dvh] overflow-y-auto overscroll-contain custom-scrollbar py-3 pr-3">
-              <p className="text-sm text-muted-foreground mb-4">
-                Pour ajouter un podcast, veuillez  renseigner l’URL du flux rss du podcast et choisir une tranche d’âge et une thématique.
+            <div className="custom-scrollbar max-h-[74dvh] min-h-0 overflow-y-auto overscroll-contain py-3 pr-3">
+              <p className="text-muted-foreground mb-4 text-sm">
+                Pour ajouter un podcast, veuillez renseigner l’URL du flux rss du podcast et choisir
+                une tranche d’âge et une thématique.
               </p>
 
-              <div className="space-y-2 mb-4">
+              <div className="mb-4 space-y-2">
                 <label className="text-sm">Url du podcast</label>
                 <Input
                   value={rssUrl}
@@ -124,9 +129,9 @@ export default function PodcastsManager() {
                 />
               </div>
 
-              <div className="space-y-3 mb-6">
+              <div className="mb-6 space-y-3">
                 <p className="text-sm">Tranches d&apos;âge</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {ORDERED_AGE_RANGES.map((ar) => {
                     const selected = ageRanges.includes(ar);
                     return (
@@ -138,7 +143,7 @@ export default function PodcastsManager() {
                           "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
                           (selected
                             ? "bg-primary text-primary-foreground"
-                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                            : "bg-muted/20 border-muted/40 hover:bg-muted/30 border text-foreground")
                         }
                         aria-pressed={selected}
                       >
@@ -149,9 +154,9 @@ export default function PodcastsManager() {
                 </div>
               </div>
 
-              <div className="space-y-3 mb-6">
+              <div className="mb-6 space-y-3">
                 <p className="text-sm">Thématiques</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {ORDERED_CATEGORIES.map((cat) => {
                     const selected = categories.includes(cat);
                     return (
@@ -160,10 +165,10 @@ export default function PodcastsManager() {
                         type="button"
                         onClick={() => toggleCategory(cat)}
                         className={
-                          "rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors " +
+                          "rounded-xl px-4 py-3 text-left text-sm font-medium transition-colors " +
                           (selected
                             ? "bg-primary text-primary-foreground"
-                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                            : "bg-muted/20 border-muted/40 hover:bg-muted/30 border text-foreground")
                         }
                         aria-pressed={selected}
                       >
@@ -175,7 +180,7 @@ export default function PodcastsManager() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 shrink-0">
+            <div className="flex shrink-0 justify-end gap-3 pt-4">
               <Button
                 variant="secondary"
                 onClick={() => {

@@ -1,0 +1,17 @@
+{
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Prettier est le formateur par défaut
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  // On conserve les fixes ESLint à l'enregistrement
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+
+  // Utiliser la version locale de Prettier du projet
+  "prettier.preferLocal": true
+}

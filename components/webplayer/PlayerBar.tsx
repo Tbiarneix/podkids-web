@@ -6,18 +6,21 @@ import { useAudioPlayer, formatTime } from "@/components/webplayer/AudioPlayerPr
 import { cn } from "@/lib/utils";
 
 export function PlayerBar() {
-  const { current, playing, progress, duration, remaining, toggle, seekBy, seekTo } = useAudioPlayer();
+  const { current, playing, progress, duration, remaining, toggle, seekBy, seekTo } =
+    useAudioPlayer();
 
   if (!current) return null;
 
   const pct = duration > 0 ? Math.min(100, Math.max(0, (progress / duration) * 100)) : 0;
 
   return (
-    <div className={cn(
-      "fixed inset-x-0 bottom-0 z-40",
-      "border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80"
-    )}>
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-3">
+    <div
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-40",
+        "border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80",
+      )}
+    >
+      <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           {current.cover ? (
             <Image
@@ -29,15 +32,17 @@ export function PlayerBar() {
               unoptimized
             />
           ) : (
-            <div className="h-10 w-10 rounded-md bg-muted" />
+            <div className="bg-muted h-10 w-10 rounded-md" />
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3">
               <p className="truncate text-sm font-medium">
                 {current.name}
-                {current.podcastName ? <span className="text-muted-foreground"> — {current.podcastName}</span> : null}
+                {current.podcastName ? (
+                  <span className="text-muted-foreground"> — {current.podcastName}</span>
+                ) : null}
               </p>
-              <div className="shrink-0 text-xs tabular-nums text-muted-foreground">
+              <div className="text-muted-foreground shrink-0 text-xs tabular-nums">
                 -{formatTime(remaining)}
               </div>
             </div>
@@ -61,7 +66,7 @@ export function PlayerBar() {
                 />
                 {duration > 0 ? (
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-yellow-400 ring-2 ring-background/60 shadow transition-transform group-hover:scale-110"
+                    className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-400 shadow ring-2 ring-background/60 transition-transform group-hover:scale-110"
                     style={{ left: `${pct}%` }}
                     aria-hidden="true"
                   />
@@ -84,7 +89,7 @@ export function PlayerBar() {
                 </svg>
                 <span className="sr-only">-10 secondes</span>
               </button>
-              <span className="mt-0.5 text-xs leading-none text-muted-foreground">10s</span>
+              <span className="text-muted-foreground mt-0.5 text-xs leading-none">10s</span>
             </div>
             <button
               type="button"
@@ -118,7 +123,7 @@ export function PlayerBar() {
                 </svg>
                 <span className="sr-only">+10 secondes</span>
               </button>
-              <span className="mt-0.5 text-xs leading-none text-muted-foreground">10s</span>
+              <span className="text-muted-foreground mt-0.5 text-xs leading-none">10s</span>
             </div>
           </div>
         </div>

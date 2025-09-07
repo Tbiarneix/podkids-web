@@ -3,22 +3,13 @@
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useState } from "react";
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -52,7 +43,7 @@ export function ForgotPasswordForm({
             <CardDescription>Instructions de réinitialisation envoyées</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Si vous avez enregistré votre compte avec votre email et mot de passe, vous recevrez
               un email de réinitialisation.
             </p>
@@ -87,10 +78,7 @@ export function ForgotPasswordForm({
               </div>
               <div className="mt-4 text-center text-sm">
                 Déjà un compte?{" "}
-                <Link
-                  href="/auth/login"
-                  className="underline underline-offset-4"
-                >
+                <Link href="/auth/login" className="underline underline-offset-4">
                   Se connecter
                 </Link>
               </div>

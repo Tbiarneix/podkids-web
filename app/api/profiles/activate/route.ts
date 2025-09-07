@@ -11,7 +11,7 @@ const FRONT_TO_DB_AGE: Record<string, string> = {
 };
 
 const DB_TO_FRONT_AGE: Record<string, string> = Object.fromEntries(
-  Object.entries(FRONT_TO_DB_AGE).map(([front, db]) => [db, front])
+  Object.entries(FRONT_TO_DB_AGE).map(([front, db]) => [db, front]),
 );
 
 function mapDbToFront(row: any) {

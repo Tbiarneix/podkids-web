@@ -36,20 +36,21 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
   }, [pin, confirm, current, mode]);
   const matches = useMemo(() => pin.join("") === confirm.join(""), [pin, confirm]);
 
-  function handleChange(
-    index: number,
-    value: string,
-    which: "current" | "pin" | "confirm",
-  ) {
+  function handleChange(index: number, value: string, which: "current" | "pin" | "confirm") {
     const v = value.replace(/\D/g, "");
     if (v.length === 0) return;
-    const next = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+    const next = which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current];
     next[index] = v[v.length - 1];
     if (which === "pin") setPin(next);
     else if (which === "confirm") setConfirm(next);
     else setCurrent(next);
 
-    const refArray = which === "pin" ? inputsPin.current : which === "confirm" ? inputsConfirm.current : inputsCurrent.current;
+    const refArray =
+      which === "pin"
+        ? inputsPin.current
+        : which === "confirm"
+          ? inputsConfirm.current
+          : inputsCurrent.current;
     if (index < LENGTH - 1) {
       refArray[index + 1]?.focus();
     } else {
@@ -65,7 +66,7 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
   ) {
     if (e.key === "Backspace") {
       e.preventDefault();
-      const next = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+      const next = which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current];
       if (next[index]) {
         next[index] = "";
         if (which === "pin") setPin(next);
@@ -74,9 +75,14 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
         return;
       }
       if (index > 0) {
-        const refArray = which === "pin" ? inputsPin.current : which === "confirm" ? inputsConfirm.current : inputsCurrent.current;
+        const refArray =
+          which === "pin"
+            ? inputsPin.current
+            : which === "confirm"
+              ? inputsConfirm.current
+              : inputsCurrent.current;
         refArray[index - 1]?.focus();
-        const prev = (which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current]);
+        const prev = which === "pin" ? [...pin] : which === "confirm" ? [...confirm] : [...current];
         prev[index - 1] = "";
         if (which === "pin") setPin(prev);
         else if (which === "confirm") setConfirm(prev);
@@ -125,7 +131,10 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
     fetch("/api/pin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: pinStr, ...(mode === "update" ? { currentPin: currentStr } : {}) }),
+      body: JSON.stringify({
+        pin: pinStr,
+        ...(mode === "update" ? { currentPin: currentStr } : {}),
+      }),
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -153,9 +162,9 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="bg-background w-full max-w-xl mx-auto">
+    <form onSubmit={submit} className="mx-auto w-full max-w-xl bg-background">
       <div className="space-y-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center">{title}</h2>
+        <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">{title}</h2>
 
         {mode === "update" && (
           <div className="space-y-3">
@@ -192,9 +201,7 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-red-500 text-center">{error}</p>
-        )}
+        {error && <p className="text-center text-sm text-red-500">{error}</p>}
 
         <Button type="submit" size="xl" className="w-full" disabled={loading}>
           {loading ? "Veuillez patienter…" : cta}
@@ -229,7 +236,7 @@ function PinInputs(props: {
           onChange={(e) => onChange(i, e.target.value)}
           onKeyDown={(e) => onKeyDown(e, i)}
           onPaste={onPaste}
-          className="h-14 w-12 md:h-16 md:w-14 text-center text-xl md:text-2xl font-semibold rounded-md bg-input text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="h-14 w-12 rounded-md bg-input text-center text-xl font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:h-16 md:w-14 md:text-2xl"
         />
       ))}
     </div>

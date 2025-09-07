@@ -1,16 +1,20 @@
 # Description
 
 ## The feature / The problem
+
 Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
 ## What I've done / The solution
+
 Description of what I did/modified
 
 ## Scop of my changes
+
 Add the name of the files you just worked on.
 e.g. login.tsx / index.js / etc.
 
 ## Type of change
+
 - [ ] New feature (feat)
 - [ ] Fix issue (fix)
 - [ ] Code refactorisation (refactor)
@@ -18,9 +22,10 @@ e.g. login.tsx / index.js / etc.
 - [ ] Code testing (test)
 - [ ] Add documentation (docs)
 
-
 # Checklist
+
 (Delete if it's not relevant)
+
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my PR
 - [ ] I have removed not needed logs
@@ -32,6 +37,6 @@ e.g. login.tsx / index.js / etc.
 - [ ] Access works properly
 - [ ] Desktop and mobile versions work properly
 
-
 # Communication
+
 Something special like a warning about this PR
