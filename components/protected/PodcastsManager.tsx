@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { AgeRange, Category } from "@/types/podcast";
 import { ageRangeToLabel } from "@/utils/ageRange";
+import { Plus } from "lucide-react";
 
 const ORDERED_AGE_RANGES: AgeRange[] = [
   AgeRange.UNDER_3,
@@ -90,7 +91,15 @@ export default function PodcastsManager() {
     <div className="w-full">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Podcasts</h2>
-        <Button onClick={() => setOpen(true)}>Ajouter un podcast</Button>
+        <Button
+          variant="outline"
+          className="inline-flex items-center gap-2 rounded-full bg-card max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
+          onClick={() => setOpen(true)}
+          aria-label="Ajouter un podcast"
+        >
+          <Plus className="size-4" aria-hidden />
+          <span className="max-[768px]:sr-only">Ajouter un podcast</span>
+        </Button>
       </div>
 
       {open && (

@@ -85,7 +85,7 @@ export default function PodcastsList({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center sm:justify-between">
         <CategoryFilter
           podcasts={podcasts}
           extractCategories={extractCats}
@@ -94,18 +94,20 @@ export default function PodcastsList({
           buttonClassName="rounded-full border-primary text-primary hover:bg-primary/10"
           resetButtonClassName="text-muted-foreground hover:bg-accent hover:text-foreground"
         />
-        <Switch
-          id="only-private"
-          checked={onlyPrivate}
-          onCheckedChange={(v) => setOnlyPrivate(!!v)}
-        />
-        <label
-          htmlFor="only-private"
-          className="text-muted-foreground cursor-pointer text-sm"
-          onClick={() => setOnlyPrivate((prev) => !prev)}
-        >
-          Afficher uniquement mes podcasts privés
-        </label>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="only-private"
+            checked={onlyPrivate}
+            onCheckedChange={(v) => setOnlyPrivate(!!v)}
+          />
+          <label
+            htmlFor="only-private"
+            className="text-muted-foreground cursor-pointer break-words text-sm"
+            onClick={() => setOnlyPrivate((prev) => !prev)}
+          >
+            Afficher uniquement mes podcasts privés
+          </label>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
