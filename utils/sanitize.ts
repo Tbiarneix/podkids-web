@@ -115,6 +115,20 @@ function cleanNode(node: Node) {
 
 export function sanitizeHtml(input: string): string {
   if (!input) return "";
+  // SSR-safe fallback: if document is not available (server-side),
+  // return a conservatively sanitized plain-text version to avoid runtime errors.
+  if (typeof document === "undefined") {
+    try {
+      // Remove script/style blocks entirely
+      const withoutScripts = input.replace(/<(script|style)[\s\S]*?<\/@?\1>/gi, "");
+      // Strip remaining HTML tags
+      const withoutTags = withoutScripts.replace(/<[^>]*>/g, "");
+      // Collapse excessive whitespace
+      return withoutTags.replace(/\s+/g, " ").trim();
+    } catch {
+      return "";
+    }
+  }
   const container = document.createElement("div");
   container.innerHTML = input;
   for (const child of Array.from(container.childNodes)) {
