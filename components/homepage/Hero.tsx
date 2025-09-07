@@ -5,9 +5,9 @@ export function Hero() {
   return (
     <section
       id="main-content"
-      className="bg-background relative overflow-hidden mx-auto max-w-[1400px] flex flex-row justify-between items-center text-left gap-8 p-8 pb-16 min-h-full md:min-h-[90vh] md:gap-12 md:p-8 lg:px-16"
+      className="bg-background relative overflow-hidden mx-auto max-w-[1400px] flex flex-col lg:flex-row justify-between items-center text-left gap-8 p-8 pb-16 min-h-full md:min-h-[90vh] md:gap-12 md:p-8 lg:px-16"
     >
-      <div className="w-full max-w-full lg:max-w-[50%]">
+      <div className="flex flex-col items-center lg:items-start w-full max-w-full lg:max-w-full">
         <h1 className="text-[3rem] lg:text-[4rem]">Podkids</h1>
         <h2 className="text-foreground font-medium text-2xl lg:text-3xl mb-6 max-w-[600px] leading-snug mx-0">
           L&apos;application de podcast sécurisée pour les enfants
@@ -24,7 +24,7 @@ export function Hero() {
           </a>
         </div>
       </div>
-      <div className="relative flex-shrink-0 flex flex-col items-center gap-5">
+      <div className="relative flex-shrink-0 flex flex-col items-center gap-5 lg:mt-8">
         <div className="relative z-10 mb-[-20px] lg:mb-0">
           <Image
             src="/images/Hero-Illustration.webp"
