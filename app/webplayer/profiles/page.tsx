@@ -74,7 +74,7 @@ export default function ProfilesSelectPage() {
         <p className="text-muted-foreground text-center text-sm">Chargement…</p>
       ) : (
         <div className="flex min-h-[40vh] w-full items-center justify-center">
-          <ul className="flex place-items-center justify-center gap-10">
+          <ul className="flex flex-wrap place-items-center justify-center gap-10">
             {profiles.map((p) => {
               return (
                 <li key={p.id} className="flex justify-center">
