@@ -31,6 +31,11 @@ export default function WebPlayer() {
   const LS_KEY_ONLY_SUBS = "pk_only_subscribed";
   const [onlySubs, setOnlySubs] = useState<boolean>(false);
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -161,6 +166,29 @@ export default function WebPlayer() {
   return (
     <div className="w-full">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center gap-4">
+          <Button
+            type="button"
+            variant="default"
+            className={`${!onlySubs ? "max-[420px]:break-all" : ""} w-full h-36 rounded-lg py-6 px-4 text-center font-bold whitespace-normal break-words text-2xl sm:text-3xl leading-tight`}
+            onClick={() => setOnlySubs((v) => !v)}
+            disabled={!mounted || !active?.id}
+            title={onlySubs ? "Voir tous les podcasts" : "Ma bibliothèque"}
+          >
+            {onlySubs ? "Voir tous les podcasts" : "Ma bibliothèque"}
+          </Button>
+
+          <Button
+            type="button"
+            variant="default"
+            className="w-full h-36 rounded-lg py-6 px-4 text-center font-bold opacity-60 cursor-not-allowed whitespace-normal break-words text-2xl sm:text-3xl leading-tight"
+            aria-disabled="true"
+            onClick={() => toast.message("Fonctionnalité bientôt disponible")}
+            title="Fonctionnalité bientôt disponible"
+          >
+            Mes playlists
+          </Button>
+        </div>
         <div className="mb-4 flex items-center justify-between gap-3">
           <Suspense fallback={null}>
             <CategoryFilter
@@ -173,16 +201,6 @@ export default function WebPlayer() {
               onSelectedChange={setSelectedCats}
             />
           </Suspense>
-          <Button
-            type="button"
-            variant={onlySubs ? "default" : "outline"}
-            size="md"
-            onClick={() => setOnlySubs((v) => !v)}
-            disabled={!active?.id}
-            title={onlySubs ? "Voir tous les podcasts" : "Voir mes abonnements"}
-          >
-            {onlySubs ? "Voir tous les podcasts" : "Voir mes abonnements"}
-          </Button>
         </div>
         <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-2">
           {displayed.map((podcast) => (
