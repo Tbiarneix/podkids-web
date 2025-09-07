@@ -29,7 +29,10 @@ function mapDbToFront(row: any) {
 }
 
 function isValidName(name: unknown): name is string {
-  return typeof name === "string" && name.trim().length >= 1 && name.trim().length <= 80;
+  if (typeof name !== "string") return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 1 || trimmed.length > 80) return false;
+  return /^[A-Za-z0-9_-]+$/.test(trimmed);
 }
 
 function isValidAvatar(avatar: unknown): avatar is number {
