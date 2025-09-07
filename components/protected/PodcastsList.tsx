@@ -126,7 +126,7 @@ export default function PodcastsList({
             <div
               key={p.id}
               className={cn(
-                "group relative flex h-full w-full items-stretch gap-6 rounded-2xl border bg-card/95 p-6 text-card-foreground shadow-sm transition-colors hover:bg-card",
+                "group relative flex h-full w-full flex-col gap-4 rounded-2xl border bg-card/95 p-6 text-card-foreground shadow-sm transition-colors hover:bg-card",
               )}
             >
               {isPrivate ? (
@@ -154,46 +154,48 @@ export default function PodcastsList({
                   </svg>
                 </Button>
               ) : null}
-              <div className="shrink-0">
-                <Image
-                  src={coverSrc}
-                  alt={p.name || "Podcast"}
-                  width={128}
-                  height={128}
-                  className="h-32 w-32 rounded-xl object-cover"
-                  unoptimized
-                />
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <div className="min-w-0">
-                  <h2 className="truncate text-lg font-semibold sm:text-xl">
-                    {p.name || "Sans titre"}
-                  </h2>
-                  <p className="text-muted-foreground mt-0.5 truncate text-sm">
-                    {(p.author || "").trim()}{" "}
-                    {p.episodes_count != null ? <span className="mx-1">•</span> : null}
-                    {p.episodes_count != null ? `${p.episodes_count} épisodes` : null}
-                  </p>
-                </div>
-                {p.description ? (
-                  <div
-                    className="text-muted-foreground line-clamp-3 text-sm"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(p.description)) }}
+              <div className="flex items-stretch gap-6">
+                <div className="shrink-0">
+                  <Image
+                    src={coverSrc}
+                    alt={p.name || "Podcast"}
+                    width={128}
+                    height={128}
+                    className="h-32 w-32 rounded-xl object-cover"
+                    unoptimized
                   />
-                ) : null}
-                {cats.length > 0 ? (
-                  <div className="mt-1 flex flex-wrap items-center gap-3">
-                    {cats.map((cat) => (
-                      <span
-                        key={cat as string}
-                        className="rounded-full border-2 border-yellow-400 px-3.5 py-1 text-sm font-semibold text-yellow-400"
-                      >
-                        {cat as string}
-                      </span>
-                    ))}
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="min-w-0">
+                    <h2 className="break-words text-lg font-semibold sm:text-xl">
+                      {p.name || "Sans titre"}
+                    </h2>
+                    <p className="text-muted-foreground mt-0.5 flex flex-wrap truncate text-sm">
+                      {(p.author || "").trim()}{" "}
+                      {p.episodes_count != null ? <span className="mx-1">•</span> : null}
+                      {p.episodes_count != null ? `${p.episodes_count} épisodes` : null}
+                    </p>
                   </div>
-                ) : null}
+                  {p.description ? (
+                    <div
+                      className="text-muted-foreground line-clamp-5 text-sm"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(p.description)) }}
+                    />
+                  ) : null}
+                </div>
               </div>
+              {cats.length > 0 ? (
+                <div className="mt-1 flex flex-wrap items-center gap-3">
+                  {cats.map((cat) => (
+                    <span
+                      key={cat as string}
+                      className="rounded-full border-2 border-yellow-400 px-3.5 py-1 text-sm font-semibold text-yellow-400"
+                    >
+                      {cat as string}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
           );
         })}
