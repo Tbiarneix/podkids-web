@@ -1,9 +1,9 @@
 "use client";
 
-export default function SkiplinksWebplayer() {
+export default function SkiplinksProtected() {
   const handleNavigationClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const nav = document.getElementById("action-bar");
+    const nav = document.getElementById("protected-action-bar");
     if (nav) {
       const firstFocusable = nav.querySelector<HTMLElement>(
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -34,7 +34,7 @@ export default function SkiplinksWebplayer() {
       <ul className="m-0 flex list-none gap-4 p-0 max-[768px]:flex-col">
         <li>
           <a
-            href="#action-bar"
+            href="#protected-action-bar"
             onClick={handleNavigationClick}
             className="sr-only focus-visible:not-sr-only focus-visible:m-2 focus-visible:px-8 focus-visible:py-4 rounded-lg border border-[var(--pastel-dark)] bg-[var(--pastel-dark)] px-2 py-2 text-base font-bold text-white no-underline transition-all duration-300"
           >
