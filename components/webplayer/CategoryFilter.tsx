@@ -45,13 +45,17 @@ export function CategoryFilter<T>({
   const [selectedInternal, setSelectedInternal] = useState<string[]>([]);
   const selected = controlledSelected ?? selectedInternal;
   const isAll = selected.length === 0;
+  const [draft, setDraft] = useState<string[]>(selected);
 
-  const toggleAll = () => {
+  const clearDraft = () => {
+    setDraft([]);
+  };
+  const clearApplied = () => {
     if (controlledSelected !== undefined) onSelectedChange?.([]);
     else setSelectedInternal([]);
   };
   const toggleCategory = (key: string) => {
-    const prev = selected;
+    const prev = draft;
     const s = new Set(prev);
     if (s.has(key)) {
       s.delete(key);
@@ -59,8 +63,7 @@ export function CategoryFilter<T>({
       s.add(key);
     }
     const next = Array.from(s);
-    if (controlledSelected !== undefined) onSelectedChange?.(next);
-    else setSelectedInternal(next);
+    setDraft(next);
   };
 
   const filtered = useMemo(() => {
@@ -100,6 +103,10 @@ export function CategoryFilter<T>({
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const triggerBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) setDraft(selected);
+  }, [open, selected]);
 
   useEffect(() => {
     if (!open) return;
@@ -175,7 +182,7 @@ export function CategoryFilter<T>({
           <Button
             variant="ghost"
             className={resetButtonClassName ?? "text-white hover:bg-white/10 hover:text-white"}
-            onClick={toggleAll}
+            onClick={clearApplied}
           >
             Réinitialiser
           </Button>
@@ -210,31 +217,12 @@ export function CategoryFilter<T>({
           </div>
 
           <div className="max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-4">
-            <div className="mb-4">
-              <Button
-                variant={isAll ? "default" : "outline"}
-                className={
-                  isAll
-                    ? "rounded-full bg-white text-slate-900 hover:bg-white/90"
-                    : "rounded-full border-white text-white hover:bg-white/10 hover:text-white"
-                }
-                aria-pressed={isAll}
-                onClick={toggleAll}
-              >
-                Tous
-              </Button>
-            </div>
-
             <div className="flex flex-col gap-2">
               {categoryEntries.map(([key, label]) => {
-                const active = selected.includes(key);
+                const active = draft.includes(key);
                 return (
                   <label key={key} className="flex items-center gap-3 text-white">
-                    <Checkbox
-                      checked={active}
-                      onCheckedChange={() => toggleCategory(key)}
-                      aria-pressed={active}
-                    />
+                    <Checkbox checked={active} onCheckedChange={() => toggleCategory(key)} />
                     <span>{label}</span>
                   </label>
                 );
@@ -245,14 +233,18 @@ export function CategoryFilter<T>({
               <Button
                 variant="default"
                 className="rounded-full bg-white text-slate-900 hover:bg-white/90"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  if (controlledSelected !== undefined) onSelectedChange?.(draft);
+                  else setSelectedInternal(draft);
+                  setOpen(false);
+                }}
               >
                 Appliquer
               </Button>
               <Button
                 variant="ghost"
                 className="text-white hover:bg-white/10 hover:text-white"
-                onClick={toggleAll}
+                onClick={clearDraft}
               >
                 Réinitialiser
               </Button>
