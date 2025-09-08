@@ -21,7 +21,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
               <NavActions />
             </div>
           </div>
-          <div className="w-full" role="main">
+          <div className="w-full" id="main-content">
             {children}
           </div>
         </div>

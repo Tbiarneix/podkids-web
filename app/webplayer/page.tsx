@@ -165,7 +165,7 @@ export default function WebPlayer() {
   }, [filtered, onlySubs, subscribedSet]);
 
   return (
-    <div className="w-full" id="main-content">
+    <div className="w-full">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center gap-4">
           <Button
