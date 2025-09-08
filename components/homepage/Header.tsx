@@ -13,7 +13,11 @@ export function Header() {
         <Image src="/images/Logo.webp" alt="LogoPodkids" width={48} height={48} />
         <p className="text-[1.8rem] font-bold text-primary">Podkids</p>
       </div>
-      <div className="flex items-center gap-5 xl:flex-row-reverse">
+      <div className="hidden items-center gap-5 xl:flex">
+        <HeaderNav />
+        <AuthButton />
+      </div>
+      <div className="flex items-center gap-5 xl:hidden">
         <AuthButton />
         <HeaderNav />
       </div>
