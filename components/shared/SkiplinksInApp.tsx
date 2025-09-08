@@ -1,6 +1,6 @@
 "use client";
 
-export default function SkiplinksWebplayer() {
+export default function SkiplinksInApp() {
   const handleNavigationClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const nav = document.getElementById("action-bar");
