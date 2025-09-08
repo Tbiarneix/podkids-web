@@ -110,7 +110,9 @@ export function HeaderNav() {
         className={
           `z-[100] ` +
           `max-[1280px]:fixed max-[1280px]:inset-0 max-[1280px]:left-auto max-[1280px]:h-screen max-[1280px]:w-full max-[1280px]:transform max-[1280px]:bg-background max-[1280px]:p-8 max-[1280px]:pt-24 max-[1280px]:shadow-[-5px_0_15px_rgba(0,0,0,0.1)] max-[1280px]:transition-transform max-[1280px]:duration-300` +
-          (menuOpen ? " max-[1280px]:translate-x-0" : " max-[1280px]:translate-x-full")
+          (menuOpen
+            ? " max-[1280px]:translate-x-0 max-[1280px]:block"
+            : " max-[1280px]:translate-x-full max-[1280px]:hidden")
         }
         aria-label="Navigation principale"
         role="navigation"
