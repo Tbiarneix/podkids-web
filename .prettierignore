@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Env/config
+.env*
+.vercel
+.turbo
+
+# Generated
+coverage

@@ -21,8 +21,8 @@ export function Branding() {
     <div className="flex items-center font-semibold">
       {isProfile ? (
         <div
-          className={`flex gap-5 items-center transition-all duration-150 ease-out ${
-            fadeIn ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          className={`flex items-center gap-5 transition-all duration-150 ease-out ${
+            fadeIn ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
           <Image
@@ -37,17 +37,11 @@ export function Branding() {
         </div>
       ) : (
         <div
-          className={`flex gap-5 items-center transition-all duration-150 ease-out ${
-            fadeIn ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          className={`flex items-center gap-5 transition-all duration-150 ease-out ${
+            fadeIn ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
-          <Image
-            src="/images/Logo.webp"
-            alt="Podkids"
-            width={48}
-            height={48}
-            priority
-          />
+          <Image src="/images/Logo.webp" alt="Podkids" width={48} height={48} priority />
           <span className="text-[1.8rem] font-bold text-primary">Podkids</span>
         </div>
       )}

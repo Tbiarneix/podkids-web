@@ -1,4 +1,4 @@
-import { AgeRange } from './podcast';
+import { AgeRange } from "./podcast";
 
 export interface Profile {
   id: string;

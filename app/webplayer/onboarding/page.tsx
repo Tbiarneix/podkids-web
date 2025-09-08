@@ -31,7 +31,7 @@ export default function WebplayerOnboardingPage() {
 
   const canSubmit = useMemo(
     () => name.trim().length > 0 && avatar !== null && ageRanges.length > 0,
-    [name, avatar, ageRanges]
+    [name, avatar, ageRanges],
   );
 
   function toggleAgeRange(ar: AgeRange) {
@@ -85,7 +85,12 @@ export default function WebplayerOnboardingPage() {
       }
       const p = data?.profile;
       if (p?.id) {
-        await setActiveProfile({ id: p.id, name: p.name, avatar: p.avatar, ageRanges: p.ageRanges });
+        await setActiveProfile({
+          id: p.id,
+          name: p.name,
+          avatar: p.avatar,
+          ageRanges: p.ageRanges,
+        });
       }
       toast.success("Profil créé");
       router.replace("/webplayer");
@@ -98,16 +103,16 @@ export default function WebplayerOnboardingPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto p-6">
-        <p className="text-sm text-muted-foreground">Chargement…</p>
+      <div className="mx-auto max-w-3xl p-6">
+        <p className="text-muted-foreground text-sm">Chargement…</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-2">Bienvenue sur le webplayer</h1>
-      <p className="text-sm text-muted-foreground mb-6">
+    <div className="mx-auto max-w-3xl p-6">
+      <h1 className="mb-2 text-2xl font-semibold">Bienvenue sur le webplayer</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
         Créez un premier profil pour personnaliser l&apos;expérience d&apos;écoute.
       </p>
 
@@ -124,7 +129,7 @@ export default function WebplayerOnboardingPage() {
 
         <div className="space-y-3">
           <p className="text-sm">Choisir un avatar</p>
-          <div className="flex items-center justify-start gap-3 flex-wrap">
+          <div className="flex flex-wrap items-center justify-start gap-3">
             {Array.from({ length: 7 }, (_, i) => i + 1).map((id) => {
               const selected = avatar === id;
               return (
@@ -135,8 +140,8 @@ export default function WebplayerOnboardingPage() {
                   className={
                     "rounded-full p-1 transition-colors focus:outline-none focus:ring-2 " +
                     (selected
-                      ? "ring-primary border-2 border-primary bg-primary/10"
-                      : "border border-muted/40 hover:border-primary/50 bg-muted/10 hover:bg-muted/20 focus:ring-primary/40")
+                      ? "border-2 border-primary bg-primary/10 ring-primary"
+                      : "border-muted/40 bg-muted/10 hover:bg-muted/20 border hover:border-primary/50 focus:ring-primary/40")
                   }
                   aria-pressed={selected}
                   aria-label={`Avatar ${id}`}
@@ -156,7 +161,7 @@ export default function WebplayerOnboardingPage() {
 
         <div className="space-y-3">
           <p className="text-sm">Tranche d&apos;âge</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {ORDERED_AGE_RANGES.map((ar) => {
               const selected = ageRanges.includes(ar);
               return (
@@ -168,7 +173,7 @@ export default function WebplayerOnboardingPage() {
                     "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
                     (selected
                       ? "bg-primary text-primary-foreground"
-                      : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                      : "bg-muted/20 border-muted/40 hover:bg-muted/30 border text-foreground")
                   }
                   aria-pressed={selected}
                 >
@@ -180,7 +185,11 @@ export default function WebplayerOnboardingPage() {
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button variant="secondary" onClick={() => router.replace("/webplayer")} disabled={submitting}>
+          <Button
+            variant="secondary"
+            onClick={() => router.replace("/webplayer")}
+            disabled={submitting}
+          >
             Annuler
           </Button>
           <Button onClick={submit} disabled={!canSubmit || submitting}>

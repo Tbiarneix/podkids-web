@@ -12,7 +12,13 @@ export default function BackToSettings() {
 
   return (
     <div className="mb-2">
-      <Button asChild variant="link" size="sm" className="text-white hover:text-white" aria-label="Retour aux paramètres">
+      <Button
+        asChild
+        variant="link"
+        size="sm"
+        className="text-white hover:text-white"
+        aria-label="Retour aux paramètres"
+      >
         <Link href="/protected" prefetch>
           <ChevronLeft className="mr-1 text-white" aria-hidden />
           Retour aux paramètres

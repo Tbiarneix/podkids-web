@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       const v = upstream.headers.get(key);
       if (v) resHeaders.set(key, v);
     }
-    
+
     if (!resHeaders.has("accept-ranges")) resHeaders.set("accept-ranges", "bytes");
 
     return new NextResponse(upstream.body, {

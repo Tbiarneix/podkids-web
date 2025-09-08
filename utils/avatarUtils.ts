@@ -1,19 +1,19 @@
 export const getAvatarImage = (index: number) => {
   switch (index) {
     case 1:
-      return require('../../assets/avatar/avatar-1.webp');
+      return require("../../assets/avatar/avatar-1.webp");
     case 2:
-      return require('../../assets/avatar/avatar-3.webp');
+      return require("../../assets/avatar/avatar-3.webp");
     case 3:
-      return require('../../assets/avatar/avatar-4.webp');
+      return require("../../assets/avatar/avatar-4.webp");
     case 4:
-      return require('../../assets/avatar/avatar-5.webp');
+      return require("../../assets/avatar/avatar-5.webp");
     case 5:
-      return require('../../assets/avatar/avatar-6.webp');
+      return require("../../assets/avatar/avatar-6.webp");
     case 6:
-      return require('../../assets/avatar/avatar-7.webp');
+      return require("../../assets/avatar/avatar-7.webp");
     default:
-      return require('../../assets/avatar/avatar-2.webp');
+      return require("../../assets/avatar/avatar-2.webp");
   }
 };
 

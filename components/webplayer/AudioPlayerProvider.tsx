@@ -1,6 +1,14 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export type PlayableEpisode = {
   id: number | string;
@@ -102,7 +110,10 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     const a = audioRef.current;
     if (!a) return;
     try {
-      const next = Math.max(0, Math.min((a.duration || Infinity), (a.currentTime || 0) + deltaSeconds));
+      const next = Math.max(
+        0,
+        Math.min(a.duration || Infinity, (a.currentTime || 0) + deltaSeconds),
+      );
       a.currentTime = next;
     } catch {}
   }, []);
@@ -111,26 +122,25 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     const a = audioRef.current;
     if (!a) return;
     try {
-      const next = Math.max(0, Math.min((a.duration || Infinity), seconds));
+      const next = Math.max(0, Math.min(a.duration || Infinity, seconds));
       a.currentTime = next;
     } catch {}
   }, []);
 
-  const value = useMemo<AudioPlayerContextType>(() => ({
-    current,
-    playing,
-    progress,
-    duration,
-    remaining: Math.max(0, (duration || 0) - (progress || 0)),
-    play,
-    toggle,
-    seekBy,
-    seekTo,
-  }), [current, playing, progress, duration, play, toggle, seekBy, seekTo]);
-
-  return (
-    <AudioPlayerContext.Provider value={value}>
-      {children}
-    </AudioPlayerContext.Provider>
+  const value = useMemo<AudioPlayerContextType>(
+    () => ({
+      current,
+      playing,
+      progress,
+      duration,
+      remaining: Math.max(0, (duration || 0) - (progress || 0)),
+      play,
+      toggle,
+      seekBy,
+      seekTo,
+    }),
+    [current, playing, progress, duration, play, toggle, seekBy, seekTo],
   );
+
+  return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;
 }

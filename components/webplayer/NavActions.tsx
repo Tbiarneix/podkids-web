@@ -41,13 +41,15 @@ export function NavActions() {
     if (!pinOpen) {
       prevFocusRef.current?.focus?.();
     } else {
-      prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
+      prevFocusRef.current =
+        typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null;
     }
   }, [pinOpen]);
 
   useEffect(() => {
     if (confirmSwitchOpen) {
-      prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
+      prevFocusRef.current =
+        typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null;
       const t = window.setTimeout(() => {
         confirmCancelRef.current?.focus();
       }, 0);
@@ -57,7 +59,6 @@ export function NavActions() {
     }
   }, [confirmSwitchOpen]);
 
-
   async function handleSubmitPin(pin: string) {
     const res = await fetch("/api/pin/validate", {
       method: "POST",
@@ -65,7 +66,7 @@ export function NavActions() {
       body: JSON.stringify({ pin }),
     });
     if (!res.ok) {
-      const j = await res.json().catch(() => ({} as any));
+      const j = await res.json().catch(() => ({}) as any);
       const code = j?.error || `HTTP_${res.status}`;
       const map: Record<string, string> = {
         unauthorized: "Vous devez être connecté.",
@@ -85,24 +86,24 @@ export function NavActions() {
       {canShowChangeProfile ? (
         <Button
           variant="outline"
-          className="bg-card rounded-full inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 rounded-full bg-card max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
           onClick={() => {
             setConfirmSwitchOpen(true);
           }}
         >
           <Users className="size-4" aria-hidden />
-          <span>Changer de profil</span>
+          <span className="max-[768px]:sr-only">Changer de profil</span>
         </Button>
       ) : null}
 
       <Button
         variant="outline"
-        className="bg-card rounded-full inline-flex items-center gap-2"
+        className="inline-flex items-center gap-2 rounded-full bg-card max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
         ref={openBtnRef}
         onClick={() => setPinOpen(true)}
       >
         <KeyRound className="size-4" aria-hidden />
-        <span>Accès parent</span>
+        <span className="max-[768px]:sr-only">Accès parent</span>
       </Button>
 
       <PinModal
@@ -146,14 +147,19 @@ export function NavActions() {
             onClick={() => setConfirmSwitchOpen(false)}
           />
           <div className="relative z-10 w-[90%] max-w-sm rounded-2xl border bg-card p-5 text-card-foreground shadow-xl">
-            <h2 id="confirm-switch-title" className="text-lg font-semibold mb-1">
+            <h2 id="confirm-switch-title" className="mb-1 text-lg font-semibold">
               Changer de profil ?
             </h2>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-sm">
               Attention, si tu quittes ton profil, tu devras demander à un parent de te reconnecter.
             </p>
             <div className="mt-5 flex justify-end gap-2">
-              <Button type="button" variant="outline" ref={confirmCancelRef} onClick={() => setConfirmSwitchOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                ref={confirmCancelRef}
+                onClick={() => setConfirmSwitchOpen(false)}
+              >
                 Annuler
               </Button>
               <Button

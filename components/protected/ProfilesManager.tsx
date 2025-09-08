@@ -28,7 +28,10 @@ export default function ProfilesManager() {
   const [submitting, setSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const canSubmit = useMemo(() => name.trim().length > 0 && avatar !== null && ageRanges.length > 0, [name, avatar, ageRanges]);
+  const canSubmit = useMemo(
+    () => name.trim().length > 0 && avatar !== null && ageRanges.length > 0,
+    [name, avatar, ageRanges],
+  );
 
   function sanitizeName(value: string) {
     return value.replace(/[^A-Za-z0-9_-]/g, "");
@@ -115,7 +118,7 @@ export default function ProfilesManager() {
     } finally {
       setSubmitting(false);
     }
-  };
+  }
 
   const requestDelete = (id: string) => {
     setPendingDeleteId(id);
@@ -132,20 +135,29 @@ export default function ProfilesManager() {
   return (
     <div className="w-full">
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold">Profils</h2>
           <Button onClick={openCreate}>Ajouter un profil</Button>
         </div>
         {profiles.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucun profil pour le moment.</p>
+          <p className="text-muted-foreground text-sm">Aucun profil pour le moment.</p>
         ) : (
-          <ul className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-2">
+          <ul className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-2">
             {profiles.map((p) => (
-              <li key={p.id} className="rounded-2xl border py-6 px-10 bg-card transform scale-x-[1.05]">
+              <li
+                key={p.id}
+                className="scale-x-[1.05] transform rounded-2xl border bg-card px-10 py-6"
+              >
                 <div className="flex items-center gap-6">
-                  <Image src={`/avatar/avatar-${p.avatar}.webp`} alt={p.name} width={64} height={64} className="rounded-full" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-lg sm:text-xl truncate">{p.name}</p>
+                  <Image
+                    src={`/avatar/avatar-${p.avatar}.webp`}
+                    alt={p.name}
+                    width={64}
+                    height={64}
+                    className="rounded-full"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-lg font-semibold sm:text-xl">{p.name}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {(p.ageRanges ?? []).map((ar: AgeRange) => (
                         <span
@@ -159,8 +171,22 @@ export default function ProfilesManager() {
                   </div>
                 </div>
                 <div className="mt-6 flex justify-center gap-2">
-                  <Button size="md" variant="outline" onClick={() => openEdit(p)} disabled={submitting}>Modifier</Button>
-                  <Button size="md" variant="outline" onClick={() => requestDelete(p.id)} disabled={submitting}>Supprimer</Button>
+                  <Button
+                    size="md"
+                    variant="outline"
+                    onClick={() => openEdit(p)}
+                    disabled={submitting}
+                  >
+                    Modifier
+                  </Button>
+                  <Button
+                    size="md"
+                    variant="outline"
+                    onClick={() => requestDelete(p.id)}
+                    disabled={submitting}
+                  >
+                    Supprimer
+                  </Button>
                 </div>
               </li>
             ))}
@@ -169,15 +195,15 @@ export default function ProfilesManager() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex justify-center items-start p-4 md:items-center">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 md:items-center">
           <div
             className="absolute inset-0 bg-black/60"
             onClick={() => setOpen(false)}
             aria-hidden
           />
 
-          <div className="relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl h-max-[95vh] overflow-hidden">
-            <div className="flex items-start justify-between mb-4 shrink-0">
+          <div className="h-max-[95vh] relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-background p-6 shadow-xl">
+            <div className="mb-4 flex shrink-0 items-start justify-between">
               <h2 className="text-2xl font-bold">Ajouter un profil</h2>
               <button
                 onClick={() => setOpen(false)}
@@ -187,8 +213,8 @@ export default function ProfilesManager() {
                 ✕
               </button>
             </div>
-            <div className="min-h-0 max-h-[74dvh] overflow-y-auto overscroll-contain custom-scrollbar py-3 pr-3">
-              <div className="space-y-2 mb-6">
+            <div className="custom-scrollbar max-h-[74dvh] min-h-0 overflow-y-auto overscroll-contain py-3 pr-3">
+              <div className="mb-6 space-y-2">
                 <label className="text-sm">Nom</label>
                 <Input
                   value={name}
@@ -201,9 +227,9 @@ export default function ProfilesManager() {
                 />
               </div>
 
-              <div className="space-y-3 mb-6">
+              <div className="mb-6 space-y-3">
                 <p className="text-sm">Choisir un avatar</p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
+                <div className="flex flex-wrap items-center justify-center gap-3">
                   {Array.from({ length: 7 }, (_, i) => i + 1).map((id) => {
                     const selected = avatar === id;
                     return (
@@ -214,8 +240,8 @@ export default function ProfilesManager() {
                         className={
                           "rounded-full p-1 transition-colors focus:outline-none focus:ring-2 " +
                           (selected
-                            ? "ring-primary border-2 border-primary bg-primary/10"
-                            : "border border-muted/40 hover:border-primary/50 bg-muted/10 hover:bg-muted/20 focus:ring-primary/40")
+                            ? "border-2 border-primary bg-primary/10 ring-primary"
+                            : "border-muted/40 bg-muted/10 hover:bg-muted/20 border hover:border-primary/50 focus:ring-primary/40")
                         }
                         aria-pressed={selected}
                         aria-label={`Avatar ${id}`}
@@ -233,9 +259,9 @@ export default function ProfilesManager() {
                 </div>
               </div>
 
-              <div className="space-y-3 mb-8">
+              <div className="mb-8 space-y-3">
                 <p className="text-sm">Tranche d&apos;âge</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {ORDERED_AGE_RANGES.map((ar) => {
                     const selected = ageRanges.includes(ar);
                     return (
@@ -247,7 +273,7 @@ export default function ProfilesManager() {
                           "rounded-xl px-4 py-3 text-sm font-medium transition-colors " +
                           (selected
                             ? "bg-primary text-primary-foreground"
-                            : "bg-muted/20 text-foreground border border-muted/40 hover:bg-muted/30")
+                            : "bg-muted/20 border-muted/40 hover:bg-muted/30 border text-foreground")
                         }
                         aria-pressed={selected}
                       >
@@ -259,8 +285,17 @@ export default function ProfilesManager() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-2 shrink-0">
-              <Button variant="secondary" onClick={() => { if (!submitting) { resetForm(); setOpen(false); } }} disabled={submitting}>
+            <div className="flex shrink-0 justify-end gap-3 pt-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (!submitting) {
+                    resetForm();
+                    setOpen(false);
+                  }
+                }}
+                disabled={submitting}
+              >
                 Annuler
               </Button>
               <Button onClick={submit} disabled={!canSubmit || submitting}>
@@ -274,19 +309,36 @@ export default function ProfilesManager() {
       {/* Confirmation Modal */}
       {confirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => { if (!submitting) { setConfirmOpen(false); setPendingDeleteId(null); } }} />
+          <div
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            onClick={() => {
+              if (!submitting) {
+                setConfirmOpen(false);
+                setPendingDeleteId(null);
+              }
+            }}
+          />
           <div
             role="dialog"
             aria-modal="true"
             className="relative z-10 w-[92vw] max-w-lg rounded-xl border bg-card p-6 shadow-xl"
           >
             <h2 className="text-base font-semibold">Confirmer la suppression</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Cette action supprimera le profil et tous ses paramètres associés (abonnements aux podcasts, playlists, etc.).
-              Cette opération est définitive.
+            <p className="text-muted-foreground mt-2 text-sm">
+              Cette action supprimera le profil et tous ses paramètres associés (abonnements aux
+              podcasts, playlists, etc.). Cette opération est définitive.
             </p>
             <div className="mt-5 flex flex-wrap justify-end gap-2">
-              <Button variant="secondary" onClick={() => { if (!submitting) { setConfirmOpen(false); setPendingDeleteId(null); } }} disabled={submitting}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (!submitting) {
+                    setConfirmOpen(false);
+                    setPendingDeleteId(null);
+                  }
+                }}
+                disabled={submitting}
+              >
                 Annuler la suppression
               </Button>
               <Button onClick={confirmDelete} disabled={submitting}>
