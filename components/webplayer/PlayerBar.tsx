@@ -80,7 +80,7 @@ export function PlayerBar() {
                 type="button"
                 title="Reculer de 10s"
                 aria-label="Reculer de 10 secondes"
-                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300"
                 onClick={() => seekBy(-10)}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
@@ -95,7 +95,7 @@ export function PlayerBar() {
               type="button"
               title={playing ? "Pause" : "Lecture"}
               aria-label={playing ? "Pause" : "Lecture"}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400 text-background hover:bg-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400 text-background hover:bg-yellow-300"
               onClick={toggle}
             >
               {playing ? (
@@ -114,7 +114,7 @@ export function PlayerBar() {
                 type="button"
                 title="Avancer de 10s"
                 aria-label="Avancer de 10 secondes"
-                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300"
                 onClick={() => seekBy(10)}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">

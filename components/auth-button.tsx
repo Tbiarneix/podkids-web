@@ -12,7 +12,7 @@ export async function AuthButton() {
   const user = data?.claims;
 
   return user ? (
-    <div className="flex items-center gap-4 max-[768px]:gap-2">
+    <nav aria-label="Authentification" className="flex items-center gap-4 max-[768px]:gap-2">
       <Button
         size="lg"
         asChild
@@ -25,9 +25,9 @@ export async function AuthButton() {
         </Link>
       </Button>
       <LogoutButton />
-    </div>
+    </nav>
   ) : (
-    <div className="flex items-center gap-2 max-[768px]:gap-2">
+    <nav aria-label="Authentification" className="flex items-center gap-2 max-[768px]:gap-2">
       <Button
         asChild
         size="xl"
@@ -50,6 +50,6 @@ export async function AuthButton() {
           <span className="max-[768px]:sr-only">S&apos;inscrire</span>
         </Link>
       </Button>
-    </div>
+    </nav>
   );
 }
