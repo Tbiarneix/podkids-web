@@ -53,13 +53,23 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
         )}
         {...rest}
       >
+        {href ? (
+          <Link
+            href={href}
+            aria-label={`Voir le podcast ${name}`}
+            title={`Voir le podcast ${name}`}
+            className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
+          >
+            <span className="sr-only">Voir la fiche du podcast {name}</span>
+          </Link>
+        ) : null}
         <button
           type="button"
           aria-label={subscribed ? "Se désabonner" : "S'abonner"}
           title={subscribed ? "Se désabonner" : "S'abonner"}
           aria-pressed={subscribed}
           className={cn(
-            "absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full",
+            "absolute right-3 top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full",
             "text-yellow-400 hover:text-yellow-300",
           )}
           onClick={(e) => {
@@ -117,7 +127,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
                 <button
                   key={cat}
                   type="button"
-                  className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400 hover:bg-yellow-400/10"
+                  className="relative z-20 rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400 hover:bg-yellow-400/10"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -134,14 +144,6 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
         </div>
       </div>
     );
-
-    if (href) {
-      return (
-        <Link href={href} className="block h-full">
-          {content}
-        </Link>
-      );
-    }
 
     return content;
   },
