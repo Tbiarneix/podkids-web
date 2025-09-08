@@ -110,16 +110,16 @@ export function HeaderNav() {
         className={
           `z-[100] ` +
           `max-[1280px]:fixed max-[1280px]:inset-0 max-[1280px]:left-auto max-[1280px]:h-screen max-[1280px]:w-full max-[1280px]:transform max-[1280px]:bg-background max-[1280px]:p-8 max-[1280px]:pt-24 max-[1280px]:shadow-[-5px_0_15px_rgba(0,0,0,0.1)] max-[1280px]:transition-transform max-[1280px]:duration-300` +
-          (menuOpen ? "max-[1280px]:translate-x-0" : "max-[1280px]:translate-x-full")
+          (menuOpen ? " max-[1280px]:translate-x-0" : " max-[1280px]:translate-x-full")
         }
         aria-label="Navigation principale"
         role="navigation"
         id="main-menu"
       >
-        <ul className="flex list-none gap-8 max-[1280px]:flex-col max-[1280px]:items-start max-[1280px]:gap-8">
+        <ul className="flex list-none gap-8 max-[1280px]:flex-col max-[1280px]:items-center max-[1280px]:gap-8">
           <li>
             <a
-              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:py-2 max-[1280px]:text-2xl"
+              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:w-full max-[1280px]:py-2 max-[1280px]:text-center max-[1280px]:text-2xl"
               href="#features"
               onClick={() => setMenuOpen(false)}
             >
@@ -128,7 +128,7 @@ export function HeaderNav() {
           </li>
           <li>
             <a
-              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:py-2 max-[1280px]:text-2xl"
+              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:w-full max-[1280px]:py-2 max-[1280px]:text-center max-[1280px]:text-2xl"
               href="#screenshots"
               onClick={() => setMenuOpen(false)}
             >
@@ -137,7 +137,7 @@ export function HeaderNav() {
           </li>
           <li>
             <a
-              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:py-2 max-[1280px]:text-2xl"
+              className="font-medium text-foreground transition-colors duration-300 hover:text-primary max-[1280px]:block max-[1280px]:w-full max-[1280px]:py-2 max-[1280px]:text-center max-[1280px]:text-2xl"
               href="#download"
               onClick={() => setMenuOpen(false)}
             >
