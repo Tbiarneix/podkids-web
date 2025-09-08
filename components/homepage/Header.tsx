@@ -14,12 +14,12 @@ export function Header() {
         <p className="text-[1.8rem] font-bold text-primary">Podkids</p>
       </div>
       <div className="hidden items-center gap-5 xl:flex">
-        <HeaderNav />
+        <HeaderNav menuId="main-menu-desktop" />
         <AuthButton />
       </div>
       <div className="flex items-center gap-5 xl:hidden">
         <AuthButton />
-        <HeaderNav />
+        <HeaderNav menuId="main-menu-mobile" />
       </div>
     </header>
   );
