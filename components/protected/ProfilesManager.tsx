@@ -176,6 +176,7 @@ export default function ProfilesManager() {
                     variant="outline"
                     onClick={() => openEdit(p)}
                     disabled={submitting}
+                    aria-label={`Modifier le profil ${p.name}`}
                   >
                     Modifier
                   </Button>
@@ -184,6 +185,7 @@ export default function ProfilesManager() {
                     variant="outline"
                     onClick={() => requestDelete(p.id)}
                     disabled={submitting}
+                    aria-label={`Supprimer le profil ${p.name}`}
                   >
                     Supprimer
                   </Button>
