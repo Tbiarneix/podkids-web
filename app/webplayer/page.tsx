@@ -9,6 +9,7 @@ import { Tables } from "@/types/supabase";
 import { CategoryFilter } from "@/components/webplayer/CategoryFilter";
 import { useActiveProfile } from "@/hooks/useActiveProfile";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -180,13 +181,13 @@ export default function WebPlayer() {
 
           <Button
             type="button"
-            variant="default"
-            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight opacity-60 sm:text-3xl"
-            aria-disabled="true"
-            onClick={() => toast.message("Fonctionnalité bientôt disponible")}
+            variant="outline"
+            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl bg-primary/10 hover:bg-primary/10 text-primary border-0 disabled:opacity-100 flex-col gap-3"
+            disabled
             title="Fonctionnalité bientôt disponible"
           >
-            Mes playlists
+            <span>Mes playlists</span>
+            <Badge className="border border-primary bg-transparent text-primary">Bientôt disponible</Badge>
           </Button>
         </div>
         <div className="mb-4 flex items-center justify-between gap-3">
