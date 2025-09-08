@@ -181,8 +181,8 @@ export default function WebPlayer() {
 
           <Button
             type="button"
-            variant="outline"
-            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl bg-primary/10 hover:bg-primary/10 text-primary border-0 disabled:opacity-100 flex-col gap-3"
+            variant="disabled"
+            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl flex-col gap-3"
             disabled
             title="Fonctionnalité bientôt disponible"
           >
