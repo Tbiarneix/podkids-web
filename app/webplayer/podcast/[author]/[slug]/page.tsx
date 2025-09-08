@@ -238,7 +238,8 @@ export default function PodcastDetailsPage() {
           <div className="shrink-0">
             <Image
               src={coverSrc}
-              alt={podcast.name}
+              alt=""
+              role="presentation"
               width={128}
               height={128}
               className="h-32 w-32 rounded-xl object-cover sm:h-40 sm:w-40"
@@ -348,7 +349,8 @@ export default function PodcastDetailsPage() {
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src={epCover}
-                      alt={ep.name}
+                      alt=""
+                      role="presentation"
                       width={80}
                       height={80}
                       className="h-full w-full object-cover"
