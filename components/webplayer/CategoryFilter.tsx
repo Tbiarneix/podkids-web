@@ -103,6 +103,7 @@ export function CategoryFilter<T>({
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const triggerBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveRef = useRef<HTMLElement | null>(null);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
     if (open) setDraft(selected);
@@ -119,14 +120,16 @@ export function CategoryFilter<T>({
 
   useEffect(() => {
     if (open) {
+      wasOpenRef.current = true;
       lastActiveRef.current = (document.activeElement as HTMLElement) ?? null;
       const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const target = closeBtnRef.current ?? focusable?.[0] ?? null;
       target?.focus();
-    } else {
+    } else if (wasOpenRef.current) {
       (triggerBtnRef.current ?? lastActiveRef.current)?.focus?.();
+      wasOpenRef.current = false;
     }
   }, [open]);
 

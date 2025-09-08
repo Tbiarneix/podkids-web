@@ -165,7 +165,7 @@ export default function WebPlayer() {
   }, [filtered, onlySubs, subscribedSet]);
 
   return (
-    <div className="w-full">
+    <div className="w-full" id="main-content">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center gap-4">
           <Button
@@ -182,12 +182,14 @@ export default function WebPlayer() {
           <Button
             type="button"
             variant="disabled"
-            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl flex-col gap-3"
+            className="h-36 w-full cursor-not-allowed flex-col gap-3 whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl"
             disabled
             title="Fonctionnalité bientôt disponible"
           >
             <span>Mes playlists</span>
-            <Badge className="border border-primary bg-transparent text-primary">Bientôt disponible</Badge>
+            <Badge className="border border-primary bg-transparent text-primary">
+              Bientôt disponible
+            </Badge>
           </Button>
         </div>
         <div className="mb-4 flex items-center justify-between gap-3">
