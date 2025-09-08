@@ -170,7 +170,7 @@ export default function WebPlayer() {
           <Button
             type="button"
             variant="default"
-            className={`${!onlySubs ? "max-[420px]:break-all" : ""} w-full h-36 rounded-lg py-6 px-4 text-center font-bold whitespace-normal break-words text-2xl sm:text-3xl leading-tight`}
+            className={`${!onlySubs ? "max-[420px]:break-all" : ""} h-36 w-full whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl`}
             onClick={() => setOnlySubs((v) => !v)}
             disabled={!mounted || !active?.id}
             title={onlySubs ? "Voir tous les podcasts" : "Ma bibliothèque"}
@@ -181,7 +181,7 @@ export default function WebPlayer() {
           <Button
             type="button"
             variant="default"
-            className="w-full h-36 rounded-lg py-6 px-4 text-center font-bold opacity-60 cursor-not-allowed whitespace-normal break-words text-2xl sm:text-3xl leading-tight"
+            className="h-36 w-full cursor-not-allowed whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight opacity-60 sm:text-3xl"
             aria-disabled="true"
             onClick={() => toast.message("Fonctionnalité bientôt disponible")}
             title="Fonctionnalité bientôt disponible"

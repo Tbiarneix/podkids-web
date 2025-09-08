@@ -184,80 +184,82 @@ export function CategoryFilter<T>({
 
       {open && <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setOpen(false)} />}
 
-      <div
-        id="filters-drawer"
-        role="dialog"
-        aria-modal={open}
-        className={`fixed inset-y-0 left-0 z-50 w-full max-w-md transform bg-slate-900 shadow-xl transition-transform duration-200 ease-out ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
-        onClick={(e) => e.stopPropagation()}
-        ref={drawerRef}
-        onKeyDown={onKeyDownTrap}
-      >
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-          <h2 className="text-lg font-semibold text-white">Filtres</h2>
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-white/10 hover:text-white"
-            onClick={() => setOpen(false)}
-            aria-label="Fermer le panneau des filtres"
-            ref={closeBtnRef}
-          >
-            ✕
-          </Button>
-        </div>
-
-        <div className="max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-4">
-          <div className="mb-4">
-            <Button
-              variant={isAll ? "default" : "outline"}
-              className={
-                isAll
-                  ? "rounded-full bg-white text-slate-900 hover:bg-white/90"
-                  : "rounded-full border-white text-white hover:bg-white/10 hover:text-white"
-              }
-              aria-pressed={isAll}
-              onClick={toggleAll}
-            >
-              Tous
-            </Button>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            {categoryEntries.map(([key, label]) => {
-              const active = selected.includes(key);
-              return (
-                <label key={key} className="flex items-center gap-3 text-white">
-                  <Checkbox
-                    checked={active}
-                    onCheckedChange={() => toggleCategory(key)}
-                    aria-pressed={active}
-                  />
-                  <span>{label}</span>
-                </label>
-              );
-            })}
-          </div>
-
-          <div className="mt-6 flex items-center gap-3">
-            <Button
-              variant="default"
-              className="rounded-full bg-white text-slate-900 hover:bg-white/90"
-              onClick={() => setOpen(false)}
-            >
-              Appliquer
-            </Button>
+      {open && (
+        <div
+          id="filters-drawer"
+          role="dialog"
+          aria-modal={true}
+          className={`fixed inset-y-0 left-0 z-50 w-full max-w-md transform bg-slate-900 shadow-xl transition-transform duration-200 ease-out ${
+            open ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+          ref={drawerRef}
+          onKeyDown={onKeyDownTrap}
+        >
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <h2 className="text-lg font-semibold text-white">Filtres</h2>
             <Button
               variant="ghost"
               className="text-white hover:bg-white/10 hover:text-white"
-              onClick={toggleAll}
+              onClick={() => setOpen(false)}
+              aria-label="Fermer le panneau des filtres"
+              ref={closeBtnRef}
             >
-              Réinitialiser
+              ✕
             </Button>
           </div>
+
+          <div className="max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-4">
+            <div className="mb-4">
+              <Button
+                variant={isAll ? "default" : "outline"}
+                className={
+                  isAll
+                    ? "rounded-full bg-white text-slate-900 hover:bg-white/90"
+                    : "rounded-full border-white text-white hover:bg-white/10 hover:text-white"
+                }
+                aria-pressed={isAll}
+                onClick={toggleAll}
+              >
+                Tous
+              </Button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {categoryEntries.map(([key, label]) => {
+                const active = selected.includes(key);
+                return (
+                  <label key={key} className="flex items-center gap-3 text-white">
+                    <Checkbox
+                      checked={active}
+                      onCheckedChange={() => toggleCategory(key)}
+                      aria-pressed={active}
+                    />
+                    <span>{label}</span>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 flex items-center gap-3">
+              <Button
+                variant="default"
+                className="rounded-full bg-white text-slate-900 hover:bg-white/90"
+                onClick={() => setOpen(false)}
+              >
+                Appliquer
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white"
+                onClick={toggleAll}
+              >
+                Réinitialiser
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
