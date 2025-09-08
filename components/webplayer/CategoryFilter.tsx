@@ -184,6 +184,7 @@ export function CategoryFilter<T>({
         {!isAll && (
           <Button
             variant="ghost"
+            aria-label="Réinitialiser les filtres"
             className={resetButtonClassName ?? "text-white hover:bg-white/10 hover:text-white"}
             onClick={clearApplied}
           >

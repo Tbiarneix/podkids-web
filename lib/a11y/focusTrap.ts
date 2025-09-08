@@ -6,13 +6,12 @@ export type FocusTrapOptions = {
   restoreFocus?: boolean;
 };
 
-// Selector for focusable elements
 const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
   '[tabindex]:not([tabindex="-1"])',
   '[contenteditable="true"]',
 ].join(",");
@@ -28,16 +27,13 @@ export function useFocusTrap(
     const container = containerRef.current;
     if (!active || !container) return;
 
-    const prevFocused = (typeof document !== "undefined"
-      ? (document.activeElement as HTMLElement | null)
-      : null);
+    const prevFocused =
+      typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null;
 
-    // Move focus inside the container
-    const focusables = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      (el) => el.offsetParent !== null || el === container,
-    );
+    const focusables = Array.from(
+      container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+    ).filter((el) => el.offsetParent !== null || el === container);
     const target = initialFocusRef?.current ?? focusables[0] ?? container;
-    // Avoid outline on programmatic focus
     target?.setAttribute("data-skip-outline", "1");
     target?.focus();
     window.setTimeout(() => target?.removeAttribute("data-skip-outline"), 0);
