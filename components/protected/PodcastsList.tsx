@@ -92,17 +92,16 @@ export default function PodcastsList({
           extractCategories={extractCats}
           onFiltered={handleFiltered}
           variant="inline"
-          buttonClassName="rounded-full border-primary text-primary hover:bg-primary/10"
-          resetButtonClassName="text-muted-foreground hover:bg-accent hover:text-foreground"
         />
         <div className="flex items-center gap-2">
           <Switch
             id="only-private"
+            aria-labelledby="only-private-label"
             checked={onlyPrivate}
             onCheckedChange={(v) => setOnlyPrivate(!!v)}
           />
           <label
-            htmlFor="only-private"
+            id="only-private-label"
             className="text-muted-foreground cursor-pointer break-words text-sm"
             onClick={() => setOnlyPrivate((prev) => !prev)}
           >
@@ -132,7 +131,7 @@ export default function PodcastsList({
             >
               {isPrivate ? (
                 <Button
-                  aria-label="Supprimer le podcast"
+                  aria-label="Supprimer ce podcast"
                   title="Supprimer le podcast"
                   variant="default"
                   className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-2 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:p-0"

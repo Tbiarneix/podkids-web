@@ -114,6 +114,11 @@ input:focus {
   outline-offset: 0;
 }
 
+/* Suppress outline for programmatic focus when explicitly requested */
+[data-skip-outline="1"]:focus {
+  outline: none !important;
+}
+
 /* Themed custom scrollbars (applied via .custom-scrollbar) */
 /* Firefox */
 .custom-scrollbar {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AgeRange } from "@/types/podcast";
 import { ageRangeToLabel } from "@/utils/ageRange";
 import type { ProfileFormData } from "@/types/profile";
+import { useFocusTrap } from "@/lib/a11y/focusTrap";
 
 const ORDERED_AGE_RANGES: AgeRange[] = [
   AgeRange.UNDER_3,
@@ -28,10 +29,30 @@ export default function ProfilesManager() {
   const [submitting, setSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  // Focus trap refs
+  const createModalRef = useRef<HTMLDivElement | null>(null);
+  const inputNameRef = useRef<HTMLInputElement | null>(null);
+  const confirmModalRef = useRef<HTMLDivElement | null>(null);
+  const confirmCancelRef = useRef<HTMLButtonElement | null>(null);
   const canSubmit = useMemo(
     () => name.trim().length > 0 && avatar !== null && ageRanges.length > 0,
     [name, avatar, ageRanges],
   );
+
+  // Focus traps (hooks must be called unconditionally)
+  useFocusTrap(createModalRef, open, {
+    initialFocusRef: inputNameRef,
+    onEscape: () => setOpen(false),
+  });
+  useFocusTrap(confirmModalRef, confirmOpen, {
+    initialFocusRef: confirmCancelRef,
+    onEscape: () => {
+      if (!submitting) {
+        setConfirmOpen(false);
+        setPendingDeleteId(null);
+      }
+    },
+  });
 
   function sanitizeName(value: string) {
     return value.replace(/[^A-Za-z0-9_-]/g, "");
@@ -176,6 +197,7 @@ export default function ProfilesManager() {
                     variant="outline"
                     onClick={() => openEdit(p)}
                     disabled={submitting}
+                    aria-label={`Modifier le profil ${p.name}`}
                   >
                     Modifier
                   </Button>
@@ -184,6 +206,7 @@ export default function ProfilesManager() {
                     variant="outline"
                     onClick={() => requestDelete(p.id)}
                     disabled={submitting}
+                    aria-label={`Supprimer le profil ${p.name}`}
                   >
                     Supprimer
                   </Button>
@@ -201,10 +224,18 @@ export default function ProfilesManager() {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-
-          <div className="h-max-[95vh] relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-background p-6 shadow-xl">
+          <div
+            className="h-max-[95vh] relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-background p-6 shadow-xl"
+            ref={createModalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profile-modal-title"
+          >
             <div className="mb-4 flex shrink-0 items-start justify-between">
-              <h2 className="text-2xl font-bold">Ajouter un profil</h2>
+              <h2 id="profile-modal-title" className="text-2xl font-bold">
+                {editingId ? "Modifier un profil" : "Ajouter un profil"}
+              </h2>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Fermer"
@@ -221,6 +252,7 @@ export default function ProfilesManager() {
                   onChange={(e) => setName(sanitizeName(e.target.value))}
                   placeholder="Nom de l'enfant"
                   autoFocus
+                  ref={inputNameRef}
                   inputMode="text"
                   pattern="[A-Za-z0-9_-]*"
                   title="Seules les lettres, chiffres, _ et - sont autorisés"
@@ -322,8 +354,13 @@ export default function ProfilesManager() {
             role="dialog"
             aria-modal="true"
             className="relative z-10 w-[92vw] max-w-lg rounded-xl border bg-card p-6 shadow-xl"
+            ref={confirmModalRef}
+            tabIndex={-1}
+            aria-labelledby="confirm-delete-title"
           >
-            <h2 className="text-base font-semibold">Confirmer la suppression</h2>
+            <h2 id="confirm-delete-title" className="text-base font-semibold">
+              Confirmer la suppression
+            </h2>
             <p className="text-muted-foreground mt-2 text-sm">
               Cette action supprimera le profil et tous ses paramètres associés (abonnements aux
               podcasts, playlists, etc.). Cette opération est définitive.
@@ -331,6 +368,7 @@ export default function ProfilesManager() {
             <div className="mt-5 flex flex-wrap justify-end gap-2">
               <Button
                 variant="secondary"
+                ref={confirmCancelRef}
                 onClick={() => {
                   if (!submitting) {
                     setConfirmOpen(false);

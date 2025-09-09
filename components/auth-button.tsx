@@ -12,12 +12,16 @@ export async function AuthButton() {
   const user = data?.claims;
 
   return user ? (
-    <div className="flex items-center gap-4 max-[768px]:gap-2">
+    <nav
+      aria-label="Authentification"
+      className="flex items-center gap-4 max-[768px]:gap-2"
+      id="action-bar"
+    >
       <Button
         size="lg"
         asChild
         variant="outline"
-        className="inline-flex items-center gap-2 rounded-full max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
+        className="inline-flex items-center gap-2 rounded-full bg-transparent max-[768px]:h-10 max-[768px]:w-10 max-[768px]:justify-center max-[768px]:border-0 max-[768px]:bg-primary max-[768px]:p-0 max-[768px]:text-primary-foreground max-[768px]:shadow max-[768px]:hover:bg-primary/90"
       >
         <Link href="/api/pin/clear" className="inline-flex w-full items-center gap-2 lg:w-auto">
           <Play className="size-5 max-[768px]:size-5" aria-hidden />
@@ -25,9 +29,13 @@ export async function AuthButton() {
         </Link>
       </Button>
       <LogoutButton />
-    </div>
+    </nav>
   ) : (
-    <div className="flex items-center gap-2 max-[768px]:gap-2">
+    <nav
+      aria-label="Authentification"
+      className="flex items-center gap-2 max-[768px]:gap-2"
+      id="action-bar"
+    >
       <Button
         asChild
         size="xl"
@@ -50,6 +58,6 @@ export async function AuthButton() {
           <span className="max-[768px]:sr-only">S&apos;inscrire</span>
         </Link>
       </Button>
-    </div>
+    </nav>
   );
 }

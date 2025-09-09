@@ -13,7 +13,7 @@ export function Hero() {
           L&apos;application de podcast sécurisée pour les enfants
         </h2>
         <p className="mx-0 mb-8 text-center text-xl leading-relaxed text-foreground lg:text-left">
-          Une application simple, accessible et sans pub !
+          Une application simple, accessible et sans pub&nbsp;!
         </p>
         <div className="mt-8">
           <a

@@ -9,7 +9,7 @@
 
   // On conserve les fixes ESLint à l'enregistrement
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
 
   // Utiliser la version locale de Prettier du projet
