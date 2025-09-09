@@ -10,8 +10,8 @@ export function Header() {
       role="banner"
     >
       <div className="flex items-center gap-3">
-        <Image src="/images/Logo.webp" alt="LogoPodkids" width={48} height={48} />
-        <p className="text-[1.8rem] font-bold text-primary">Podkids</p>
+        <Image src="/images/Logo.webp" alt="Logo Podkids" width={48} height={48} />
+        <p className="hidden text-[1.8rem] font-bold text-primary sm:block">Podkids</p>
       </div>
       <div className="hidden items-center gap-5 xl:flex">
         <HeaderNav menuId="main-menu-desktop" />
