@@ -12,6 +12,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider";
 import { PodcastSheetHeader } from "@/components/webplayer/PodcastSheetHeader";
 import { EpisodesList } from "@/components/webplayer/EpisodesList";
+import { useEpisodeStatus } from "@/hooks/useEpisodeStatus";
 
 type PodcastRow = any;
 
@@ -60,7 +61,10 @@ export default function PodcastDetailsPage() {
     return copy;
   }, [episodes, sortAsc]);
 
-  const [episodeStatuses, setEpisodeStatuses] = useState<Record<number, { status: "unlistened" | "listening" | "listened"; progress?: number | null }>>({});
+  const { statuses: episodeStatuses, toggleStatus: toggleEpisodeStatus } = useEpisodeStatus(
+    podcast?.id ?? null,
+    episodes,
+  );
 
   // Persist sort preference per podcast for the current session only
   useEffect(() => {
@@ -149,7 +153,8 @@ export default function PodcastDetailsPage() {
     return () => {
       active = false;
     };
-  }, [slug, authorSlug, supabase]);
+  }, [slug, authorSlug, idFromQuery, supabase]);
+
 
   useEffect(() => {
     let mounted = true;
@@ -175,51 +180,7 @@ export default function PodcastDetailsPage() {
     };
   }, [podcast?.id, active?.id, supabase]);
 
-  useEffect(() => {
-    let aborted = false;
-    const loadStatuses = async () => {
-      try {
-        if (!podcast?.id) return;
-        const res = await fetch(`/api/episode-status?podcastId=${podcast.id}`, { cache: "no-store" });
-        if (!res.ok) return;
-        const json = await res.json();
-        if (aborted) return;
-        const map: Record<number, { status: "unlistened" | "listening" | "listened"; progress?: number | null }> = {};
-        for (const it of Array.isArray(json.items) ? json.items : []) {
-          const s = String(it.status || "UNLISTENED").toUpperCase();
-          const norm = s === "LISTENED" ? "listened" : s === "LISTENING" ? "listening" : "unlistened";
-          map[Number(it.episode_id)] = { status: norm, progress: typeof it.progress === "number" ? it.progress : Number(it.progress ?? 0) };
-        }
-        setEpisodeStatuses(map);
-      } catch {}
-    };
-    loadStatuses();
-    return () => {
-      aborted = true;
-    };
-  }, [podcast?.id]);
-
-  const toggleEpisodeStatus = async (episodeId: number, next: "unlistened" | "listened") => {
-    try {
-      const prev = episodeStatuses[episodeId];
-      setEpisodeStatuses((m) => ({ ...m, [episodeId]: { ...(prev ?? { progress: 0 }), status: next } }));
-      const res = await fetch("/api/episode-status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ episodeId, status: next }),
-      });
-      if (!res.ok) throw new Error("failed");
-      const json = await res.json();
-      const it = json?.item;
-      if (it) {
-        const s = String(it.status || "UNLISTENED").toUpperCase();
-        const norm = s === "LISTENED" ? "listened" : s === "LISTENING" ? "listening" : "unlistened";
-        setEpisodeStatuses((m) => ({ ...m, [Number(it.episode_id)]: { status: norm, progress: Number(it.progress ?? 0) } }));
-      }
-    } catch {
-      setEpisodeStatuses((m) => ({ ...m, [episodeId]: episodeStatuses[episodeId] }));
-    }
-  };
+  
 
   const direct =
     podcast?.cover_url && String(podcast.cover_url).trim() !== ""
