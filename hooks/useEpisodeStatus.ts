@@ -126,6 +126,23 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
   });
   const cooldownRef = useRef<number>(0);
 
+  // Stable refs to avoid resetting timers on frequent progress changes
+  const currentIdRef = useRef<number | null>(null);
+  const playingRef = useRef<boolean>(false);
+  const progressRef = useRef<number>(0);
+
+  useEffect(() => {
+    currentIdRef.current = current?.id ? Number(current.id) : null;
+  }, [current]);
+
+  useEffect(() => {
+    playingRef.current = !!playing;
+  }, [playing]);
+
+  useEffect(() => {
+    progressRef.current = Number(progress || 0);
+  }, [progress]);
+
   useEffect(() => {
     const id = current?.id ? Number(current.id) : null;
     if (!id) return;
@@ -137,9 +154,9 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const id = current?.id ? Number(current.id) : null;
-      if (!id || !playing) return;
-      const prog = Number(progress || 0);
+      const id = currentIdRef.current;
+      if (!id || !playingRef.current) return;
+      const prog = Number(progressRef.current || 0);
       const last = lastFlushRef.current;
       const now = Date.now();
       const since = (now - last.ts) / 1000;
@@ -179,14 +196,14 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
       }
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [current, playing, progress, findDuration, setOptimistic, upsert]);
+  }, [findDuration, setOptimistic, upsert]);
 
   useEffect(() => {
     const onVisibility = () => {
       if (typeof document === "undefined" || !document.hidden) return;
-      const id = current?.id ? Number(current.id) : null;
+      const id = currentIdRef.current;
       if (!id) return;
-      const prog = Number(progress || 0);
+      const prog = Number(progressRef.current || 0);
       try {
         const payload = JSON.stringify({ episodeId: id, progress: Math.max(0, Math.floor(prog)) });
         if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
@@ -204,7 +221,7 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [current, progress]);
+  }, []);
 
   const value = useMemo(() => ({ statuses, setStatuses, toggleStatus }), [statuses, toggleStatus]);
 

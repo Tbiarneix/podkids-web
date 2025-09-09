@@ -41,7 +41,9 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
 
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const toLabel = (v: "all" | "unlistened" | "listened"): "Tous les épisodes" | "Non écoutés" | "Déjà écoutés" =>
+  const toLabel = (
+    v: "all" | "unlistened" | "listened",
+  ): "Tous les épisodes" | "Non écoutés" | "Déjà écoutés" =>
     v === "unlistened" ? "Non écoutés" : v === "listened" ? "Déjà écoutés" : "Tous les épisodes";
 
   return (
@@ -121,8 +123,8 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
           </div>
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-2xl font-bold sm:text-3xl">{podcast.name}</h1>
-          <p className="text-muted-foreground mt-1 truncate text-sm sm:text-base">
+          <h1 className="text-2xl font-bold sm:text-3xl">{podcast.name}</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             {podcast.author} <span className="mx-1">•</span> {Number(podcast.episodes_count || 0)}{" "}
             épisodes
           </p>
@@ -149,9 +151,9 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
       </div>
 
       <div className="mt-8">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <h2 className="text-xl font-semibold text-white">Épisodes</h2>
-          <div className="flex items-center gap-2">
+          <div className="mt-2 flex flex-col items-stretch gap-2 md:mt-0 md:flex-row md:items-center">
             <div className="relative">
               <Button
                 type="button"
@@ -173,11 +175,13 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
                   aria-label="Filtrer les épisodes"
                   className="absolute left-0 top-full z-10 mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-background/95 p-1 shadow-xl backdrop-blur"
                 >
-                  {([
-                    { key: "all", label: "Tous les épisodes" },
-                    { key: "unlistened", label: "Non écoutés" },
-                    { key: "listened", label: "Déjà écoutés" },
-                  ] as const).map((opt) => (
+                  {(
+                    [
+                      { key: "all", label: "Tous les épisodes" },
+                      { key: "unlistened", label: "Non écoutés" },
+                      { key: "listened", label: "Déjà écoutés" },
+                    ] as const
+                  ).map((opt) => (
                     <button
                       key={opt.key}
                       type="button"
