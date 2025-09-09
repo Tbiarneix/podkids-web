@@ -149,7 +149,7 @@ export function EpisodesList({
                     variant="outline"
                     className="inline-flex h-8 items-center border-white/20 bg-white/10 px-3 text-xs text-white"
                   >
-                    {remaining} restant
+                    {remaining} {st === "listening" ? "restant" : null}
                   </Badge>
                 ) : null}
                 <Button
