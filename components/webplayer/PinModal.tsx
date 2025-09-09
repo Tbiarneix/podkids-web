@@ -233,7 +233,7 @@ export function PinModal({
               onKeyDown={(e) => handleKeyDown(e, i)}
               onPaste={handlePaste}
               disabled={!!blockedUntil}
-              className="h-14 w-12 rounded-md border border-border bg-background text-center text-xl font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60 md:h-16 md:w-14 md:text-2xl"
+              className="h-14 w-12 rounded-md border border-border bg-background text-center text-xl font-semibold text-foreground disabled:opacity-60 md:h-16 md:w-14 md:text-2xl"
             />
           ))}
         </div>

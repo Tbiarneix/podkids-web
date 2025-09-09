@@ -30,7 +30,7 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           }
         }}
         className={cn(
-          "focus-visible:ring-ring inline-flex h-7 w-12 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "inline-flex h-7 w-12 items-center rounded-full transition-colors",
           checked ? "bg-primary" : "bg-input",
           className,
         )}

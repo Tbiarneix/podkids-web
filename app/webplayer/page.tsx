@@ -9,6 +9,7 @@ import { Tables } from "@/types/supabase";
 import { CategoryFilter } from "@/components/webplayer/CategoryFilter";
 import { useActiveProfile } from "@/hooks/useActiveProfile";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -170,7 +171,7 @@ export default function WebPlayer() {
           <Button
             type="button"
             variant="default"
-            className={`${!onlySubs ? "max-[420px]:break-all" : ""} w-full h-36 rounded-lg py-6 px-4 text-center font-bold whitespace-normal break-words text-2xl sm:text-3xl leading-tight`}
+            className={`${!onlySubs ? "max-[420px]:break-all" : ""} h-36 w-full whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl`}
             onClick={() => setOnlySubs((v) => !v)}
             disabled={!mounted || !active?.id}
             title={onlySubs ? "Voir tous les podcasts" : "Ma bibliothèque"}
@@ -180,13 +181,15 @@ export default function WebPlayer() {
 
           <Button
             type="button"
-            variant="default"
-            className="w-full h-36 rounded-lg py-6 px-4 text-center font-bold opacity-60 cursor-not-allowed whitespace-normal break-words text-2xl sm:text-3xl leading-tight"
-            aria-disabled="true"
-            onClick={() => toast.message("Fonctionnalité bientôt disponible")}
+            variant="disabled"
+            className="h-36 w-full cursor-not-allowed flex-col gap-3 whitespace-normal break-words rounded-lg px-4 py-6 text-center text-2xl font-bold leading-tight sm:text-3xl"
+            disabled
             title="Fonctionnalité bientôt disponible"
           >
-            Mes playlists
+            <span>Mes playlists</span>
+            <Badge className="border border-primary bg-transparent text-primary">
+              Bientôt disponible
+            </Badge>
           </Button>
         </div>
         <div className="mb-4 flex items-center justify-between gap-3">

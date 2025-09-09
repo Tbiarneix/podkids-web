@@ -238,7 +238,8 @@ export default function PodcastDetailsPage() {
           <div className="shrink-0">
             <Image
               src={coverSrc}
-              alt={podcast.name}
+              alt=""
+              role="presentation"
               width={128}
               height={128}
               className="h-32 w-32 rounded-xl object-cover sm:h-40 sm:w-40"
@@ -348,7 +349,8 @@ export default function PodcastDetailsPage() {
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src={epCover}
-                      alt={ep.name}
+                      alt=""
+                      role="presentation"
                       width={80}
                       height={80}
                       className="h-full w-full object-cover"
@@ -372,7 +374,7 @@ export default function PodcastDetailsPage() {
                         });
                       }}
                     >
-                      <span className="inline-flex items-center justify-center rounded-full bg-black/60 text-yellow-400 h-10 w-10 md:h-10 md:w-10 md:group-hover:h-14 md:group-hover:w-14 transition-all duration-200">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-yellow-400 transition-all duration-200 md:h-10 md:w-10 md:group-hover:h-14 md:group-hover:w-14">
                         <svg
                           aria-hidden="true"
                           viewBox="0 0 24 24"

@@ -167,39 +167,45 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
         <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">{title}</h2>
 
         {mode === "update" && (
-          <div className="space-y-3">
-            <p className="text-sm text-foreground">Code PIN actuel</p>
+          <fieldset className="space-y-3">
+            <legend className="text-sm text-foreground">Code PIN actuel</legend>
             <PinInputs
               refArray={inputsCurrent}
               values={current}
+              which="current"
+              groupLabel="Code PIN actuel"
               onChange={(i, v) => handleChange(i, v, "current")}
               onKeyDown={(e, i) => handleKeyDown(e, i, "current")}
               onPaste={(e) => handlePaste(e, "current")}
             />
-          </div>
+          </fieldset>
         )}
 
-        <div className="space-y-3">
-          <p className="text-sm text-foreground">Nouveau code PIN</p>
+        <fieldset className="space-y-3">
+          <legend className="text-sm text-foreground">Nouveau code PIN</legend>
           <PinInputs
             refArray={inputsPin}
             values={pin}
+            which="pin"
+            groupLabel="Nouveau code PIN"
             onChange={(i, v) => handleChange(i, v, "pin")}
             onKeyDown={(e, i) => handleKeyDown(e, i, "pin")}
             onPaste={(e) => handlePaste(e, "pin")}
           />
-        </div>
+        </fieldset>
 
-        <div className="space-y-3">
-          <p className="text-sm text-foreground">Confirmez votre code PIN</p>
+        <fieldset className="space-y-3">
+          <legend className="text-sm text-foreground">Confirmez votre code PIN</legend>
           <PinInputs
             refArray={inputsConfirm}
             values={confirm}
+            which="confirm"
+            groupLabel="Confirmation du code PIN"
             onChange={(i, v) => handleChange(i, v, "confirm")}
             onKeyDown={(e, i) => handleKeyDown(e, i, "confirm")}
             onPaste={(e) => handlePaste(e, "confirm")}
           />
-        </div>
+        </fieldset>
 
         {error && <p className="text-center text-sm text-red-500">{error}</p>}
 
@@ -214,31 +220,41 @@ export default function PinForm({ mode = "create", onSubmit }: PinFormProps) {
 function PinInputs(props: {
   values: string[];
   refArray: React.MutableRefObject<Array<HTMLInputElement | null>>;
+  which: "current" | "pin" | "confirm";
+  groupLabel: string;
   onChange: (index: number, value: string) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
   onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 }) {
-  const { values, refArray, onChange, onKeyDown, onPaste } = props;
+  const { values, refArray, which, groupLabel, onChange, onKeyDown, onPaste } = props;
   return (
     <div className="flex items-center justify-center gap-3">
-      {values.map((val, i) => (
-        <input
-          key={i}
-          ref={(el) => {
-            refArray.current[i] = el;
-          }}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          aria-label={`Chiffre ${i + 1}`}
-          pattern="[0-9]*"
-          maxLength={1}
-          value={val}
-          onChange={(e) => onChange(i, e.target.value)}
-          onKeyDown={(e) => onKeyDown(e, i)}
-          onPaste={onPaste}
-          className="h-14 w-12 rounded-md bg-input text-center text-xl font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:h-16 md:w-14 md:text-2xl"
-        />
-      ))}
+      {values.map((val, i) => {
+        const inputId = `pin-${which}-input-${i}`;
+        return (
+          <div key={i} className="flex flex-col items-center">
+            <label
+              htmlFor={inputId}
+              className="sr-only"
+            >{`${groupLabel} · Chiffre ${i + 1}`}</label>
+            <input
+              ref={(el) => {
+                refArray.current[i] = el;
+              }}
+              id={inputId}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]*"
+              maxLength={1}
+              value={val}
+              onChange={(e) => onChange(i, e.target.value)}
+              onKeyDown={(e) => onKeyDown(e, i)}
+              onPaste={onPaste}
+              className="h-14 w-12 rounded-md bg-input text-center text-xl font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:h-16 md:w-14 md:text-2xl"
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

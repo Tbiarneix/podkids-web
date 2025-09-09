@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { AgeRange, Category } from "@/types/podcast";
 import { ageRangeToLabel } from "@/utils/ageRange";
 import { Plus } from "lucide-react";
+import { useFocusTrap } from "@/lib/a11y/focusTrap";
 
 const ORDERED_AGE_RANGES: AgeRange[] = [
   AgeRange.UNDER_3,
@@ -45,10 +46,20 @@ export default function PodcastsManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  // Focus trap refs
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const rssInputRef = useRef<HTMLInputElement | null>(null);
+
   const canSubmit = useMemo(() => {
     const hasUrl = rssUrl.trim().length > 0;
     return hasUrl && ageRanges.length > 0 && categories.length > 0;
   }, [rssUrl, ageRanges, categories]);
+
+  // Install focus trap (hooks must stay at top-level)
+  useFocusTrap(modalRef, open, {
+    initialFocusRef: rssInputRef,
+    onEscape: () => setOpen(false),
+  });
 
   function resetForm() {
     setRssUrl("");
@@ -110,9 +121,16 @@ export default function PodcastsManager() {
             aria-hidden
           />
 
-          <div className="relative z-10 h-[95vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-background p-6 shadow-xl">
+          <div
+            className="relative z-10 h-[95vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-background p-6 shadow-xl"
+            ref={modalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-podcast-title"
+          >
             <div className="mb-4 flex shrink-0 items-start justify-between">
-              <h2 className="text-2xl font-bold">Ajouter un podcast</h2>
+              <h2 id="add-podcast-title" className="text-2xl font-bold">Ajouter un podcast</h2>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Fermer"
@@ -128,12 +146,16 @@ export default function PodcastsManager() {
               </p>
 
               <div className="mb-4 space-y-2">
-                <label className="text-sm">Url du podcast</label>
+                <label htmlFor="rssUrl" className="text-sm">
+                  Url du podcast
+                </label>
                 <Input
+                  id="rssUrl"
                   value={rssUrl}
                   onChange={(e) => setRssUrl(e.target.value)}
                   placeholder="https://exemple.com/flux.rss"
                   autoFocus
+                  ref={rssInputRef}
                   inputMode="url"
                 />
               </div>
