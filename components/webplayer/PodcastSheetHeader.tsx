@@ -21,6 +21,8 @@ type PodcastSheetHeaderProps = {
   onToggleSubscribe: () => void;
   sortAsc: boolean;
   onToggleSort: () => void;
+  statusFilter?: "all" | "unlistened" | "listened";
+  onChangeStatusFilter?: (value: "all" | "unlistened" | "listened") => void;
 };
 
 export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
@@ -33,12 +35,14 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
     onToggleSubscribe,
     sortAsc,
     onToggleSort,
+    statusFilter = "all",
+    onChangeStatusFilter,
   } = props;
 
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filterLabel, setFilterLabel] = useState<
-    "Tous les épisodes" | "Non écoutés" | "Déjà écoutés"
-  >("Tous les épisodes");
+
+  const toLabel = (v: "all" | "unlistened" | "listened"): "Tous les épisodes" | "Non écoutés" | "Déjà écoutés" =>
+    v === "unlistened" ? "Non écoutés" : v === "listened" ? "Déjà écoutés" : "Tous les épisodes";
 
   return (
     <>
@@ -157,7 +161,7 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
                 aria-expanded={filterOpen}
                 onClick={() => setFilterOpen((v) => !v)}
               >
-                {filterLabel}
+                {toLabel(statusFilter)}
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
                   <path d="M6 10l6 8 6-8z" />
                 </svg>
@@ -169,25 +173,29 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
                   aria-label="Filtrer les épisodes"
                   className="absolute left-0 top-full z-10 mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-background/95 p-1 shadow-xl backdrop-blur"
                 >
-                  {(["Tous les épisodes", "Non écoutés", "Déjà écoutés"] as const).map((opt) => (
+                  {([
+                    { key: "all", label: "Tous les épisodes" },
+                    { key: "unlistened", label: "Non écoutés" },
+                    { key: "listened", label: "Déjà écoutés" },
+                  ] as const).map((opt) => (
                     <button
-                      key={opt}
+                      key={opt.key}
                       type="button"
                       role="option"
-                      aria-selected={filterLabel === opt}
+                      aria-selected={statusFilter === opt.key}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
-                        filterLabel === opt
+                        statusFilter === opt.key
                           ? "bg-white/10 text-white"
                           : "text-white/90 hover:bg-white/10",
                       )}
                       onClick={() => {
-                        setFilterLabel(opt);
+                        onChangeStatusFilter?.(opt.key);
                         setFilterOpen(false);
                       }}
                     >
-                      <span>{opt}</span>
-                      {filterLabel === opt ? (
+                      <span>{opt.label}</span>
+                      {statusFilter === opt.key ? (
                         <svg
                           aria-hidden="true"
                           viewBox="0 0 24 24"

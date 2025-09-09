@@ -13,6 +13,7 @@ import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider";
 import { PodcastSheetHeader } from "@/components/webplayer/PodcastSheetHeader";
 import { EpisodesList } from "@/components/webplayer/EpisodesList";
 import { useEpisodeStatus } from "@/hooks/useEpisodeStatus";
+import { sessionSortKey } from "@/lib/webplayer/episodeStatus";
 
 type PodcastRow = any;
 
@@ -50,6 +51,7 @@ export default function PodcastDetailsPage() {
   const { toggle, loading: subLoading } = useSubscription(podcast?.id);
 
   const [sortAsc, setSortAsc] = useState(false); // false = recent → old (default)
+  const [statusFilter, setStatusFilter] = useState<"all" | "unlistened" | "listened">("all");
   const sortedEpisodes = useMemo(() => {
     const copy = [...episodes];
     copy.sort((a, b) => {
@@ -66,25 +68,49 @@ export default function PodcastDetailsPage() {
     episodes,
   );
 
-  // Persist sort preference per podcast for the current session only
+  const filteredEpisodes = useMemo(() => {
+    if (statusFilter === "all") return sortedEpisodes;
+    return sortedEpisodes.filter((ep) => {
+      const st = episodeStatuses[ep.id]?.status ?? "unlistened";
+      return statusFilter === "unlistened" ? st !== "listened" : st === "listened";
+    });
+  }, [sortedEpisodes, statusFilter, episodeStatuses]);
+
   useEffect(() => {
     try {
       if (!podcast?.id) return;
-      const key = `webplayer:podcast:${podcast.id}:sortAsc`;
-      const raw = typeof window !== "undefined" ? sessionStorage.getItem(key) : null;
+      const sortKey = sessionSortKey(podcast.id);
+      const raw = typeof window !== "undefined" ? localStorage.getItem(sortKey) : null;
       if (raw === null) return;
       setSortAsc(raw === "1");
     } catch {}
-    // Run once per podcast id
   }, [podcast?.id]);
 
   useEffect(() => {
     try {
       if (!podcast?.id) return;
-      const key = `webplayer:podcast:${podcast.id}:sortAsc`;
-      if (typeof window !== "undefined") sessionStorage.setItem(key, sortAsc ? "1" : "0");
+      const sortKey = sessionSortKey(podcast.id);
+      if (typeof window !== "undefined") localStorage.setItem(sortKey, sortAsc ? "1" : "0");
     } catch {}
   }, [podcast?.id, sortAsc]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const key = `webplayer:podcast:${podcast.id}:statusFilter`;
+      const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null;
+      if (!raw) return;
+      if (raw === "unlistened" || raw === "listened" || raw === "all") setStatusFilter(raw);
+    } catch {}
+  }, [podcast?.id]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const key = `webplayer:podcast:${podcast.id}:statusFilter`;
+      if (typeof window !== "undefined") localStorage.setItem(key, statusFilter);
+    } catch {}
+  }, [podcast?.id, statusFilter]);
 
   useEffect(() => {
     let active = true;
@@ -155,7 +181,6 @@ export default function PodcastDetailsPage() {
     };
   }, [slug, authorSlug, idFromQuery, supabase]);
 
-
   useEffect(() => {
     let mounted = true;
     const fetchStatus = async () => {
@@ -179,8 +204,6 @@ export default function PodcastDetailsPage() {
       mounted = false;
     };
   }, [podcast?.id, active?.id, supabase]);
-
-  
 
   const direct =
     podcast?.cover_url && String(podcast.cover_url).trim() !== ""
@@ -262,11 +285,13 @@ export default function PodcastDetailsPage() {
           }}
           sortAsc={sortAsc}
           onToggleSort={() => setSortAsc((v) => !v)}
+          statusFilter={statusFilter}
+          onChangeStatusFilter={setStatusFilter}
         />
 
         <div className="mt-8">
           <EpisodesList
-            episodes={sortedEpisodes}
+            episodes={filteredEpisodes}
             coverFallback={coverSrc}
             podcastName={podcast.name}
             statuses={episodeStatuses}

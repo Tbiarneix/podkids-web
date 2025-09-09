@@ -15,7 +15,6 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
     Record<number, { status: AppEpisodeStatus; progress?: number | null }>
   >({});
 
-  // Load from sessionStorage first
   useEffect(() => {
     try {
       if (!podcastId) return;
@@ -26,7 +25,6 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
     } catch {}
   }, [podcastId]);
 
-  // Persist to sessionStorage
   useEffect(() => {
     try {
       if (!podcastId) return;
@@ -34,13 +32,14 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
     } catch {}
   }, [podcastId, statuses]);
 
-  // Fetch from API
   useEffect(() => {
     let aborted = false;
     const load = async () => {
       if (!podcastId) return;
       try {
-        const res = await fetch(`/api/episode-status?podcastId=${podcastId}`, { cache: "no-store" });
+        const res = await fetch(`/api/episode-status?podcastId=${podcastId}`, {
+          cache: "no-store",
+        });
         if (!res.ok) return;
         const json = await res.json();
         if (aborted) return;
@@ -70,41 +69,52 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
   );
 
   const setOptimistic = useCallback(
-    (episodeId: number, updater: (prev: { status: AppEpisodeStatus; progress?: number | null } | undefined) => { status: AppEpisodeStatus; progress?: number | null }) => {
+    (
+      episodeId: number,
+      updater: (prev: { status: AppEpisodeStatus; progress?: number | null } | undefined) => {
+        status: AppEpisodeStatus;
+        progress?: number | null;
+      },
+    ) => {
       setStatuses((m) => ({ ...m, [episodeId]: updater(m[episodeId]) }));
     },
     [],
   );
 
-  const upsert = useCallback(async (episodeId: number, status?: AppEpisodeStatus, progressSec?: number) => {
-    try {
-      const body: any = { episodeId };
-      if (status) body.status = status;
-      if (typeof progressSec === "number") body.progress = Math.max(0, Math.floor(progressSec));
-      await fetch("/api/episode-status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        keepalive: true,
-      });
-    } catch {}
-  }, []);
+  const upsert = useCallback(
+    async (episodeId: number, status?: AppEpisodeStatus, progressSec?: number) => {
+      try {
+        const body: any = { episodeId };
+        if (status) body.status = status;
+        if (typeof progressSec === "number") body.progress = Math.max(0, Math.floor(progressSec));
+        await fetch("/api/episode-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          keepalive: true,
+        });
+      } catch {}
+    },
+    [],
+  );
 
   const toggleStatus = useCallback(
     async (episodeId: number, next: "unlistened" | "listened") => {
       const prev = statuses[episodeId];
-      setOptimistic(episodeId, (p) => ({ ...(p ?? { progress: 0, status: "unlistened" }), status: next }));
+      setOptimistic(episodeId, (p) => ({
+        ...(p ?? { progress: 0, status: "unlistened" }),
+        status: next,
+      }));
       try {
         await upsert(episodeId, next);
       } catch {
-        // rollback
         setStatuses((m) => ({ ...m, [episodeId]: prev }));
       }
     },
     [statuses, upsert, setOptimistic],
   );
 
-  // Hybrid progress flush: thresholds and periodic
+  // Hybrid progress flush
   const FLUSH_INTERVAL_SECONDS = 30;
   const MIN_PROGRESS_DELTA_SECONDS = 15;
   const END_MARGIN_SECONDS = 2;
@@ -116,11 +126,13 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
   });
   const cooldownRef = useRef<number>(0);
 
-  // Mark listening on play (no POST)
   useEffect(() => {
     const id = current?.id ? Number(current.id) : null;
     if (!id) return;
-    setOptimistic(id, (p) => ({ ...(p ?? { progress: 0, status: "unlistened" }), status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening") }));
+    setOptimistic(id, (p) => ({
+      ...(p ?? { progress: 0, status: "unlistened" }),
+      status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening"),
+    }));
   }, [current, setOptimistic]);
 
   useEffect(() => {
@@ -136,7 +148,11 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
 
       if (durationSec > 0 && prog >= Math.max(0, durationSec - END_MARGIN_SECONDS)) {
         lastFlushRef.current = { episodeId: id, ts: now, progress: durationSec };
-        setOptimistic(id, (p) => ({ ...(p ?? { progress: 0, status: "unlistened" }), status: "listened", progress: durationSec }));
+        setOptimistic(id, (p) => ({
+          ...(p ?? { progress: 0, status: "unlistened" }),
+          status: "listened",
+          progress: durationSec,
+        }));
         void upsert(id, "listened", durationSec);
         return;
       }
@@ -144,14 +160,21 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
       if (delta >= MIN_PROGRESS_DELTA_SECONDS && now - cooldownRef.current > 5000) {
         cooldownRef.current = now;
         lastFlushRef.current = { episodeId: id, ts: now, progress: prog };
-        setOptimistic(id, (p) => ({ ...(p ?? { progress: 0, status: "unlistened" }), status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening"), progress: prog }));
+        setOptimistic(id, (p) => ({
+          ...(p ?? { progress: 0, status: "unlistened" }),
+          status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening"),
+          progress: prog,
+        }));
         void upsert(id, undefined, prog);
         return;
       }
 
       if (since >= FLUSH_INTERVAL_SECONDS) {
         lastFlushRef.current = { episodeId: id, ts: now, progress: prog };
-        setOptimistic(id, (p) => ({ ...(p ?? { progress: 0, status: "unlistened" }), progress: prog }));
+        setOptimistic(id, (p) => ({
+          ...(p ?? { progress: 0, status: "unlistened" }),
+          progress: prog,
+        }));
         void upsert(id, undefined, prog);
       }
     }, 1000);
@@ -183,10 +206,7 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, [current, progress]);
 
-  const value = useMemo(
-    () => ({ statuses, setStatuses, toggleStatus }),
-    [statuses, toggleStatus],
-  );
+  const value = useMemo(() => ({ statuses, setStatuses, toggleStatus }), [statuses, toggleStatus]);
 
   return value;
 }
