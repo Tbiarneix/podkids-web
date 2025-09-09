@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
@@ -33,6 +34,11 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
     sortAsc,
     onToggleSort,
   } = props;
+
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterLabel, setFilterLabel] = useState<
+    "Tous les épisodes" | "Non écoutés" | "Déjà écoutés"
+  >("Tous les épisodes");
 
   return (
     <>
@@ -141,29 +147,96 @@ export function PodcastSheetHeader(props: PodcastSheetHeaderProps) {
       <div className="mt-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">Épisodes</h2>
-          <Button
-            type="button"
-            variant="outline"
-            className="border-white text-white hover:bg-transparent"
-            aria-pressed={sortAsc}
-            onClick={onToggleSort}
-          >
-            {sortAsc ? (
-              <>
-                Du plus ancien au plus récent
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
-                  <path d="M12 6l-6 8h12z" />
-                </svg>
-              </>
-            ) : (
-              <>
-                Du plus récent au plus ancien
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-white text-white hover:bg-transparent"
+                aria-haspopup="listbox"
+                aria-expanded={filterOpen}
+                onClick={() => setFilterOpen((v) => !v)}
+              >
+                {filterLabel}
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
                   <path d="M6 10l6 8 6-8z" />
                 </svg>
-              </>
-            )}
-          </Button>
+              </Button>
+
+              {filterOpen ? (
+                <div
+                  role="listbox"
+                  aria-label="Filtrer les épisodes"
+                  className="absolute left-0 top-full z-10 mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-background/95 p-1 shadow-xl backdrop-blur"
+                >
+                  {(["Tous les épisodes", "Non écoutés", "Déjà écoutés"] as const).map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      role="option"
+                      aria-selected={filterLabel === opt}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
+                        filterLabel === opt
+                          ? "bg-white/10 text-white"
+                          : "text-white/90 hover:bg-white/10",
+                      )}
+                      onClick={() => {
+                        setFilterLabel(opt);
+                        setFilterOpen(false);
+                      }}
+                    >
+                      <span>{opt}</span>
+                      {filterLabel === opt ? (
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          className="h-4 w-4"
+                          fill="currentColor"
+                        >
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="border-white text-white hover:bg-transparent"
+              aria-pressed={sortAsc}
+              onClick={onToggleSort}
+            >
+              {sortAsc ? (
+                <>
+                  Du plus ancien au plus récent
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="currentColor"
+                  >
+                    <path d="M12 6l-6 8h12z" />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Du plus récent au plus ancien
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="currentColor"
+                  >
+                    <path d="M6 10l6 8 6-8z" />
+                  </svg>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </>
