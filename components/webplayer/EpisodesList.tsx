@@ -95,7 +95,8 @@ export function EpisodesList({
                 <div className="relative mt-2 h-20 w-20 shrink-0 overflow-hidden rounded-lg">
                   <Image
                     src={epCover}
-                    alt={ep.name}
+                    alt=""
+                    role="presentation"
                     width={80}
                     height={80}
                     className="z-0 h-full w-full object-cover"

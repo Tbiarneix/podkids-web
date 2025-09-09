@@ -109,6 +109,11 @@ input:focus {
   outline-offset: 0.2rem;
 }
 
+.focus-visible-thin:focus-visible {
+  outline: 3px solid hsl(var(--border));
+  outline-offset: 0;
+}
+
 /* Themed custom scrollbars (applied via .custom-scrollbar) */
 /* Firefox */
 .custom-scrollbar {
