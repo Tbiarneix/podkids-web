@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { sanitizeHtml } from "@/utils/sanitize";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export type EpisodeItem = {
   id: number;
@@ -17,6 +19,11 @@ type EpisodesListProps = {
   episodes: EpisodeItem[];
   coverFallback: string;
   podcastName: string;
+  statuses?: Record<
+    number,
+    { status: "unlistened" | "listening" | "listened"; progress?: number | null }
+  >;
+  onToggleStatus?: (episodeId: number, nextStatus: "unlistened" | "listened") => void;
   onPlay: (payload: {
     id: number;
     name: string;
@@ -27,12 +34,47 @@ type EpisodesListProps = {
   }) => void;
 };
 
-export function EpisodesList({ episodes, coverFallback, podcastName, onPlay }: EpisodesListProps) {
+function formatRemaining(durationSec: number | null | undefined, progressSec: number | null | undefined) {
+  const d = Math.max(0, Math.floor(Number(durationSec ?? 0)));
+  const p = Math.max(0, Math.floor(Number(progressSec ?? 0)));
+  const remain = Math.max(0, d - p);
+  const h = Math.floor(remain / 3600);
+  const m = Math.floor((remain % 3600) / 60);
+  const s = remain % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s.toString().padStart(2, "0")}s`;
+  return `${s}s`;
+}
+
+function statusBadge(status?: "unlistened" | "listening" | "listened") {
+  const label =
+    status === "listened" ? "Écouté" : status === "listening" ? "En cours" : "Non écouté";
+  const cls =
+    status === "listened"
+      ? "bg-green-500/20 text-green-300 border-green-500/30"
+      : status === "listening"
+      ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+      : "bg-white/10 text-white border-white/20";
+  return <Badge className={cls}>{label}</Badge>;
+}
+
+export function EpisodesList({
+  episodes,
+  coverFallback,
+  podcastName,
+  statuses,
+  onToggleStatus,
+  onPlay,
+}: EpisodesListProps) {
   return (
     <ul className="flex flex-col gap-4">
       {episodes.map((ep) => {
         const epCover = ep.cover ? `/api/image-proxy?src=${encodeURIComponent(ep.cover)}` : coverFallback;
         const audioSrc = `/api/audio-proxy?src=${encodeURIComponent(ep.url)}`;
+        const st = statuses?.[ep.id]?.status ?? "unlistened";
+        const progress = statuses?.[ep.id]?.progress ?? 0;
+        const remaining = formatRemaining(ep.duration ?? null, progress);
+        const nextToggle = st === "listened" ? "unlistened" : "listened";
         return (
           <li
             key={ep.id}
@@ -82,6 +124,24 @@ export function EpisodesList({ episodes, coverFallback, podcastName, onPlay }: E
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(ep.description)) }}
                 />
               ) : null}
+              <div className="pointer-events-none h-8" />
+            </div>
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              {statusBadge(st)}
+              <Badge className="bg-white/10 text-white border-white/20">{remaining} restants</Badge>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="border-white/40 text-white hover:bg-white/10"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleStatus?.(ep.id, nextToggle);
+                }}
+              >
+                {st === "listened" ? "Marquer comme non écouté" : "Marquer comme écouté"}
+              </Button>
             </div>
           </li>
         );
