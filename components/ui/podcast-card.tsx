@@ -122,7 +122,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
         </div>
         <div className="flex flex-col items-start gap-5">
           {Array.isArray(categories) && categories.length > 0 ? (
-            <div className="flex h-auto flex-wrap items-center gap-2 overflow-hidden">
+            <div className="flex h-auto flex-wrap items-center gap-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
