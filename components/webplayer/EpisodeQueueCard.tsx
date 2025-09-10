@@ -154,7 +154,8 @@ export function EpisodeQueueCard({
           {formatTime(
             Math.max(
               0,
-              Math.floor(Number(item.duration ?? 0)) - Math.max(0, Math.floor(Number(item.startAt ?? 0))),
+              Math.floor(Number(item.duration ?? 0)) -
+                Math.max(0, Math.floor(Number(item.startAt ?? 0))),
             ),
           )}
         </div>

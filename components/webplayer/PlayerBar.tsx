@@ -122,16 +122,37 @@ export function PlayerBar() {
             )}
           >
             <div
-              className="group relative h-2 w-full cursor-pointer bg-foreground/20"
+              className="group relative h-2 w-full cursor-pointer bg-foreground/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/70"
               role="slider"
               aria-valuemin={0}
               aria-valuemax={Math.floor(duration || 0)}
               aria-valuenow={Math.floor(progress || 0)}
+              aria-orientation="horizontal"
+              aria-valuetext={`${formatTime(progress)} sur ${formatTime(duration)}`}
               aria-label="Position de lecture"
+              tabIndex={0}
               onClick={(e) => {
                 const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
                 const ratio = (e.clientX - rect.left) / rect.width;
                 seekTo((duration || 0) * ratio);
+              }}
+              onKeyDown={(e) => {
+                const total = duration || 0;
+                if (!Number.isFinite(total) || total <= 0) return;
+                const step = 5; // seconds per arrow
+                if (e.key === "ArrowLeft") {
+                  e.preventDefault();
+                  seekTo(Math.max(0, (progress || 0) - step));
+                } else if (e.key === "ArrowRight") {
+                  e.preventDefault();
+                  seekTo(Math.min(total, (progress || 0) + step));
+                } else if (e.key === "Home") {
+                  e.preventDefault();
+                  seekTo(0);
+                } else if (e.key === "End") {
+                  e.preventDefault();
+                  seekTo(total);
+                }
               }}
             >
               <div
