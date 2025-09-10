@@ -25,7 +25,7 @@ export async function GET() {
 
     const { data: recents, error: stErr } = await supabase
       .from("episode_status")
-      .select("episode_id, last_update")
+      .select("episode_id, progress, last_update")
       .eq("profile_id", profile.id)
       .eq("status", "LISTENING")
       .order("last_update", { ascending: false })
@@ -57,6 +57,7 @@ export async function GET() {
           podcast_id: Number(ep.podcast?.id ?? 0) || null,
           podcast_name: (ep.podcast?.name as string) ?? null,
           podcast_cover: (ep.podcast?.cover_url as string) ?? null,
+          progress: typeof r.progress === "number" ? r.progress : Number(r.progress ?? 0),
           last_update: r.last_update as string,
         };
       })
