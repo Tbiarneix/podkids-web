@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { usePlaybackQueue } from "@/lib/webplayer/queue";
 
 export type PlayableEpisode = {
   id: number | string;
@@ -22,17 +23,25 @@ export type PlayableEpisode = {
 export type AudioPlayerContextType = {
   current: PlayableEpisode | null;
   playing: boolean;
-  progress: number; // current time in seconds
-  duration: number; // duration in seconds
-  remaining: number; // remaining time in seconds
-  volume: number; // 0..1
+  progress: number;
+  duration: number;
+  remaining: number;
+  volume: number;
+  queue: PlayableEpisode[];
   play: (episode: PlayableEpisode) => void;
+  playNow: (episode: PlayableEpisode, nextQueue?: PlayableEpisode[]) => void;
   toggle: () => void;
   stop: () => void;
   seekBy: (deltaSeconds: number) => void;
   seekTo: (seconds: number) => void;
   setVolume: (v: number) => void;
   toggleMute: () => void;
+  setQueue: (items: PlayableEpisode[]) => void;
+  enqueue: (items: PlayableEpisode[] | PlayableEpisode) => void;
+  enqueueNext: (items: PlayableEpisode[] | PlayableEpisode) => void;
+  removeFromQueue: (id: PlayableEpisode["id"]) => void;
+  clearQueue: () => void;
+  next: () => void;
 };
 
 const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(undefined);
@@ -64,8 +73,29 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1);
   const previousVolumeRef = useRef(1);
+  const STORAGE_KEY = "podkids.playback.v1";
+  const {
+    queue,
+    setQueue,
+    enqueue,
+    enqueueNext,
+    removeFromQueue,
+    clearQueue,
+    next: queueNext,
+    playNow: queuePlayNow,
+  } = usePlaybackQueue();
 
-  // lazily create the audio element once on client
+  const playInternal = useCallback((episode: PlayableEpisode) => {
+    setCurrent(episode);
+    const a = audioRef.current;
+    if (!a) return;
+    try {
+      if (a.src !== episode.url) a.src = episode.url;
+      a.currentTime = 0;
+      a.play().catch(() => {});
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (!audioRef.current) {
       const a = new Audio();
@@ -78,7 +108,13 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     const onDuration = () => setDuration(a.duration || 0);
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
-    const onEnded = () => setPlaying(false);
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+      try {
+        queueNext(playInternal);
+      } catch {}
+    };
 
     a.addEventListener("timeupdate", onTime);
     a.addEventListener("durationchange", onDuration);
@@ -93,9 +129,8 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       a.removeEventListener("pause", onPause);
       a.removeEventListener("ended", onEnded);
     };
-  }, [volume]);
+  }, [volume, queueNext, playInternal]);
 
-  // Apply volume to audio element whenever it changes
   useEffect(() => {
     const a = audioRef.current;
     if (a) {
@@ -105,16 +140,12 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     }
   }, [volume]);
 
-  const play = useCallback((episode: PlayableEpisode) => {
-    setCurrent(episode);
-    const a = audioRef.current;
-    if (!a) return;
-    try {
-      if (a.src !== episode.url) a.src = episode.url;
-      a.currentTime = 0;
-      a.play().catch(() => {});
-    } catch {}
-  }, []);
+  const play = useCallback(
+    (episode: PlayableEpisode) => {
+      playInternal(episode);
+    },
+    [playInternal],
+  );
 
   const toggle = useCallback(() => {
     const a = audioRef.current;
@@ -128,7 +159,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     try {
       if (a) {
         a.pause();
-        // Clear the source to free memory and ensure ended
         a.removeAttribute("src");
         a.load();
       }
@@ -163,7 +193,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   const setVolume = useCallback((v: number) => {
     const clamped = Math.max(0, Math.min(1, v));
     setVolumeState(() => {
-      // remember previous non-zero volume for mute toggle
       if (clamped > 0) previousVolumeRef.current = clamped;
       return clamped;
     });
@@ -179,6 +208,42 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     });
   }, []);
 
+  // Queue wrappers delegating to the shared hook
+  const next = useCallback(() => {
+    queueNext(playInternal);
+  }, [queueNext, playInternal]);
+
+  const playNow = useCallback(
+    (episode: PlayableEpisode, nextQueue?: PlayableEpisode[]) => {
+      queuePlayNow(episode, nextQueue, playInternal);
+    },
+    [queuePlayNow, playInternal],
+  );
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as {
+          current: PlayableEpisode | null;
+          queue: PlayableEpisode[];
+        };
+        if (parsed && Array.isArray(parsed.queue)) setQueue(parsed.queue);
+        if (parsed && parsed.current) {
+          setCurrent(parsed.current);
+        }
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    try {
+      const data = JSON.stringify({ current, queue });
+      localStorage.setItem(STORAGE_KEY, data);
+    } catch {}
+  }, [current, queue]);
+
   const value = useMemo<AudioPlayerContextType>(
     () => ({
       current,
@@ -187,15 +252,44 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       duration,
       remaining: Math.max(0, (duration || 0) - (progress || 0)),
       volume,
+      queue,
       play,
+      playNow,
       toggle,
       stop,
       seekBy,
       seekTo,
       setVolume,
       toggleMute,
+      setQueue,
+      enqueue,
+      enqueueNext,
+      removeFromQueue,
+      clearQueue,
+      next,
     }),
-    [current, playing, progress, duration, volume, play, toggle, stop, seekBy, seekTo, setVolume, toggleMute],
+    [
+      current,
+      playing,
+      progress,
+      duration,
+      volume,
+      queue,
+      play,
+      playNow,
+      toggle,
+      stop,
+      seekBy,
+      seekTo,
+      setVolume,
+      toggleMute,
+      setQueue,
+      enqueue,
+      enqueueNext,
+      removeFromQueue,
+      clearQueue,
+      next,
+    ],
   );
 
   return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;

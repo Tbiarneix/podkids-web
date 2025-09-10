@@ -16,6 +16,7 @@ import {
   Maximize2,
   X,
 } from "lucide-react";
+import { QueueDrawer } from "./QueueDrawer";
 
 export function PlayerBar() {
   const {
@@ -34,6 +35,7 @@ export function PlayerBar() {
   const [minimized, setMinimized] = React.useState(false);
   const volDraggingRef = React.useRef(false);
   const volumeTrackRef = React.useRef<HTMLDivElement | null>(null);
+  const [queueOpen, setQueueOpen] = React.useState(false);
 
   const handleVolumeAtClientX = React.useCallback(
     (clientX: number, trackEl: HTMLDivElement | null) => {
@@ -52,7 +54,6 @@ export function PlayerBar() {
   return (
     <div className={cn("fixed inset-x-0 bottom-3 z-40 px-3 sm:px-4")}>
       <div className={cn("relative", minimized ? "ml-auto w-fit" : "mx-auto max-w-6xl")}>
-        {/* Floating card (normal or minimized) */}
         {minimized ? (
           <div
             className={cn(
@@ -61,7 +62,6 @@ export function PlayerBar() {
             )}
           >
             <div className="flex items-center gap-3 px-2 py-1.5 sm:px-3 sm:py-2">
-              {/* Cover */}
               {current.cover ? (
                 <Image
                   src={current.cover}
@@ -74,7 +74,6 @@ export function PlayerBar() {
               ) : (
                 <div className="bg-muted h-9 w-9 rounded-md" />
               )}
-              {/* Play/Pause */}
               <button
                 type="button"
                 title={playing ? "Pause" : "Lecture"}
@@ -103,7 +102,6 @@ export function PlayerBar() {
                   </svg>
                 )}
               </button>
-              {/* Restore */}
               <button
                 type="button"
                 title="Agrandir le lecteur"
@@ -122,7 +120,6 @@ export function PlayerBar() {
               "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85",
             )}
           >
-            {/* Top progress bar */}
             <div
               className="group relative h-2 w-full cursor-pointer bg-foreground/20"
               role="slider"
@@ -142,9 +139,7 @@ export function PlayerBar() {
               />
             </div>
 
-            {/* Content */}
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2 sm:gap-6 sm:px-4 sm:py-3 max-[520px]:grid-cols-1 max-[520px]:justify-items-center">
-              {/* Left: cover & titles */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2 max-[520px]:grid-cols-1 max-[520px]:justify-items-center sm:gap-6 sm:px-4 sm:py-3">
               <div className="flex min-w-0 items-center gap-3 max-[520px]:hidden">
                 {current.cover ? (
                   <Image
@@ -166,10 +161,8 @@ export function PlayerBar() {
                 </div>
               </div>
 
-              {/* Center: controls */}
               <div className="flex flex-col items-center justify-center">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  {/* Prev (playlist) - UI only */}
                   <button
                     type="button"
                     title="Précédent"
@@ -178,8 +171,6 @@ export function PlayerBar() {
                   >
                     <SkipBack className="h-5 w-5" aria-hidden="true" />
                   </button>
-
-                  {/* -15 with circular arrow and 15 inside */}
                   <button
                     type="button"
                     title="Reculer de 15s"
@@ -193,8 +184,6 @@ export function PlayerBar() {
                     </span>
                     <span className="sr-only">-15 secondes</span>
                   </button>
-
-                  {/* Play/Pause */}
                   <button
                     type="button"
                     title={playing ? "Pause" : "Lecture"}
@@ -223,8 +212,6 @@ export function PlayerBar() {
                       </svg>
                     )}
                   </button>
-
-                  {/* +15 with circular arrow and 15 inside */}
                   <button
                     type="button"
                     title="Avancer de 15s"
@@ -238,8 +225,6 @@ export function PlayerBar() {
                     </span>
                     <span className="sr-only">+15 secondes</span>
                   </button>
-
-                  {/* Next (playlist) - UI only */}
                   <button
                     type="button"
                     title="Suivant"
@@ -254,18 +239,18 @@ export function PlayerBar() {
                 </div>
               </div>
 
-              {/* Right: future controls placeholder */}
-              <div className="flex shrink-0 items-center gap-2 justify-self-end sm:gap-3 max-[520px]:hidden">
-                {/* Liste */}
+              <div className="flex shrink-0 items-center gap-2 justify-self-end max-[520px]:hidden sm:gap-3">
                 <button
                   type="button"
                   className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-foreground/10"
+                  onClick={() => setQueueOpen(true)}
+                  aria-haspopup="dialog"
+                  aria-expanded={queueOpen}
                 >
                   <List className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Liste</span>
                 </button>
-                {/* Volume */}
-                <div className="group relative">
+                <div className="group relative max-[520px]:hidden">
                   <button
                     type="button"
                     title={volume === 0 ? "Activer le son" : "Couper le son"}
@@ -280,7 +265,6 @@ export function PlayerBar() {
                     )}
                     <span className="sr-only">Volume</span>
                   </button>
-                  {/* Hover slider */}
                   <div className="absolute left-1/2 top-full z-10 hidden w-28 -translate-x-1/2 select-none py-1 group-hover:block">
                     <div
                       ref={volumeTrackRef}
@@ -324,7 +308,6 @@ export function PlayerBar() {
                     </div>
                   </div>
                 </div>
-                {/* Réduire */}
                 <button
                   type="button"
                   title="Réduire"
@@ -335,7 +318,6 @@ export function PlayerBar() {
                   <Minimize2 className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Réduire</span>
                 </button>
-                {/* Fermer */}
                 <button
                   type="button"
                   title="Fermer"
@@ -351,6 +333,7 @@ export function PlayerBar() {
           </div>
         )}
       </div>
+      <QueueDrawer open={queueOpen} onClose={() => setQueueOpen(false)} />
     </div>
   );
 }
