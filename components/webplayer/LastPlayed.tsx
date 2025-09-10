@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider";
+import { EpisodeCoverWithPlay } from "@/components/webplayer/EpisodeCoverWithPlay";
 
 type RecentItem = {
   id: number;
@@ -42,6 +43,7 @@ export default function LastPlayed() {
 
   const list = Array.isArray(items) ? items : [];
   const [maxItems, setMaxItems] = useState<number>(5);
+
   useEffect(() => {
     const compute = () => {
       if (typeof window === "undefined") return;
@@ -55,10 +57,13 @@ export default function LastPlayed() {
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
   }, []);
+
   const displayed = list.slice(0, maxItems);
+
   const count = Math.max(1, displayed.length);
   const gapPx = 16;
   const itemWidth = `calc((100% - ${(count - 1) * gapPx}px) / ${count})`;
+
   if (error) return null;
   if (items && list.length === 0) return null;
 
@@ -75,6 +80,8 @@ export default function LastPlayed() {
               ? `/api/image-proxy?src=${encodeURIComponent(coverRaw)}`
               : "/images/Logo.webp";
             const audioSrc = `/api/audio-proxy?src=${encodeURIComponent(it.episode_url)}`;
+            const isCurrent = Number(player.current?.id) === Number(it.id);
+            const isActive = !!player.playing && isCurrent;
             return (
               <div
                 key={`${it.id}-${it.last_update}`}
@@ -83,9 +90,10 @@ export default function LastPlayed() {
               >
                 <EpisodeCoverWithPlay
                   cover={cover}
+                  isActive={isActive}
+                  isCurrent={isCurrent}
                   onPlay={() => {
                     try {
-                      // Start playback
                       player.play({
                         id: it.id,
                         name: it.episode_name,
@@ -98,6 +106,11 @@ export default function LastPlayed() {
                       if (prog > 0) {
                         setTimeout(() => player.seekTo(prog), 60);
                       }
+                    } catch {}
+                  }}
+                  onToggle={() => {
+                    try {
+                      player.toggle();
                     } catch {}
                   }}
                 />
@@ -120,44 +133,6 @@ export default function LastPlayed() {
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-function EpisodeCoverWithPlay({
-  cover,
-  onPlay,
-}: {
-  cover: string;
-  onPlay: () => void;
-}) {
-  return (
-    <div className="group relative mb-2 aspect-square w-full overflow-hidden rounded-xl">
-      <Image
-        src={cover}
-        alt=""
-        role="presentation"
-        fill
-        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-        className="object-cover"
-        unoptimized
-      />
-      <button
-        type="button"
-        title="Lecture"
-        aria-label="Lecture"
-        className="absolute left-1/2 top-1/2 z-10 grid aspect-square h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-yellow-400 bg-background/80 text-yellow-400 shadow-lg backdrop-blur transition-opacity duration-200 focus:opacity-100 md:opacity-0 md:group-hover:opacity-100"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onPlay();
-        }}
-      >
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-10 w-10" fill="currentColor">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-        <span className="sr-only">Lire</span>
-      </button>
     </div>
   );
 }
