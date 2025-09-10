@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Category } from "@/types/podcast";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { X } from "lucide-react";
 
 export type CategoryFilterProps<T> = {
   podcasts: T[];
@@ -28,6 +29,10 @@ export function CategoryFilter<T>({
 }: CategoryFilterProps<T>) {
   const categoryEntries = Object.entries(Category) as [keyof typeof Category, string][];
   const categoryKeys = categoryEntries.map(([k]) => k);
+  const labelByKey = useMemo(
+    () => Object.fromEntries(categoryEntries) as Record<string, string>,
+    [categoryEntries],
+  );
   const keyByLabel = Object.fromEntries(categoryEntries.map(([k, v]) => [v, k])) as Record<
     string,
     string
@@ -53,6 +58,11 @@ export function CategoryFilter<T>({
   const clearApplied = () => {
     if (controlledSelected !== undefined) onSelectedChange?.([]);
     else setSelectedInternal([]);
+  };
+  const removeTag = (key: string) => {
+    const next = selected.filter((k) => k !== key);
+    if (controlledSelected !== undefined) onSelectedChange?.(next);
+    else setSelectedInternal(next);
   };
   const toggleCategory = (key: string) => {
     const prev = draft;
@@ -179,7 +189,7 @@ export function CategoryFilter<T>({
           aria-controls="filters-drawer"
           ref={triggerBtnRef}
         >
-          Filtrer{selected.length ? ` (${selected.length})` : ""}
+          Filtrer
         </Button>
         {!isAll && (
           <Button
@@ -192,6 +202,34 @@ export function CategoryFilter<T>({
           </Button>
         )}
       </div>
+
+      {/* Active filter tags */}
+      {!isAll && (
+        <div
+          className={
+            variant === "inline"
+              ? "mt-3 flex flex-wrap items-center gap-2"
+              : "mt-3 flex flex-wrap items-center gap-2"
+          }
+        >
+          {selected.map((key) => (
+            <span
+              key={key}
+              className="inline-flex items-center gap-2 rounded-full border border-white px-3 py-1 text-sm text-white"
+            >
+              <span>{labelByKey[key] ?? key}</span>
+              <button
+                type="button"
+                onClick={() => removeTag(key)}
+                aria-label={`Retirer le filtre ${labelByKey[key] ?? key}`}
+                className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {open && <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setOpen(false)} />}
 
