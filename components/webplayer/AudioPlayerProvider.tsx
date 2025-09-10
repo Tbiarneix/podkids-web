@@ -27,6 +27,7 @@ export type AudioPlayerContextType = {
   remaining: number; // remaining time in seconds
   play: (episode: PlayableEpisode) => void;
   toggle: () => void;
+  stop: () => void;
   seekBy: (deltaSeconds: number) => void;
   seekTo: (seconds: number) => void;
 };
@@ -106,6 +107,22 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     else a.pause();
   }, []);
 
+  const stop = useCallback(() => {
+    const a = audioRef.current;
+    try {
+      if (a) {
+        a.pause();
+        // Clear the source to free memory and ensure ended
+        a.removeAttribute("src");
+        a.load();
+      }
+    } catch {}
+    setPlaying(false);
+    setProgress(0);
+    setDuration(0);
+    setCurrent(null);
+  }, []);
+
   const seekBy = useCallback((deltaSeconds: number) => {
     const a = audioRef.current;
     if (!a) return;
@@ -136,10 +153,11 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       remaining: Math.max(0, (duration || 0) - (progress || 0)),
       play,
       toggle,
+      stop,
       seekBy,
       seekTo,
     }),
-    [current, playing, progress, duration, play, toggle, seekBy, seekTo],
+    [current, playing, progress, duration, play, toggle, stop, seekBy, seekTo],
   );
 
   return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;

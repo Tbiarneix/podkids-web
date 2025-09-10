@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { RotateCcw, RotateCw, SkipBack, SkipForward, List, Volume2, Minimize2, X } from "lucide-react";
 
 export function PlayerBar() {
-  const { current, playing, progress, duration, toggle, seekBy, seekTo } = useAudioPlayer();
+  const { current, playing, progress, duration, toggle, stop, seekBy, seekTo } = useAudioPlayer();
 
   if (!current) return null;
 
@@ -173,7 +173,7 @@ export function PlayerBar() {
                 <span className="sr-only">Réduire</span>
               </button>
               {/* Fermer */}
-              <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-foreground/10">
+              <button type="button" title="Fermer" aria-label="Fermer le lecteur" onClick={stop} className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-foreground/10">
                 <X className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only">Fermer</span>
               </button>
