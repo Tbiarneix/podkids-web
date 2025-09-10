@@ -11,14 +11,39 @@ import {
   SkipForward,
   List,
   Volume2,
+  VolumeX,
   Minimize2,
   Maximize2,
   X,
 } from "lucide-react";
 
 export function PlayerBar() {
-  const { current, playing, progress, duration, toggle, stop, seekBy, seekTo } = useAudioPlayer();
+  const {
+    current,
+    playing,
+    progress,
+    duration,
+    toggle,
+    stop,
+    seekBy,
+    seekTo,
+    volume,
+    setVolume,
+    toggleMute,
+  } = useAudioPlayer();
   const [minimized, setMinimized] = React.useState(false);
+  const volDraggingRef = React.useRef(false);
+  const volumeTrackRef = React.useRef<HTMLDivElement | null>(null);
+
+  const handleVolumeAtClientX = React.useCallback(
+    (clientX: number, trackEl: HTMLDivElement | null) => {
+      if (!trackEl) return;
+      const rect = trackEl.getBoundingClientRect();
+      const r = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      setVolume(r);
+    },
+    [setVolume],
+  );
 
   if (!current) return null;
 
@@ -240,13 +265,65 @@ export function PlayerBar() {
                   <span className="sr-only">Liste</span>
                 </button>
                 {/* Volume */}
-                <button
-                  type="button"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-foreground/10"
-                >
-                  <Volume2 className="h-5 w-5" aria-hidden="true" />
-                  <span className="sr-only">Volume</span>
-                </button>
+                <div className="group relative">
+                  <button
+                    type="button"
+                    title={volume === 0 ? "Activer le son" : "Couper le son"}
+                    aria-label={volume === 0 ? "Activer le son" : "Couper le son"}
+                    onClick={toggleMute}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-foreground/10"
+                  >
+                    {volume === 0 ? (
+                      <VolumeX className="h-5 w-5" aria-hidden="true" />
+                    ) : (
+                      <Volume2 className="h-5 w-5" aria-hidden="true" />
+                    )}
+                    <span className="sr-only">Volume</span>
+                  </button>
+                  {/* Hover slider */}
+                  <div className="absolute left-1/2 top-full z-10 hidden w-28 -translate-x-1/2 select-none py-1 group-hover:block">
+                    <div
+                      ref={volumeTrackRef}
+                      role="slider"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.round(volume * 100)}
+                      aria-label="Volume"
+                      className="relative h-2 cursor-pointer rounded bg-foreground/20"
+                      onMouseDown={(e) => {
+                        volDraggingRef.current = true;
+                        handleVolumeAtClientX(e.clientX, volumeTrackRef.current);
+                        const move = (ev: MouseEvent) => {
+                          if (!volDraggingRef.current) return;
+                          handleVolumeAtClientX(ev.clientX, volumeTrackRef.current);
+                        };
+                        const up = () => {
+                          volDraggingRef.current = false;
+                          window.removeEventListener("mousemove", move);
+                          window.removeEventListener("mouseup", up);
+                        };
+                        window.addEventListener("mousemove", move);
+                        window.addEventListener("mouseup", up);
+                      }}
+                      onMouseMove={(e) => {
+                        if (!volDraggingRef.current) return;
+                        handleVolumeAtClientX(e.clientX, volumeTrackRef.current);
+                      }}
+                      onClick={(e) => {
+                        handleVolumeAtClientX(e.clientX, volumeTrackRef.current);
+                      }}
+                    >
+                      <div
+                        className="absolute inset-y-0 left-0 rounded bg-yellow-400"
+                        style={{ width: `${Math.round(volume * 100)}%` }}
+                      />
+                      <div
+                        className="absolute -top-1.5 -ml-1.5 h-5 w-5 rounded-full border-2 border-yellow-400 bg-background shadow"
+                        style={{ left: `${Math.round(volume * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
                 {/* Réduire */}
                 <button
                   type="button"

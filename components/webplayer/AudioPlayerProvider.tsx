@@ -25,11 +25,14 @@ export type AudioPlayerContextType = {
   progress: number; // current time in seconds
   duration: number; // duration in seconds
   remaining: number; // remaining time in seconds
+  volume: number; // 0..1
   play: (episode: PlayableEpisode) => void;
   toggle: () => void;
   stop: () => void;
   seekBy: (deltaSeconds: number) => void;
   seekTo: (seconds: number) => void;
+  setVolume: (v: number) => void;
+  toggleMute: () => void;
 };
 
 const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(undefined);
@@ -59,12 +62,15 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolumeState] = useState(1);
+  const previousVolumeRef = useRef(1);
 
   // lazily create the audio element once on client
   useEffect(() => {
     if (!audioRef.current) {
       const a = new Audio();
       a.preload = "metadata";
+      a.volume = volume;
       audioRef.current = a;
     }
     const a = audioRef.current!;
@@ -87,7 +93,17 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       a.removeEventListener("pause", onPause);
       a.removeEventListener("ended", onEnded);
     };
-  }, []);
+  }, [volume]);
+
+  // Apply volume to audio element whenever it changes
+  useEffect(() => {
+    const a = audioRef.current;
+    if (a) {
+      try {
+        a.volume = Math.max(0, Math.min(1, volume));
+      } catch {}
+    }
+  }, [volume]);
 
   const play = useCallback((episode: PlayableEpisode) => {
     setCurrent(episode);
@@ -144,6 +160,25 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     } catch {}
   }, []);
 
+  const setVolume = useCallback((v: number) => {
+    const clamped = Math.max(0, Math.min(1, v));
+    setVolumeState(() => {
+      // remember previous non-zero volume for mute toggle
+      if (clamped > 0) previousVolumeRef.current = clamped;
+      return clamped;
+    });
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setVolumeState((v) => {
+      if (v > 0) {
+        previousVolumeRef.current = v;
+        return 0;
+      }
+      return previousVolumeRef.current || 1;
+    });
+  }, []);
+
   const value = useMemo<AudioPlayerContextType>(
     () => ({
       current,
@@ -151,13 +186,16 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       progress,
       duration,
       remaining: Math.max(0, (duration || 0) - (progress || 0)),
+      volume,
       play,
       toggle,
       stop,
       seekBy,
       seekTo,
+      setVolume,
+      toggleMute,
     }),
-    [current, playing, progress, duration, play, toggle, stop, seekBy, seekTo],
+    [current, playing, progress, duration, volume, play, toggle, stop, seekBy, seekTo, setVolume, toggleMute],
   );
 
   return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;
