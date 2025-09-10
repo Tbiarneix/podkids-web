@@ -133,7 +133,10 @@ export default function PodcastDetailsPage() {
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-2xl font-bold sm:text-3xl">{podcast.name}</h1>
               <p className="text-muted-foreground mt-1 truncate text-sm sm:text-base">
-                {podcast.author} <span className="mx-1">•</span>{" "}
+                {podcast.author}{" "}
+                <span className="mx-1" aria-hidden="true">
+                  •
+                </span>{" "}
                 {Number(podcast.episodes_count || 0)} épisodes
               </p>
               {podcast.description ? (

@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
-import { sanitizeHtml } from "@/utils/sanitize";
 import { slugify } from "@/utils/slugify";
-import { cn } from "@/lib/utils";
 import { Category } from "@/types/podcast";
 import { useActiveProfile } from "@/hooks/useActiveProfile";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider";
+import { PodcastSheetHeader } from "@/components/webplayer/PodcastSheetHeader";
+import { EpisodesList } from "@/components/webplayer/EpisodesList";
+import { useEpisodeStatus } from "@/hooks/useEpisodeStatus";
+import { sessionSortKey } from "@/lib/webplayer/episodeStatus";
 
 type PodcastRow = any;
 
@@ -48,6 +49,68 @@ export default function PodcastDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState<boolean>(false);
   const { toggle, loading: subLoading } = useSubscription(podcast?.id);
+
+  const [sortAsc, setSortAsc] = useState(false); // false = recent → old (default)
+  const [statusFilter, setStatusFilter] = useState<"all" | "unlistened" | "listened">("all");
+  const sortedEpisodes = useMemo(() => {
+    const copy = [...episodes];
+    copy.sort((a, b) => {
+      const da = a.publication_date ? new Date(a.publication_date).getTime() : 0;
+      const db = b.publication_date ? new Date(b.publication_date).getTime() : 0;
+      if (da === db) return 0;
+      return sortAsc ? da - db : db - da;
+    });
+    return copy;
+  }, [episodes, sortAsc]);
+
+  const { statuses: episodeStatuses, toggleStatus: toggleEpisodeStatus } = useEpisodeStatus(
+    podcast?.id ?? null,
+    episodes,
+  );
+
+  const filteredEpisodes = useMemo(() => {
+    if (statusFilter === "all") return sortedEpisodes;
+    return sortedEpisodes.filter((ep) => {
+      const st = episodeStatuses[ep.id]?.status ?? "unlistened";
+      return statusFilter === "unlistened" ? st !== "listened" : st === "listened";
+    });
+  }, [sortedEpisodes, statusFilter, episodeStatuses]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const sortKey = sessionSortKey(podcast.id);
+      const raw = typeof window !== "undefined" ? localStorage.getItem(sortKey) : null;
+      if (raw === null) return;
+      setSortAsc(raw === "1");
+    } catch {}
+  }, [podcast?.id]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const sortKey = sessionSortKey(podcast.id);
+      if (typeof window !== "undefined") localStorage.setItem(sortKey, sortAsc ? "1" : "0");
+    } catch {}
+  }, [podcast?.id, sortAsc]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const key = `webplayer:podcast:${podcast.id}:statusFilter`;
+      const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null;
+      if (!raw) return;
+      if (raw === "unlistened" || raw === "listened" || raw === "all") setStatusFilter(raw);
+    } catch {}
+  }, [podcast?.id]);
+
+  useEffect(() => {
+    try {
+      if (!podcast?.id) return;
+      const key = `webplayer:podcast:${podcast.id}:statusFilter`;
+      if (typeof window !== "undefined") localStorage.setItem(key, statusFilter);
+    } catch {}
+  }, [podcast?.id, statusFilter]);
 
   useEffect(() => {
     let active = true;
@@ -116,7 +179,7 @@ export default function PodcastDetailsPage() {
     return () => {
       active = false;
     };
-  }, [slug, authorSlug, supabase]);
+  }, [slug, authorSlug, idFromQuery, supabase]);
 
   useEffect(() => {
     let mounted = true;
@@ -202,204 +265,41 @@ export default function PodcastDetailsPage() {
             <span>Retour à la liste des podcasts</span>
           </Link>
         </div>
-        <div className={cn("relative flex items-start gap-6 p-0")}>
-          <button
-            type="button"
-            aria-label={subscribed ? "Se désabonner" : "S'abonner"}
-            title={subscribed ? "Se désabonner" : "S'abonner"}
-            aria-pressed={subscribed}
-            className={cn(
-              "absolute right-0 top-0 hidden h-10 w-10 items-center justify-center rounded-full md:inline-flex",
-              "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            )}
-            disabled={subLoading}
-            onClick={async () => {
-              const next = !subscribed;
-              setSubscribed(next);
-              const ok = await toggle(next);
-              if (!ok) setSubscribed(!next);
-            }}
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-6 w-6"
-              fill={subscribed ? "currentColor" : "none"}
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-            <span className="sr-only">{subscribed ? "Se désabonner" : "S'abonner"}</span>
-          </button>
-
-          <div className="shrink-0">
-            <Image
-              src={coverSrc}
-              alt=""
-              role="presentation"
-              width={128}
-              height={128}
-              className="h-32 w-32 rounded-xl object-cover sm:h-40 sm:w-40"
-              unoptimized
-            />
-            <div className="mt-3 flex justify-center md:hidden">
-              <button
-                type="button"
-                aria-label={subscribed ? "Se désabonner" : "S'abonner"}
-                title={subscribed ? "Se désabonner" : "S'abonner"}
-                aria-pressed={subscribed}
-                className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full",
-                  "text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                )}
-                disabled={subLoading}
-                onClick={async () => {
-                  const next = !subscribed;
-                  setSubscribed(next);
-                  const ok = await toggle(next);
-                  if (!ok) setSubscribed(!next);
-                }}
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-6 w-6"
-                  fill={subscribed ? "currentColor" : "none"}
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-                <span className="sr-only">{subscribed ? "Se désabonner" : "S'abonner"}</span>
-              </button>
-            </div>
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-2xl font-bold sm:text-3xl">{podcast.name}</h1>
-            <p className="text-muted-foreground mt-1 truncate text-sm sm:text-base">
-              {podcast.author} <span className="mx-1">•</span> {Number(podcast.episodes_count || 0)}{" "}
-              épisodes
-            </p>
-            {podcast.description ? (
-              <div
-                className="text-muted-foreground mt-3 space-y-2 text-sm"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(podcast.description)) }}
-              />
-            ) : null}
-
-            {categories.length > 0 ? (
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                {categories.map((cat) => (
-                  <span
-                    key={cat}
-                    className="rounded-full border-2 border-yellow-400 px-3 py-1 text-sm font-semibold text-yellow-400"
-                  >
-                    {cat}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </div>
+        <PodcastSheetHeader
+          coverSrc={coverSrc}
+          podcast={{
+            id: podcast.id,
+            name: podcast.name,
+            author: podcast.author,
+            episodes_count: podcast.episodes_count ?? 0,
+            description: podcast.description ?? null,
+          }}
+          categories={categories}
+          subscribed={subscribed}
+          subLoading={subLoading}
+          onToggleSubscribe={async () => {
+            const next = !subscribed;
+            setSubscribed(next);
+            const ok = await toggle(next);
+            if (!ok) setSubscribed(!next);
+          }}
+          sortAsc={sortAsc}
+          onToggleSort={() => setSortAsc((v) => !v)}
+          statusFilter={statusFilter}
+          onChangeStatusFilter={setStatusFilter}
+        />
 
         <div className="mt-8">
-          <h2 className="mb-4 text-xl font-semibold text-white">Épisodes</h2>
-          <ul className="flex flex-col gap-4">
-            {episodes.map((ep) => {
-              const epCover = ep.cover
-                ? `/api/image-proxy?src=${encodeURIComponent(ep.cover)}`
-                : coverSrc;
-              const audioSrc = `/api/audio-proxy?src=${encodeURIComponent(ep.url)}`;
-              return (
-                <li
-                  key={ep.id}
-                  className="group relative flex items-start gap-4 rounded-2xl border bg-card/95 p-4 text-card-foreground shadow-sm"
-                >
-                  <div className="absolute right-4 top-4 flex items-center">
-                    {/* <button
-                      type="button"
-                      title="Ajouter à une playlist"
-                      aria-label="Ajouter à une playlist"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-yellow-400 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-6 w-6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 5v14M5 12h14" />
-                      </svg>
-                      <span className="sr-only">Ajouter à une playlist</span>
-                    </button> */}
-                  </div>
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
-                    <Image
-                      src={epCover}
-                      alt=""
-                      role="presentation"
-                      width={80}
-                      height={80}
-                      className="h-full w-full object-cover"
-                      unoptimized
-                    />
-                    <button
-                      type="button"
-                      title="Lecture"
-                      aria-label="Lecture"
-                      className="absolute inset-0 flex items-center justify-center opacity-100 transition-opacity duration-200 focus:opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        play({
-                          id: ep.id,
-                          name: ep.name,
-                          url: audioSrc,
-                          cover: epCover,
-                          podcastName: podcast.name,
-                          duration: ep.duration ?? null,
-                        });
-                      }}
-                    >
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-yellow-400 transition-all duration-200 md:h-10 md:w-10 md:group-hover:h-14 md:group-hover:w-14">
-                        <svg
-                          aria-hidden="true"
-                          viewBox="0 0 24 24"
-                          className="h-6 w-6 md:h-8 md:w-8 md:group-hover:h-10 md:group-hover:w-10"
-                          fill="currentColor"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                        <span className="sr-only">Lire</span>
-                      </span>
-                    </button>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-base font-semibold sm:text-lg">{ep.name}</h3>
-                    {ep.description ? (
-                      <div
-                        className="text-muted-foreground mt-1 space-y-2 text-sm"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(ep.description)) }}
-                      />
-                    ) : null}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <EpisodesList
+            episodes={filteredEpisodes}
+            coverFallback={coverSrc}
+            podcastName={podcast.name}
+            statuses={episodeStatuses}
+            onToggleStatus={toggleEpisodeStatus}
+            onPlay={(payload) => {
+              play(payload);
+            }}
+          />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 export enum EpisodeStatus {
-  TO_LISTEN = "to listen",
+  UNLISTENED = "unlistened",
   LISTENING = "listening",
   LISTENED = "listened",
 }

@@ -109,7 +109,10 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
               <h2 className="break-words pr-5 text-lg font-semibold sm:text-2xl">{name}</h2>
               <p className="text-muted-foreground mt-0.5 truncate text-sm sm:text-base">
                 {author}
-                <span className="mx-1">•</span> {episodesCount} épisodes
+                <span className="mx-1" aria-hidden="true">
+                  •
+                </span>{" "}
+                {episodesCount} épisodes
               </p>
               {description ? (
                 <div

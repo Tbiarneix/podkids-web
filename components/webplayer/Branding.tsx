@@ -27,13 +27,17 @@ export function Branding() {
         >
           <Image
             src={`/avatar/avatar-${active!.avatar}.webp`}
-            alt={active!.name}
+            alt=""
+            role="presentation"
             width={48}
             height={48}
             className="rounded-full"
             priority
           />
-          <span className="text-[1.8rem] font-bold text-primary">{active!.name}</span>
+          <span className="text-[1.8rem] font-bold text-primary">
+            <span className="sr-only">Profil de </span>
+            {active!.name}
+          </span>
         </div>
       ) : (
         <div
@@ -41,7 +45,7 @@ export function Branding() {
             fadeIn ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
-          <Image src="/images/Logo.webp" alt="Podkids" width={48} height={48} priority />
+          <Image src="/images/Logo.webp" alt="Podkids Logo" width={48} height={48} priority />
           <span className="text-[1.8rem] font-bold text-primary">Podkids</span>
         </div>
       )}

@@ -159,7 +159,11 @@ export default function PodcastsList({
                     </h2>
                     <p className="text-muted-foreground mt-0.5 flex flex-wrap truncate text-sm">
                       {(p.author || "").trim()}{" "}
-                      {p.episodes_count != null ? <span className="mx-1">•</span> : null}
+                      {p.episodes_count != null ? (
+                        <span className="mx-1" aria-hidden="true">
+                          •
+                        </span>
+                      ) : null}
                       {p.episodes_count != null ? `${p.episodes_count} épisodes` : null}
                     </p>
                   </div>
