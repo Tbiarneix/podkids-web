@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import LastPlayed from "@/components/webplayer/LastPlayed";
 
 const AGE_RANGE_CODE_MAP: Record<AgeRange, string> = {
   [AgeRange.UNDER_3]: "UNDER_3",
@@ -167,6 +168,7 @@ export default function WebPlayer() {
   return (
     <div className="w-full">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <LastPlayed />
         <div className="mb-8 flex items-center gap-4">
           <Button
             type="button"
