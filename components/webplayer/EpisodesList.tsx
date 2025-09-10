@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAudioPlayer } from "@/components/webplayer/AudioPlayerProvider";
+import { EpisodeCoverWithPlay } from "@/components/webplayer/EpisodeCoverWithPlay";
 
 export type EpisodeItem = {
   id: number;
@@ -74,6 +75,7 @@ export function EpisodesList({
   onToggleStatus,
   onPlay,
 }: EpisodesListProps) {
+  const player = useAudioPlayer();
   return (
     <ul className="flex flex-col gap-4">
       {episodes.map((ep) => {
@@ -85,6 +87,8 @@ export function EpisodesList({
         const progress = statuses?.[ep.id]?.progress ?? 0;
         const remaining = formatRemaining(ep.duration ?? null, progress);
         const nextToggle = st === "listened" ? "unlistened" : "listened";
+        const isCurrent = Number(player.current?.id) === Number(ep.id);
+        const isActive = !!player.playing && isCurrent;
         return (
           <li
             key={ep.id}
@@ -92,24 +96,14 @@ export function EpisodesList({
           >
             <div>
               <div className="flex w-full items-start gap-4">
-                <div className="relative mt-2 h-20 w-20 shrink-0 overflow-hidden rounded-lg">
-                  <Image
-                    src={epCover}
-                    alt=""
-                    role="presentation"
-                    width={80}
-                    height={80}
-                    className="z-0 h-full w-full object-cover"
-                    unoptimized
-                  />
-                  <button
-                    type="button"
-                    title="Lecture"
-                    aria-label="Lecture"
-                    className="absolute inset-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-200 focus:opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                <div className="mt-2 shrink-0">
+                  <EpisodeCoverWithPlay
+                    cover={epCover}
+                    isActive={isActive}
+                    isCurrent={isCurrent}
+                    coverSizePx={80}
+                    buttonSizePct={0.6}
+                    onPlay={() =>
                       onPlay({
                         id: ep.id,
                         name: ep.name,
@@ -117,21 +111,14 @@ export function EpisodesList({
                         cover: epCover,
                         podcastName,
                         duration: ep.duration ?? null,
-                      });
+                      })
+                    }
+                    onToggle={() => {
+                      try {
+                        player.toggle();
+                      } catch {}
                     }}
-                  >
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-yellow-400 bg-background text-yellow-400 transition-all duration-200 md:group-hover:h-14 md:group-hover:w-14">
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-7 w-7 md:h-10 md:w-10 md:group-hover:h-12 md:group-hover:w-12"
-                        fill="currentColor"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span className="sr-only">Lire</span>
-                    </span>
-                  </button>
+                  />
                 </div>
                 <div className="min-w-0 flex-1 basis-0 overflow-hidden">
                   <h3 className="mb-2 max-w-full text-base font-semibold sm:text-lg">{ep.name}</h3>
