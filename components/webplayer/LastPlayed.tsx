@@ -59,8 +59,9 @@ export default function LastPlayed() {
   }, []);
 
   const displayed = list.slice(0, maxItems);
-
-  const count = Math.max(1, displayed.length);
+  const skeletonCount = maxItems;
+  const isLoading = items == null;
+  const count = isLoading ? skeletonCount : Math.max(1, displayed.length);
   const gapPx = 16;
   const itemWidth = `calc((100% - ${(count - 1) * gapPx}px) / ${count})`;
 
@@ -70,8 +71,18 @@ export default function LastPlayed() {
   return (
     <div className="mb-12">
       <h2 className="mb-4 text-2xl font-bold">Reprendre l&apos;écoute</h2>
-      {items == null ? (
-        <div className="text-muted-foreground text-sm">Chargement…</div>
+      {isLoading ? (
+        <div className="flex w-full flex-row items-stretch gap-4">
+          {Array.from({ length: skeletonCount }).map((_, idx) => (
+            <div
+              key={`sk-${idx}`}
+              className="flex min-w-0 flex-col"
+              style={{ flex: `0 0 ${itemWidth}`, maxWidth: itemWidth }}
+            >
+              <div className="relative aspect-square w-full animate-pulse overflow-hidden rounded-xl bg-foreground/10" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="flex w-full flex-row items-stretch gap-4">
           {displayed.map((it) => {
