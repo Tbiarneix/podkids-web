@@ -143,9 +143,9 @@ export function PlayerBar() {
             </div>
 
             {/* Content */}
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2 sm:gap-6 sm:px-4 sm:py-3">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2 sm:gap-6 sm:px-4 sm:py-3 max-[520px]:grid-cols-1 max-[520px]:justify-items-center">
               {/* Left: cover & titles */}
-              <div className="flex min-w-0 items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3 max-[520px]:hidden">
                 {current.cover ? (
                   <Image
                     src={current.cover}
@@ -255,7 +255,7 @@ export function PlayerBar() {
               </div>
 
               {/* Right: future controls placeholder */}
-              <div className="flex shrink-0 items-center gap-2 justify-self-end sm:gap-3">
+              <div className="flex shrink-0 items-center gap-2 justify-self-end sm:gap-3 max-[520px]:hidden">
                 {/* Liste */}
                 <button
                   type="button"
