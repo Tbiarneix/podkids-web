@@ -150,7 +150,8 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
       ...(p ?? { progress: 0, status: "unlistened" }),
       status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening"),
     }));
-  }, [current, setOptimistic]);
+    void upsert(id, "listening");
+  }, [current, setOptimistic, upsert]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

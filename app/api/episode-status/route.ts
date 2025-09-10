@@ -39,12 +39,16 @@ export async function GET(req: Request) {
     } = await supabase.auth.getUser();
     if (userErr || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { data: profile } = await supabase
+    const { data: profiles, error: profErr } = await supabase
       .from("profile")
-      .select("id")
+      .select("id, active_profile, created_at")
       .eq("user_id", user.id)
-      .maybeSingle();
-    if (!profile) return NextResponse.json({ error: "Profile not found" }, { status: 403 });
+      .order("active_profile", { ascending: false })
+      .order("created_at", { ascending: true })
+      .limit(1);
+    if (profErr) return NextResponse.json({ error: profErr.message }, { status: 500 });
+    const profile = Array.isArray(profiles) ? profiles[0] : null;
+    if (!profile) return NextResponse.json({ items: [] });
 
     const { data: episodes, error: epsErr } = await supabase
       .from("episode")
@@ -77,11 +81,16 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
     if (userErr || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { data: profile } = await supabase
+    // Pick the active profile if any, otherwise the oldest
+    const { data: profiles, error: profErr } = await supabase
       .from("profile")
-      .select("id")
+      .select("id, active_profile, created_at")
       .eq("user_id", user.id)
-      .maybeSingle();
+      .order("active_profile", { ascending: false })
+      .order("created_at", { ascending: true })
+      .limit(1);
+    if (profErr) return NextResponse.json({ error: profErr.message }, { status: 500 });
+    const profile = Array.isArray(profiles) ? profiles[0] : null;
     if (!profile) return NextResponse.json({ error: "Profile not found" }, { status: 403 });
 
     const json = await req.json().catch(() => ({}));
