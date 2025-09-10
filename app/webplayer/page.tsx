@@ -35,8 +35,15 @@ export default function WebPlayer() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
+  const [minGridDelayDone, setMinGridDelayDone] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(() => setMinGridDelayDone(true), 2000);
+    return () => clearTimeout(id);
   }, []);
 
   useEffect(() => {
@@ -208,44 +215,53 @@ export default function WebPlayer() {
           </Suspense>
         </div>
         <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {displayed.map((podcast) => (
-            <div key={podcast.id} className="h-full">
-              <PodcastCard
-                {...toCardProps(podcast)}
-                onSubscribe={async (next) => {
-                  if (!active?.id) return;
-                  const profileId = Number(active.id);
-                  const podcastId = Number(podcast.id);
-                  if (Number.isNaN(profileId) || Number.isNaN(podcastId)) return;
-                  setSubscribedSet((prev) => {
-                    const s = new Set(prev);
-                    if (next) s.add(podcastId);
-                    else s.delete(podcastId);
-                    return s;
-                  });
-                  try {
-                    const res = await fetch("/api/subscriptions", {
-                      method: next ? "POST" : "DELETE",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ profileId, podcastId }),
-                    });
-                    if (!res.ok) throw new Error("request_failed");
-                  } catch {
-                    setSubscribedSet((prev) => {
-                      const s = new Set(prev);
-                      if (next) s.delete(podcastId);
-                      else s.add(podcastId);
-                      return s;
-                    });
-                  }
-                }}
-                onCategoryClick={(label) => {
-                  const key = keyByLabel[label];
-                  if (key) setSelectedCats([key]);
-                }}
-              />
-            </div>
-          ))}
+          {podcasts == null || !minGridDelayDone
+            ? [0, 1].map((i) => (
+                <div
+                  key={`sk-pod-${i}`}
+                  className={`h-full ${i === 1 ? "hidden sm:block" : "block"}`}
+                >
+                  <div className="h-64 w-full animate-pulse rounded-2xl bg-foreground/10" />
+                </div>
+              ))
+            : displayed.map((podcast) => (
+                <div key={podcast.id} className="h-full">
+                  <PodcastCard
+                    {...toCardProps(podcast)}
+                    onSubscribe={async (next) => {
+                      if (!active?.id) return;
+                      const profileId = Number(active.id);
+                      const podcastId = Number(podcast.id);
+                      if (Number.isNaN(profileId) || Number.isNaN(podcastId)) return;
+                      setSubscribedSet((prev) => {
+                        const s = new Set(prev);
+                        if (next) s.add(podcastId);
+                        else s.delete(podcastId);
+                        return s;
+                      });
+                      try {
+                        const res = await fetch("/api/subscriptions", {
+                          method: next ? "POST" : "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ profileId, podcastId }),
+                        });
+                        if (!res.ok) throw new Error("request_failed");
+                      } catch {
+                        setSubscribedSet((prev) => {
+                          const s = new Set(prev);
+                          if (next) s.delete(podcastId);
+                          else s.add(podcastId);
+                          return s;
+                        });
+                      }
+                    }}
+                    onCategoryClick={(label) => {
+                      const key = keyByLabel[label];
+                      if (key) setSelectedCats([key]);
+                    }}
+                  />
+                </div>
+              ))}
         </div>
       </div>
     </div>

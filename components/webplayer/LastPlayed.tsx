@@ -60,7 +60,12 @@ export default function LastPlayed() {
 
   const displayed = list.slice(0, maxItems);
   const skeletonCount = maxItems;
-  const isLoading = items == null;
+  const [minDelayDone, setMinDelayDone] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setMinDelayDone(true), 2000);
+    return () => clearTimeout(id);
+  }, []);
+  const isLoading = items == null || !minDelayDone;
   const count = isLoading ? skeletonCount : Math.max(1, displayed.length);
   const gapPx = 16;
   const itemWidth = `calc((100% - ${(count - 1) * gapPx}px) / ${count})`;
@@ -103,6 +108,7 @@ export default function LastPlayed() {
                   cover={cover}
                   isActive={isActive}
                   isCurrent={isCurrent}
+                  episodeName={it.episode_name}
                   onPlay={() => {
                     try {
                       player.play({

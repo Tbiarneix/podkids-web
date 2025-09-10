@@ -10,6 +10,7 @@ export type EpisodeCoverWithPlayProps = {
   isCurrent?: boolean;
   coverSizePx?: number;
   buttonSizePct?: number;
+  episodeName: string;
 };
 
 export function EpisodeCoverWithPlay({
@@ -20,6 +21,7 @@ export function EpisodeCoverWithPlay({
   isCurrent,
   coverSizePx,
   buttonSizePct = 0.35,
+  episodeName,
 }: EpisodeCoverWithPlayProps) {
   const wrapperStyle: React.CSSProperties | undefined = coverSizePx
     ? { width: coverSizePx, height: coverSizePx }
@@ -50,8 +52,13 @@ export function EpisodeCoverWithPlay({
       />
       <button
         type="button"
-        title="Lecture"
-        aria-label="Lecture"
+        title={
+          isCurrent ? (isActive ? "Mettre en pause" : `Lire ${episodeName}`) : `Lire ${episodeName}`
+        }
+        aria-label={
+          isCurrent ? (isActive ? "Mettre en pause" : `Lire ${episodeName}`) : `Lire ${episodeName}`
+        }
+        aria-pressed={isCurrent ? !!isActive : undefined}
         className={
           "absolute left-1/2 top-1/2 z-10 grid -translate-x-1/2 -translate-y-1/2 place-items-center overflow-hidden rounded-full border-2 border-yellow-400 bg-background/80 text-yellow-400 shadow-lg backdrop-blur transition-opacity duration-200 " +
           (isActive ? "opacity-100" : "focus:opacity-100 md:opacity-0 md:group-hover:opacity-100")
@@ -164,8 +171,18 @@ export function EpisodeCoverWithPlay({
             <path d="M8 5v14l11-7z" />
           </svg>
         )}
-        <span className="sr-only">Lire</span>
+        <span className="sr-only" aria-hidden={!!isActive}>
+          Lire {episodeName}
+        </span>
+        <span className="sr-only" aria-hidden={!isActive}>
+          Mettre en pause
+        </span>
       </button>
+      {isCurrent ? (
+        <span className="sr-only" role="status" aria-live="polite">
+          {isActive ? "Lecture en cours" : "Lecture en pause"}
+        </span>
+      ) : null}
     </div>
   );
 }

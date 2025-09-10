@@ -102,7 +102,8 @@ export function EpisodesList({
                     isActive={isActive}
                     isCurrent={isCurrent}
                     coverSizePx={80}
-                    buttonSizePct={0.6}
+                    buttonSizePct={0.7}
+                    episodeName={ep.name}
                     onPlay={() =>
                       onPlay({
                         id: ep.id,
