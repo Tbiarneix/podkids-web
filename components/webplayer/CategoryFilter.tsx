@@ -203,15 +203,9 @@ export function CategoryFilter<T>({
         )}
       </div>
 
-      {/* Active filter tags */}
+      {/* Filter tags */}
       {!isAll && (
-        <div
-          className={
-            variant === "inline"
-              ? "mt-3 flex flex-wrap items-center gap-2"
-              : "mt-3 flex flex-wrap items-center gap-2"
-          }
-        >
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           {selected.map((key) => (
             <span
               key={key}
@@ -222,7 +216,7 @@ export function CategoryFilter<T>({
                 type="button"
                 onClick={() => removeTag(key)}
                 aria-label={`Retirer le filtre ${labelByKey[key] ?? key}`}
-                className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+                className="focus-visible-thin inline-flex h-5 w-5 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
@@ -259,17 +253,19 @@ export function CategoryFilter<T>({
           </div>
 
           <div className="max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-4">
-            <div className="flex flex-col gap-2">
+            <ul className="flex list-none flex-col gap-2">
               {categoryEntries.map(([key, label]) => {
                 const active = draft.includes(key);
                 return (
-                  <label key={key} className="flex items-center gap-3 text-white">
-                    <Checkbox checked={active} onCheckedChange={() => toggleCategory(key)} />
-                    <span>{label}</span>
-                  </label>
+                  <li key={key}>
+                    <label className="flex items-center gap-3 text-white">
+                      <Checkbox checked={active} onCheckedChange={() => toggleCategory(key)} />
+                      <span>{label}</span>
+                    </label>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
 
             <div className="mt-6 flex items-center gap-3">
               <Button
