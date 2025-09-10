@@ -38,24 +38,45 @@ export default function LastPlayed() {
   }, []);
 
   const list = Array.isArray(items) ? items : [];
-  console.log("items", items, list);
+  const [maxItems, setMaxItems] = useState<number>(5);
+  useEffect(() => {
+    const compute = () => {
+      if (typeof window === "undefined") return;
+      const w = window.innerWidth || 0;
+      if (w < 520) setMaxItems(2);
+      else if (w < 768) setMaxItems(3);
+      else if (w < 1080) setMaxItems(4);
+      else setMaxItems(5);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+  const displayed = list.slice(0, maxItems);
+  const count = Math.max(1, displayed.length);
+  const gapPx = 16;
+  const itemWidth = `calc((100% - ${(count - 1) * gapPx}px) / ${count})`;
   if (error) return null;
   if (items && list.length === 0) return null;
 
   return (
-    <div className="mb-8">
+    <div className="mb-12">
       <h2 className="mb-4 text-2xl font-bold">Reprendre l&apos;écoute</h2>
       {items == null ? (
         <div className="text-muted-foreground text-sm">Chargement…</div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-          {list.map((it) => {
+        <div className="flex w-full flex-row items-stretch gap-4">
+          {displayed.map((it) => {
             const coverRaw = it.episode_cover || it.podcast_cover || "/images/Logo.webp";
             const cover = coverRaw
               ? `/api/image-proxy?src=${encodeURIComponent(coverRaw)}`
               : "/images/Logo.webp";
             return (
-              <div key={`${it.id}-${it.last_update}`} className="flex flex-col">
+              <div
+                key={`${it.id}-${it.last_update}`}
+                className="flex min-w-0 flex-col"
+                style={{ flex: `0 0 ${itemWidth}`, maxWidth: itemWidth }}
+              >
                 <div className="relative mb-2 aspect-square w-full overflow-hidden rounded-xl">
                   <Image
                     src={cover}
