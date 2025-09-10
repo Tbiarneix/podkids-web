@@ -18,6 +18,7 @@ export type PlayableEpisode = {
   cover?: string | null;
   podcastName?: string | null;
   duration?: number | null;
+  startAt?: number | null; // optional resume position in seconds
 };
 
 export type AudioPlayerContextType = {
@@ -85,13 +86,14 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     playNow: queuePlayNow,
   } = usePlaybackQueue();
 
-  const playInternal = useCallback((episode: PlayableEpisode) => {
+  const playInternal = useCallback((episode: PlayableEpisode, startAt?: number | null) => {
     setCurrent(episode);
     const a = audioRef.current;
     if (!a) return;
     try {
       if (a.src !== episode.url) a.src = episode.url;
-      a.currentTime = 0;
+      const at = Math.max(0, Math.floor(Number(startAt ?? episode.startAt ?? 0)));
+      a.currentTime = at;
       a.play().catch(() => {});
     } catch {}
   }, []);
@@ -210,7 +212,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
 
   // Queue wrappers delegating to the shared hook
   const next = useCallback(() => {
-    queueNext(playInternal);
+    queueNext((it) => playInternal(it, it.startAt ?? 0));
   }, [queueNext, playInternal]);
 
   const playNow = useCallback(

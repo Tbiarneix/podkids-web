@@ -104,6 +104,7 @@ function QueueContent() {
               podcastName: current.podcastName ?? undefined,
               cover: current.cover ?? undefined,
               duration: current.duration ?? null,
+              startAt: current.startAt ?? null,
             }}
             isActive
             draggable={false}
@@ -137,6 +138,7 @@ function QueueContent() {
                 podcastName: q.podcastName,
                 cover: q.cover,
                 duration: q.duration ?? null,
+                startAt: q.startAt ?? null,
               }}
               index={i}
               isActive={false}

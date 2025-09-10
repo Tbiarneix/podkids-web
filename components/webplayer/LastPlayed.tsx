@@ -126,6 +126,7 @@ export default function LastPlayed() {
                           cover: eCover,
                           podcastName: e.podcast_name ?? undefined,
                           duration: e.duration ?? null,
+                          startAt: Math.max(0, Math.floor(Number(e.progress ?? 0))) || 0,
                         };
                       });
 
@@ -137,13 +138,13 @@ export default function LastPlayed() {
                           cover,
                           podcastName: it.podcast_name ?? undefined,
                           duration: it.duration ?? null,
+                          startAt: Math.max(0, Math.floor(Number(it.progress ?? 0))) || 0,
                         },
                         nextQueue,
                       );
+                      // Fallback seek remains in place in case of race timing on first play
                       const prog = Math.max(0, Math.floor(Number(it.progress ?? 0)));
-                      if (prog > 0) {
-                        setTimeout(() => player.seekTo(prog), 60);
-                      }
+                      if (prog > 0) setTimeout(() => player.seekTo(prog), 60);
                     } catch {}
                   }}
                   onToggle={() => {

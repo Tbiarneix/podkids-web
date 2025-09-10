@@ -12,6 +12,7 @@ export type EpisodeQueueItem = {
   podcastName?: string | null;
   cover?: string | null;
   duration?: number | null;
+  startAt?: number | null;
 };
 
 export type EpisodeQueueCardProps = {
@@ -150,7 +151,12 @@ export function EpisodeQueueCard({
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <div className="text-xs tabular-nums text-foreground/70">
-          {formatTime(Math.max(0, Math.floor(Number(item.duration ?? 0))))}
+          {formatTime(
+            Math.max(
+              0,
+              Math.floor(Number(item.duration ?? 0)) - Math.max(0, Math.floor(Number(item.startAt ?? 0))),
+            ),
+          )}
         </div>
         {!hideControls && (
           <button

@@ -7,6 +7,7 @@ export type QueueItem = {
   cover?: string | null;
   podcastName?: string | null;
   duration?: number | null;
+  startAt?: number | null;
 };
 
 export type UsePlaybackQueue = {
