@@ -18,7 +18,7 @@ export type PlayableEpisode = {
   cover?: string | null;
   podcastName?: string | null;
   duration?: number | null;
-  startAt?: number | null; // optional resume position in seconds
+  startAt?: number | null;
 };
 
 export type AudioPlayerContextType = {

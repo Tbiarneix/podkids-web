@@ -28,6 +28,7 @@ export function PlayerBar() {
     stop,
     seekBy,
     seekTo,
+    next,
     volume,
     setVolume,
     toggleMute,
@@ -168,6 +169,7 @@ export function PlayerBar() {
                     title="Précédent"
                     aria-label="Piste précédente"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:text-foreground"
+                    onClick={() => seekTo(0)}
                   >
                     <SkipBack className="h-5 w-5" aria-hidden="true" />
                   </button>
@@ -230,6 +232,7 @@ export function PlayerBar() {
                     title="Suivant"
                     aria-label="Piste suivante"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:text-foreground"
+                    onClick={next}
                   >
                     <SkipForward className="h-5 w-5" aria-hidden="true" />
                   </button>

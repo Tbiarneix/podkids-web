@@ -142,7 +142,6 @@ export default function LastPlayed() {
                         },
                         nextQueue,
                       );
-                      // Fallback seek remains in place in case of race timing on first play
                       const prog = Math.max(0, Math.floor(Number(it.progress ?? 0)));
                       if (prog > 0) setTimeout(() => player.seekTo(prog), 60);
                     } catch {}
