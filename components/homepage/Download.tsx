@@ -24,11 +24,11 @@ export default function Download() {
   //         duration: 5000,
   //       }
   //     );
-      
+
   //     setEmail("");
   //     return;
   //   }
-    
+
   //   try {
   //     const response = await fetch("/api/subscribe", {
   //       method: "POST",
@@ -65,11 +65,15 @@ export default function Download() {
   // };
 
   return (
-    <section id="download" className="py-20 md:py-20 bg-background">
-      <div className="max-w-[1000px] mx-auto px-8 text-center">
-        <h2 className="text-[2.5rem] text-primary font-bold mb-6">Télécharge Podkids</h2>
-        <p className="text-[1.3rem] text-foreground mb-8 leading-[1.5]">
+    <section id="download" className="bg-background py-20 md:py-20">
+      <div className="mx-auto max-w-[1000px] px-8 text-center">
+        <h2 className="mb-6 text-[2.5rem] font-bold text-primary">Télécharge Podkids</h2>
+        <p className="mb-8 text-[1.3rem] leading-[1.5] text-foreground">
           Offre à ton enfant une expérience d&apos;écoute sécurisée et enrichissante&nbsp;!
+        </p>
+        <p className="m-8 text-[1.1rem] leading-[1.5] text-foreground">
+          Pour l&apos;instant les téléchargement sont suspendus, mais tu es déjà inscris, tu peux
+          utiliser la version web.
         </p>
 
         {/* <div className="mb-10">
@@ -101,8 +105,8 @@ export default function Download() {
                 Ton adresse email
               </label>
             </div> */}
-            {/* Honeypot anti-spam field (hidden from users) */}
-            {/* <div className="sr-only">
+        {/* Honeypot anti-spam field (hidden from users) */}
+        {/* <div className="sr-only">
               <label htmlFor="website">Laissez ce champ vide</label>
               <input
                 type="text"
@@ -124,22 +128,22 @@ export default function Download() {
           </form>
         </div> */}
 
-        <div className="flex justify-center gap-6 flex-wrap max-w-[30rem] mt-12 mx-auto">
-          <div className="flex justify-center items-center flex-1 gap-3 bg-card border-2 border-border rounded-2xl px-6 py-3 cursor-not-allowed opacity-80 transition-opacity hover:opacity-100">
+        <div className="mx-auto mt-12 flex max-w-[30rem] flex-wrap justify-center gap-6">
+          <div className="flex flex-1 cursor-not-allowed items-center justify-center gap-3 rounded-2xl border-2 border-border bg-card px-6 py-3 opacity-80 transition-opacity hover:opacity-100">
             <span className="text-2xl">
               <Image src="/icons/apple.webp" alt="" width={50} height={50} />
             </span>
             <span className="flex flex-col items-start text-left">
-              <small className="text-xs text-muted-foreground">Bientôt sur</small>
+              <small className="text-muted-foreground text-xs">Bientôt sur</small>
               <strong className="text-[1.1rem] text-foreground">App Store</strong>
             </span>
           </div>
-          <div className="flex justify-center items-center flex-1 gap-3 bg-card border-2 border-border rounded-2xl px-6 py-3 cursor-not-allowed opacity-80 transition-opacity hover:opacity-100">
+          <div className="flex flex-1 cursor-not-allowed items-center justify-center gap-3 rounded-2xl border-2 border-border bg-card px-6 py-3 opacity-80 transition-opacity hover:opacity-100">
             <span className="text-2xl">
               <Image src="/icons/android.webp" alt="" width={50} height={50} />
             </span>
             <span className="flex flex-col items-start text-left">
-              <small className="text-xs text-muted-foreground">Bientôt sur</small>
+              <small className="text-muted-foreground text-xs">Bientôt sur</small>
               <strong className="text-[1.1rem] text-foreground">Google Play</strong>
             </span>
           </div>

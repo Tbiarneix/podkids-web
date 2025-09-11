@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     };
 
     const CATEGORY_CODE_MAP: Record<string, string> = Object.fromEntries(
-      Object.entries(Category).map(([key, value]) => [String(value), key])
+      Object.entries(Category).map(([key, value]) => [String(value), key]),
     );
 
     const dbAgeRanges: string[] = Array.isArray(ageRanges)
@@ -85,7 +85,10 @@ export async function POST(req: NextRequest) {
             .eq("url", url)
             .limit(1);
           if (retryErr || !retryList || retryList.length === 0) {
-            return NextResponse.json({ error: retryErr?.message || "conflict_but_not_found" }, { status: 500 });
+            return NextResponse.json(
+              { error: retryErr?.message || "conflict_but_not_found" },
+              { status: 500 },
+            );
           }
           podcastId = retryList[0].id;
           isPublic = !!retryList[0].public;

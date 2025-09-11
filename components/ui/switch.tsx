@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useCallback} from "react";
+import React, { useCallback } from "react";
 import { cn } from "@/lib/utils";
 
-export interface SwitchProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface SwitchProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   checked: boolean;
   onCheckedChange?: (checked: boolean) => void;
 }
@@ -31,7 +30,7 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           }
         }}
         className={cn(
-          "inline-flex h-7 w-12 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "inline-flex h-7 w-12 items-center rounded-full transition-colors",
           checked ? "bg-primary" : "bg-input",
           className,
         )}

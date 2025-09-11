@@ -1,4 +1,3 @@
-import { AuthButton } from "@/components/auth-button";
 import { Hero } from "@/components/homepage/Hero";
 import { Header } from "@/components/homepage/Header";
 import About from "@/components/homepage/About";
@@ -18,12 +17,6 @@ export default function Home() {
       <Features />
       <Screenshots />
       <Download />
-      <div className="flex flex-col items-center mb-16">
-        <p className="text-[1.1rem] text-foreground mb-8 leading-[1.5]">
-          Pour l&apos;instant les téléchargement sont suspendus, mais tu peux utiliser la version web&nbsp;:
-        </p>
-        <AuthButton />
-      </div>
       <Footer />
     </main>
   );

@@ -11,9 +11,9 @@ export interface ParsedEpisode {
   name: string;
   description?: string;
   cover?: string;
-  url: string; 
-  duration?: number; 
-  publication_date?: string; 
+  url: string;
+  duration?: number;
+  publication_date?: string;
 }
 
 function toISODate(d?: string | number | Date): string | undefined {
@@ -31,19 +31,22 @@ export function parseDurationToSeconds(value?: string | number): number | undefi
   if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10));
   const parts = s.split(":").map((p) => parseInt(p, 10));
   if (parts.some((n) => isNaN(n))) return undefined;
-  while (parts.length < 3) parts.unshift(0); 
+  while (parts.length < 3) parts.unshift(0);
   const [hh, mm, ss] = parts;
   return hh * 3600 + mm * 60 + ss;
 }
 
-export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; episodes: ParsedEpisode[] } {
+export function parsePodcastFeed(xmlText: string): {
+  meta: ParsedPodcastMeta;
+  episodes: ParsedEpisode[];
+} {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
   });
   const json = parser.parse(xmlText);
 
-  const channel = (json && json.rss && json.rss.channel) || (json && json.feed); 
+  const channel = (json && json.rss && json.rss.channel) || (json && json.feed);
 
   const getPath = (obj: any, path: string[]): any => {
     let cur = obj;
@@ -53,43 +56,50 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
     }
     return cur;
   };
-  const pickFirst = (...vals: any[]) => vals.find((v) => v !== undefined && v !== null && String(v).trim() !== "");
+  const pickFirst = (...vals: any[]) =>
+    vals.find((v) => v !== undefined && v !== null && String(v).trim() !== "");
 
   const title = pickFirst(channel && channel.title, getPath(channel, ["itunes:title"]));
   const author = pickFirst(
     getPath(channel, ["itunes:author"]),
     getPath(channel, ["author", "name"]),
-    typeof (channel && channel.author) === "string" ? channel.author : undefined
+    typeof (channel && channel.author) === "string" ? channel.author : undefined,
   );
   const description = pickFirst(
     getPath(channel, ["itunes:summary"]),
     channel && channel.description,
     channel && channel.subtitle,
-    getPath(channel, ["itunes:subtitle"])
+    getPath(channel, ["itunes:subtitle"]),
   );
 
   const cover: string | undefined = pickFirst(
     getPath(channel, ["itunes:image", "@_href"]),
-    getPath(channel, ["image", "url"])
+    getPath(channel, ["image", "url"]),
   );
 
   const items: any[] = Array.isArray(channel?.item)
     ? channel.item
     : channel?.item
-    ? [channel.item]
-    : Array.isArray(channel?.entry)
-    ? channel.entry
-    : [];
+      ? [channel.item]
+      : Array.isArray(channel?.entry)
+        ? channel.entry
+        : [];
 
   const episodes: ParsedEpisode[] = [];
   for (const item of items) {
     const epTitle = pickFirst(item && item.title);
-    const enclosureUrl = pickFirst(getPath(item, ["enclosure", "@_url"]), getPath(item, ["enclosure", "url"]));
+    const enclosureUrl = pickFirst(
+      getPath(item, ["enclosure", "@_url"]),
+      getPath(item, ["enclosure", "url"]),
+    );
 
     let linkAudio: string | undefined;
     if (!enclosureUrl && Array.isArray(item && item.link)) {
       const enc = (item as any).link.find(
-        (l: any) => l && l["@_rel"] === "enclosure" && ((l["@_type"] && String(l["@_type"]).includes("audio")) || !!l["@_href"]) 
+        (l: any) =>
+          l &&
+          l["@_rel"] === "enclosure" &&
+          ((l["@_type"] && String(l["@_type"]).includes("audio")) || !!l["@_href"]),
       );
       linkAudio = enc && enc["@_href"];
     } else if (!enclosureUrl && getPath(item, ["link", "@_rel"]) === "enclosure") {
@@ -99,13 +109,28 @@ export function parsePodcastFeed(xmlText: string): { meta: ParsedPodcastMeta; ep
     const audioUrl = pickFirst(enclosureUrl, linkAudio);
     if (!epTitle || !audioUrl) continue;
 
-    const epDescription = pickFirst(getPath(item, ["itunes:summary"]), item && item.description, item && item.summary);
+    const epDescription = pickFirst(
+      getPath(item, ["itunes:summary"]),
+      item && item.description,
+      item && item.summary,
+    );
 
-    const epImage = pickFirst(getPath(item, ["itunes:image", "@_href"]), getPath(item, ["image", "url"]), cover);
+    const epImage = pickFirst(
+      getPath(item, ["itunes:image", "@_href"]),
+      getPath(item, ["image", "url"]),
+      cover,
+    );
 
-    const durationSeconds = parseDurationToSeconds(pickFirst(getPath(item, ["itunes:duration"]), item && item.duration));
+    const durationSeconds = parseDurationToSeconds(
+      pickFirst(getPath(item, ["itunes:duration"]), item && item.duration),
+    );
 
-    const pubDate = pickFirst(item && item.pubDate, item && item.published, item && item.updated, item && item.date);
+    const pubDate = pickFirst(
+      item && item.pubDate,
+      item && item.published,
+      item && item.updated,
+      item && item.date,
+    );
 
     episodes.push({
       name: String(epTitle).trim(),

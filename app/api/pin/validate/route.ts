@@ -75,7 +75,10 @@ export async function POST(req: Request) {
     const nextAttempts = attempts + 1;
     if (nextAttempts >= MAX_ATTEMPTS) {
       const blockUntil = Date.now() + BLOCK_MS;
-      const res = NextResponse.json({ error: "too_many_attempts", retryAt: blockUntil }, { status: 429 });
+      const res = NextResponse.json(
+        { error: "too_many_attempts", retryAt: blockUntil },
+        { status: 429 },
+      );
       res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts: 0, until: blockUntil }), {
         httpOnly: true,
         sameSite: "lax",

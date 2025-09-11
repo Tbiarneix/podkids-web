@@ -26,7 +26,10 @@ export async function POST(req: NextRequest) {
 
     const { error: upsertErr } = await supabase
       .from("podcast_subscriptions")
-      .upsert({ profile_id, podcast_id }, { onConflict: "profile_id,podcast_id", ignoreDuplicates: true });
+      .upsert(
+        { profile_id, podcast_id },
+        { onConflict: "profile_id,podcast_id", ignoreDuplicates: true },
+      );
 
     if (upsertErr) {
       return NextResponse.json({ error: upsertErr.message }, { status: 500 });

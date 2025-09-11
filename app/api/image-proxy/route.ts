@@ -2,11 +2,7 @@ import { NextRequest } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
-const BLOCKED_HOSTS = new Set([
-  "localhost",
-  "127.0.0.1",
-  "::1",
-]);
+const BLOCKED_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
 export async function GET(req: NextRequest) {
   try {
@@ -35,7 +31,7 @@ export async function GET(req: NextRequest) {
         signal: controller.signal,
         headers: {
           "User-Agent": "Podkids-ImageProxy/1.0",
-          "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+          Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
         },
       });
     } finally {

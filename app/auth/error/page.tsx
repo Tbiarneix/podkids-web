@@ -1,11 +1,7 @@
 import AuthFormHeader from "@/components/auth-form-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
   const params = await searchParams;
 
   return (
@@ -16,17 +12,15 @@ export default async function Page({
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">
-                  Une erreur est survenue
-                </CardTitle>
+                <CardTitle className="text-2xl">Une erreur est survenue</CardTitle>
               </CardHeader>
               <CardContent>
                 {params?.error ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Code d&apos;erreur: {params.error}
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Une erreur inattendue est survenue.
                   </p>
                 )}
