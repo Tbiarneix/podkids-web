@@ -1,16 +1,9 @@
-import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import PodcastsManager from "@/components/protected/PodcastsManager";
 import PodcastsList from "@/components/protected/PodcastsList";
 
 export default async function PodcastsManagementPage() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
 
   const {
     data: { user },

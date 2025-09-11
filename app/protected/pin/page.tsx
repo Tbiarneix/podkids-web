@@ -1,15 +1,9 @@
-import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import PinForm from "@/components/protected/PinForm";
 
 export default async function PinSettingsPage() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
+  const { data } = await supabase.auth.getClaims();
 
   const userId = (data as any)?.claims?.sub as string | undefined;
   let mode: "create" | "update" = "create";
