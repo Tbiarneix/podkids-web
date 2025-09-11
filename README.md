@@ -45,7 +45,7 @@ Arborescence (extraits)
 
 ## Installation et démarrage
 
-1) Cloner et installer
+1. Cloner et installer
 
 ```bash
 git clone <repo>
@@ -53,7 +53,7 @@ cd podkids-web
 npm install
 ```
 
-2) Variables d’environnement
+2. Variables d’environnement
 
 Créer un fichier `.env.local` à la racine avec:
 
@@ -65,7 +65,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 Ces valeurs sont disponibles dans le Dashboard Supabase > Project Settings > API.
 
-3) Lancer en local
+3. Lancer en local
 
 ```bash
 npm run dev
@@ -73,7 +73,7 @@ npm run dev
 
 Ouvrir http://localhost:3000
 
-4) Scripts utiles
+4. Scripts utiles
 
 - `dev`: Next.js avec Turbopack
 - `build`: build de production
@@ -137,4 +137,3 @@ Ouvrir http://localhost:3000
 ## Licence
 
 Projet propriétaire.
-

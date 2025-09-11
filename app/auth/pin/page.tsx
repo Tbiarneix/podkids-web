@@ -24,7 +24,11 @@ function PinGateContent() {
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch("/api/pin", { method: "GET", credentials: "include", cache: "no-store" });
+        const res = await fetch("/api/pin", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
         if (!res.ok) throw new Error("failed");
         const data = (await res.json()) as { exists?: boolean };
         if (mounted && data?.exists === false) {
@@ -34,7 +38,11 @@ function PinGateContent() {
         }
       } catch {
         try {
-          const resp = await fetch("/api/pin", { method: "GET", credentials: "include", cache: "no-store" });
+          const resp = await fetch("/api/pin", {
+            method: "GET",
+            credentials: "include",
+            cache: "no-store",
+          });
           if (resp.status === 401 && mounted) {
             router.replace("/auth/login");
             return;
@@ -81,7 +89,7 @@ function PinGateContent() {
 
   if (checking) return null;
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="flex min-h-[60vh] items-center justify-center">
       <PinModal
         open={open}
         onClose={() => {

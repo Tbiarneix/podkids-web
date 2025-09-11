@@ -1,16 +1,9 @@
-import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import PodcastsManager from "@/components/protected/PodcastsManager";
 import PodcastsList from "@/components/protected/PodcastsList";
 
 export default async function PodcastsManagementPage() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
 
   const {
     data: { user },
@@ -33,9 +26,11 @@ export default async function PodcastsManagementPage() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-8">
+    <div className="flex w-full flex-1 flex-col gap-8">
       <h1 className="text-3xl font-bold">Gérer les podcasts</h1>
-      <p className="text-muted-foreground">Ajoutez, organisez et gérez vos podcasts et abonnements.</p>
+      <p className="text-muted-foreground">
+        Ajoutez, organisez et gérez vos podcasts et abonnements.
+      </p>
       <PodcastsManager />
       <PodcastsList podcasts={podcasts ?? []} privateIds={privateIds} />
     </div>

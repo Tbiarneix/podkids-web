@@ -11,7 +11,7 @@ const FRONT_TO_DB_AGE: Record<string, string> = {
 };
 
 const DB_TO_FRONT_AGE: Record<string, string> = Object.fromEntries(
-  Object.entries(FRONT_TO_DB_AGE).map(([front, db]) => [db, front])
+  Object.entries(FRONT_TO_DB_AGE).map(([front, db]) => [db, front]),
 );
 
 function mapDbToFront(row: any) {
@@ -29,7 +29,10 @@ function mapDbToFront(row: any) {
 }
 
 function isValidName(name: unknown): name is string {
-  return typeof name === "string" && name.trim().length >= 1 && name.trim().length <= 80;
+  if (typeof name !== "string") return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 1 || trimmed.length > 80) return false;
+  return /^[A-Za-z0-9_-]+$/.test(trimmed);
 }
 
 function isValidAvatar(avatar: unknown): avatar is number {
@@ -41,10 +44,7 @@ function isValidAgeRanges(ageRanges: unknown): ageRanges is string[] {
   return ageRanges.every((v) => typeof v === "string" && FRONT_TO_DB_AGE[v] !== undefined);
 }
 
-export async function PATCH(
-  req: Request,
-  context: unknown
-) {
+export async function PATCH(req: Request, context: unknown) {
   const supabase = await createClient();
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr || !userData.user) {
@@ -64,15 +64,18 @@ export async function PATCH(
 
   const patch: Record<string, any> = {};
   if (body.name !== undefined) {
-    if (!isValidName(body.name)) return NextResponse.json({ error: "invalid_name" }, { status: 400 });
+    if (!isValidName(body.name))
+      return NextResponse.json({ error: "invalid_name" }, { status: 400 });
     patch.name = String(body.name).trim();
   }
   if (body.avatar !== undefined) {
-    if (!isValidAvatar(body.avatar)) return NextResponse.json({ error: "invalid_avatar" }, { status: 400 });
+    if (!isValidAvatar(body.avatar))
+      return NextResponse.json({ error: "invalid_avatar" }, { status: 400 });
     patch.avatar = String(body.avatar);
   }
   if (body.ageRanges !== undefined) {
-    if (!isValidAgeRanges(body.ageRanges)) return NextResponse.json({ error: "invalid_age_ranges" }, { status: 400 });
+    if (!isValidAgeRanges(body.ageRanges))
+      return NextResponse.json({ error: "invalid_age_ranges" }, { status: 400 });
     patch.age_range = (body.ageRanges as string[]).map((v) => FRONT_TO_DB_AGE[v]);
   }
   if (Object.keys(patch).length === 0) {
@@ -94,10 +97,7 @@ export async function PATCH(
   return NextResponse.json({ profile: mapDbToFront(data) });
 }
 
-export async function DELETE(
-  _req: Request,
-  context: unknown
-) {
+export async function DELETE(_req: Request, context: unknown) {
   const supabase = await createClient();
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr || !userData.user) {

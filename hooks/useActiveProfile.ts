@@ -85,39 +85,42 @@ export function useActiveProfile() {
     hydrateFromServer();
   }, [hydrateFromServer]);
 
-  const setActiveProfile = useCallback(async (p: { id: string; name: string; avatar: number; ageRanges: string[] }) => {
-    const payload: ActiveProfilePayload = { ...p, updatedAt: Date.now(), version: 1 } as any;
-    writeToLS(payload);
-    setActive(payload);
+  const setActiveProfile = useCallback(
+    async (p: { id: string; name: string; avatar: number; ageRanges: string[] }) => {
+      const payload: ActiveProfilePayload = { ...p, updatedAt: Date.now(), version: 1 } as any;
+      writeToLS(payload);
+      setActive(payload);
 
-    pendingRef.current = p.id;
-    try {
-      const res = await fetch("/api/profiles/activate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: p.id }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "activate_failed");
-      
-      const prof: Profile | undefined = data?.profile;
-      if (prof) {
-        const fromServer: ActiveProfilePayload = {
-          id: prof.id,
-          name: prof.name,
-          avatar: prof.avatar,
-          ageRanges: prof.ageRanges,
-          updatedAt: Date.now(),
-          version: 1,
-        };
-        writeToLS(fromServer);
-        setActive(fromServer);
+      pendingRef.current = p.id;
+      try {
+        const res = await fetch("/api/profiles/activate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: p.id }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "activate_failed");
+
+        const prof: Profile | undefined = data?.profile;
+        if (prof) {
+          const fromServer: ActiveProfilePayload = {
+            id: prof.id,
+            name: prof.name,
+            avatar: prof.avatar,
+            ageRanges: prof.ageRanges,
+            updatedAt: Date.now(),
+            version: 1,
+          };
+          writeToLS(fromServer);
+          setActive(fromServer);
+        }
+      } catch (e) {
+      } finally {
+        pendingRef.current = null;
       }
-    } catch (e) {
-    } finally {
-      pendingRef.current = null;
-    }
-  }, []);
+    },
+    [],
+  );
 
   const clearActiveProfile = useCallback(() => {
     writeToLS(null);
@@ -126,6 +129,6 @@ export function useActiveProfile() {
 
   return useMemo(
     () => ({ active, loading, hydrateFromServer, setActiveProfile, clearActiveProfile }),
-    [active, loading, hydrateFromServer, setActiveProfile, clearActiveProfile]
+    [active, loading, hydrateFromServer, setActiveProfile, clearActiveProfile],
   );
 }

@@ -12,7 +12,14 @@ interface PinModalProps {
   submitLabel?: string;
 }
 
-export function PinModal({ open, title = "Accès parent", description = "Saisissez votre code PIN.", onClose, onSubmit, submitLabel = "Valider" }: PinModalProps) {
+export function PinModal({
+  open,
+  title = "Accès parent",
+  description = "Saisissez votre code PIN.",
+  onClose,
+  onSubmit,
+  submitLabel = "Valider",
+}: PinModalProps) {
   const [pinDigits, setPinDigits] = useState<string[]>(Array.from({ length: 5 }, () => ""));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +41,8 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
       const raw = typeof window !== "undefined" ? window.localStorage.getItem(LS_KEY) : null;
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object") return parsed as { until: number; attempts: number };
+      if (parsed && typeof parsed === "object")
+        return parsed as { until: number; attempts: number };
     } catch {}
     return null;
   }
@@ -42,14 +50,16 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
   function writeBlockState(until: number | null, nextAttempts: number) {
     try {
       if (typeof window === "undefined") return;
-      if (until) window.localStorage.setItem(LS_KEY, JSON.stringify({ until, attempts: nextAttempts }));
+      if (until)
+        window.localStorage.setItem(LS_KEY, JSON.stringify({ until, attempts: nextAttempts }));
       else window.localStorage.removeItem(LS_KEY);
     } catch {}
   }
 
   useEffect(() => {
     if (open) {
-      prevFocusRef.current = (typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null);
+      prevFocusRef.current =
+        typeof document !== "undefined" ? (document.activeElement as HTMLElement | null) : null;
       const t = window.setTimeout(() => {
         inputsRef.current[0]?.focus();
       }, 0);
@@ -197,11 +207,14 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
       }}
     >
       <button aria-label="Fermer" className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <form className="relative z-10 w-[90%] max-w-sm rounded-2xl border bg-card p-5 text-card-foreground shadow-xl" onSubmit={handleSubmit}>
-        <h2 id="pin-title" className="text-lg font-semibold mb-1">
+      <form
+        className="relative z-10 w-[90%] max-w-sm rounded-2xl border bg-card p-5 text-card-foreground shadow-xl"
+        onSubmit={handleSubmit}
+      >
+        <h2 id="pin-title" className="mb-1 text-lg font-semibold">
           {title}
         </h2>
-        {description ? <p className="text-sm text-muted-foreground mb-4">{description}</p> : null}
+        {description ? <p className="text-muted-foreground mb-4 text-sm">{description}</p> : null}
         <div className="flex items-center justify-center gap-3">
           {pinDigits.map((val, i) => (
             <input
@@ -220,12 +233,14 @@ export function PinModal({ open, title = "Accès parent", description = "Saisiss
               onKeyDown={(e) => handleKeyDown(e, i)}
               onPaste={handlePaste}
               disabled={!!blockedUntil}
-              className="h-14 w-12 md:h-16 md:w-14 text-center text-xl md:text-2xl font-semibold rounded-md bg-background text-foreground border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
+              className="h-14 w-12 rounded-md border border-border bg-background text-center text-xl font-semibold text-foreground disabled:opacity-60 md:h-16 md:w-14 md:text-2xl"
             />
           ))}
         </div>
         {blockedUntil ? (
-          <p className="mt-3 text-sm text-red-500">Trop d&apos;essais, réessayez dans {remaining}s.</p>
+          <p className="mt-3 text-sm text-red-500">
+            Trop d&apos;essais, réessayez dans {remaining}s.
+          </p>
         ) : error ? (
           <p className="mt-3 text-sm text-red-500">{error}</p>
         ) : null}

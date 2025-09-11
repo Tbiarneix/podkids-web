@@ -51,6 +51,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       path: "/",
       maxAge,
+      secure: process.env.NODE_ENV === "production",
     });
     return res;
   }
@@ -75,12 +76,16 @@ export async function POST(req: Request) {
     const nextAttempts = attempts + 1;
     if (nextAttempts >= MAX_ATTEMPTS) {
       const blockUntil = Date.now() + BLOCK_MS;
-      const res = NextResponse.json({ error: "too_many_attempts", retryAt: blockUntil }, { status: 429 });
+      const res = NextResponse.json(
+        { error: "too_many_attempts", retryAt: blockUntil },
+        { status: 429 },
+      );
       res.cookies.set(COOKIE_KEY, JSON.stringify({ attempts: 0, until: blockUntil }), {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
         maxAge: Math.ceil(BLOCK_MS / 1000),
+        secure: process.env.NODE_ENV === "production",
       });
       return res;
     }
@@ -90,6 +95,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60,
+      secure: process.env.NODE_ENV === "production",
     });
     return res;
   }
@@ -100,6 +106,7 @@ export async function POST(req: Request) {
     sameSite: "lax",
     path: "/protected",
     maxAge: 5 * 60,
+    secure: process.env.NODE_ENV === "production",
   });
   res.cookies.delete(COOKIE_KEY);
   return res;

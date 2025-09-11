@@ -2,21 +2,21 @@
 
 export default function Skiplinks() {
   const handleNavigationClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (window.innerWidth > 1025) {
+    if (window.innerWidth >= 1280) {
       e.preventDefault();
-      const nav = document.getElementById('main-menu');
+      const nav = document.getElementById("main-menu-desktop");
       if (nav) {
         const firstFocusable = nav.querySelector<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
         if (firstFocusable instanceof HTMLElement) {
           firstFocusable.focus();
         }
       }
     }
-    if (window.innerWidth <= 1025) {
+    if (window.innerWidth < 1280) {
       e.preventDefault();
-      const menuButton = document.querySelector('button[aria-controls="main-menu"]');
+      const menuButton = document.querySelector('button[aria-controls="main-menu-mobile"]');
       if (menuButton instanceof HTMLElement) {
         menuButton.focus();
       }
@@ -25,15 +25,15 @@ export default function Skiplinks() {
 
   return (
     <nav
-      className="relative bg-background sr-only focus-within:not-sr-only focus-within:m-2 focus-within:px-8 focus-within:py-4"
+      className="sr-only relative bg-background focus-within:not-sr-only focus-within:m-2 focus-within:px-8 focus-within:py-4"
       aria-label="Accès rapide"
     >
-      <ul className="flex gap-4 p-0 m-0 list-none max-[768px]:flex-col">
+      <ul className="m-0 flex list-none gap-4 p-0 max-[768px]:flex-col">
         <li>
           <a
-            href="#main-menu"
+            href="#main-menu-desktop"
             onClick={handleNavigationClick}
-            className="px-2 py-2 border rounded-lg border-[var(--pastel-dark)] bg-[var(--pastel-dark)] text-white transition-all duration-300 text-base font-bold no-underline"
+            className="rounded-lg border border-[var(--pastel-dark)] bg-[var(--pastel-dark)] px-2 py-2 text-base font-bold text-white no-underline transition-all duration-300"
           >
             Aller au menu de navigation
           </a>
@@ -41,7 +41,7 @@ export default function Skiplinks() {
         <li>
           <a
             href="#main-content"
-            className="px-2 py-2 border rounded-lg border-[var(--pastel-dark)] bg-[var(--pastel-dark)] text-white transition-all duration-300 text-base font-bold no-underline"
+            className="rounded-lg border border-[var(--pastel-dark)] bg-[var(--pastel-dark)] px-2 py-2 text-base font-bold text-white no-underline transition-all duration-300"
           >
             Aller au contenu
           </a>
@@ -49,4 +49,4 @@ export default function Skiplinks() {
       </ul>
     </nav>
   );
-};
+}

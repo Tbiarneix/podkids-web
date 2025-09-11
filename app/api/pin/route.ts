@@ -91,6 +91,7 @@ export async function POST(req: Request) {
     sameSite: "lax",
     path: "/protected",
     maxAge: 5 * 60,
+    secure: process.env.NODE_ENV === "production",
   });
   return res;
 }

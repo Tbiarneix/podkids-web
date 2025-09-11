@@ -16,6 +16,8 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  // Désactive les règles de formatage qui pourraient entrer en conflit avec Prettier
+  ...compat.extends("prettier"),
 ];
 
 export default eslintConfig;
