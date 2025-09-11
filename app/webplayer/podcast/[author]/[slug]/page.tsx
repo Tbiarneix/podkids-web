@@ -42,7 +42,7 @@ export default function PodcastDetailsPage() {
 
   const supabase = useMemo(() => createClient(), []);
   const { active } = useActiveProfile();
-  const { play } = useAudioPlayer();
+  const { playNow } = useAudioPlayer();
 
   const [podcast, setPodcast] = useState<PodcastRow | null>(null);
   const [episodes, setEpisodes] = useState<EpisodeRow[]>([]);
@@ -50,7 +50,7 @@ export default function PodcastDetailsPage() {
   const [subscribed, setSubscribed] = useState<boolean>(false);
   const { toggle, loading: subLoading } = useSubscription(podcast?.id);
 
-  const [sortAsc, setSortAsc] = useState(false); // false = recent → old (default)
+  const [sortAsc, setSortAsc] = useState(false);
   const [statusFilter, setStatusFilter] = useState<"all" | "unlistened" | "listened">("all");
   const sortedEpisodes = useMemo(() => {
     const copy = [...episodes];
@@ -297,7 +297,19 @@ export default function PodcastDetailsPage() {
             statuses={episodeStatuses}
             onToggleStatus={toggleEpisodeStatus}
             onPlay={(payload) => {
-              play(payload);
+              try {
+                const idx = filteredEpisodes.findIndex((e) => Number(e.id) === Number(payload.id));
+                const tail = idx >= 0 ? filteredEpisodes.slice(idx + 1) : [];
+                const nextQueue = tail.map((e) => ({
+                  id: e.id,
+                  name: e.name,
+                  url: `/api/audio-proxy?src=${encodeURIComponent(e.url)}`,
+                  cover: e.cover ? `/api/image-proxy?src=${encodeURIComponent(e.cover)}` : coverSrc,
+                  podcastName: podcast.name,
+                  duration: e.duration ?? null,
+                }));
+                playNow(payload, nextQueue);
+              } catch {}
             }}
           />
         </div>

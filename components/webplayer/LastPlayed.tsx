@@ -111,18 +111,39 @@ export default function LastPlayed() {
                   episodeName={it.episode_name}
                   onPlay={() => {
                     try {
-                      player.play({
-                        id: it.id,
-                        name: it.episode_name,
-                        url: audioSrc,
-                        cover,
-                        podcastName: it.podcast_name ?? undefined,
-                        duration: it.duration ?? null,
+                      const index = list.findIndex((x) => Number(x.id) === Number(it.id));
+                      const nextList = index >= 0 ? list.slice(index + 1) : [];
+                      const nextQueue = nextList.map((e) => {
+                        const eCoverRaw = e.episode_cover || e.podcast_cover || "/images/Logo.webp";
+                        const eCover = eCoverRaw
+                          ? `/api/image-proxy?src=${encodeURIComponent(eCoverRaw)}`
+                          : "/images/Logo.webp";
+                        const eUrl = `/api/audio-proxy?src=${encodeURIComponent(e.episode_url)}`;
+                        return {
+                          id: e.id,
+                          name: e.episode_name,
+                          url: eUrl,
+                          cover: eCover,
+                          podcastName: e.podcast_name ?? undefined,
+                          duration: e.duration ?? null,
+                          startAt: Math.max(0, Math.floor(Number(e.progress ?? 0))) || 0,
+                        };
                       });
+
+                      player.playNow(
+                        {
+                          id: it.id,
+                          name: it.episode_name,
+                          url: audioSrc,
+                          cover,
+                          podcastName: it.podcast_name ?? undefined,
+                          duration: it.duration ?? null,
+                          startAt: Math.max(0, Math.floor(Number(it.progress ?? 0))) || 0,
+                        },
+                        nextQueue,
+                      );
                       const prog = Math.max(0, Math.floor(Number(it.progress ?? 0)));
-                      if (prog > 0) {
-                        setTimeout(() => player.seekTo(prog), 60);
-                      }
+                      if (prog > 0) setTimeout(() => player.seekTo(prog), 60);
                     } catch {}
                   }}
                   onToggle={() => {
