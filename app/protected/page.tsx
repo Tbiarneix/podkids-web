@@ -1,19 +1,9 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
-
-import { createClient } from "@/lib/supabase/server";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Settings, KeyRound, Users, Podcast } from "lucide-react";
 
 export default async function ProtectedPage() {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
   return (
     <div className="flex w-full flex-1 flex-col gap-12">
       <div className="h-8" aria-hidden />

@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   res.cookies.set("pk_pin_ok", "", {
     path: "/protected",
     maxAge: 0,
+    secure: process.env.NODE_ENV === "production",
   });
   return res;
 }

@@ -51,6 +51,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       path: "/",
       maxAge,
+      secure: process.env.NODE_ENV === "production",
     });
     return res;
   }
@@ -84,6 +85,7 @@ export async function POST(req: Request) {
         sameSite: "lax",
         path: "/",
         maxAge: Math.ceil(BLOCK_MS / 1000),
+        secure: process.env.NODE_ENV === "production",
       });
       return res;
     }
@@ -93,6 +95,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60,
+      secure: process.env.NODE_ENV === "production",
     });
     return res;
   }
@@ -103,6 +106,7 @@ export async function POST(req: Request) {
     sameSite: "lax",
     path: "/protected",
     maxAge: 5 * 60,
+    secure: process.env.NODE_ENV === "production",
   });
   res.cookies.delete(COOKIE_KEY);
   return res;

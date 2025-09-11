@@ -44,7 +44,14 @@ export async function updateSession(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
+
+    // IMPORTANT: Preserve cookies set by Supabase during this middleware execution.
+    const redirectResponse = NextResponse.redirect(url);
+    const supaCookies = supabaseResponse.cookies.getAll();
+    for (const c of supaCookies) {
+      redirectResponse.cookies.set(c);
+    }
+    return redirectResponse;
   }
 
   const path = request.nextUrl.pathname;
@@ -58,8 +65,24 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = "/auth/pin";
       url.searchParams.set("redirect", request.nextUrl.pathname + (request.nextUrl.search || ""));
-      return NextResponse.redirect(url);
+
+      // IMPORTANT: Preserve cookies set by Supabase during this middleware execution.
+      const redirectResponse = NextResponse.redirect(url);
+      const supaCookies = supabaseResponse.cookies.getAll();
+      for (const c of supaCookies) {
+        redirectResponse.cookies.set(c);
+      }
+      return redirectResponse;
     }
+  }
+
+  // When entering the webplayer, clear the PIN cookie to require a fresh PIN
+  // the next time the user navigates to /protected/*
+  if (path.startsWith("/webplayer")) {
+    supabaseResponse.cookies.set("pk_pin_ok", "", {
+      path: "/protected",
+      maxAge: 0,
+    });
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

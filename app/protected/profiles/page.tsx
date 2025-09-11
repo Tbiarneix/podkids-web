@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -15,11 +14,7 @@ import {
 
 export default async function ProfilesManagementPage() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
+  const { data } = await supabase.auth.getClaims();
 
   const userId = (data as any)?.claims?.sub as string | undefined;
   let hasPin = false;
