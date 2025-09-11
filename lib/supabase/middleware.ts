@@ -76,6 +76,15 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // When entering the webplayer, clear the PIN cookie to require a fresh PIN
+  // the next time the user navigates to /protected/*
+  if (path.startsWith("/webplayer")) {
+    supabaseResponse.cookies.set("pk_pin_ok", "", {
+      path: "/protected",
+      maxAge: 0,
+    });
+  }
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:
