@@ -1,9 +1,10 @@
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ToasterProvider } from "@/providers/ToasterProvider";
-import { generateMetadata } from "@/utils/metadata";
+import { generateMetadata as buildMetadata } from "@/utils/metadata";
+import type { Metadata } from "next";
 
-export { generateMetadata as metadata };
+export const metadata: Metadata = buildMetadata();
 
 export default function RootLayout({
   children,

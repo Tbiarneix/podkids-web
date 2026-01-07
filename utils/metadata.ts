@@ -29,6 +29,7 @@ export function generateMetadata(options: MetadataOptions = {}): Metadata {
   const url = `${baseUrl}${path}`;
 
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
     icons: {

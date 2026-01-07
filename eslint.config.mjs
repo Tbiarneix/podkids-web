@@ -1,23 +1,14 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import next from "eslint-config-next";
+import prettier from "eslint-config-prettier";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+// Use Next.js flat config array and append project-specific rules and Prettier config.
+export default [
+  ...next,
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
-  // Désactive les règles de formatage qui pourraient entrer en conflit avec Prettier
-  ...compat.extends("prettier"),
+  // Disable formatting-related rules that might conflict with Prettier
+  prettier,
 ];
-
-export default eslintConfig;
