@@ -30,13 +30,16 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
   const toLabel = (v: StatusFilterValue): string =>
     v === "unlistened" ? "Non écoutés" : v === "listened" ? "Déjà écoutés" : "Tous les épisodes";
 
-  // When opening the listbox, move active/focus to the selected option
+  // Define before effects so it's not accessed prior to declaration
+  const closeAndFocusTrigger = () => {
+    setOpen(false);
+    setTimeout(() => triggerRef.current?.focus(), 0);
+  };
+
+  // When opening the listbox, focus the selected option without changing state inside the effect
   useEffect(() => {
     if (!open) return;
-    const idx = options.findIndex((o) => o.key === value);
-    const nextIdx = idx >= 0 ? idx : 0;
-    setActiveIndex(nextIdx);
-    const key = options[nextIdx]?.key;
+    const key = options[activeIndex]?.key ?? options.find((o) => o.key === value)?.key;
     if (!key) return;
     const id = `status-opt-${key}`;
     requestAnimationFrame(() => {
@@ -45,7 +48,7 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
         listRef.current?.focus();
       }
     });
-  }, [open, options, value]);
+  }, [open, options, value, activeIndex]);
 
   // Close when clicking outside and restore focus to trigger
   useEffect(() => {
@@ -65,11 +68,6 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
     };
   }, [open]);
 
-  const closeAndFocusTrigger = () => {
-    setOpen(false);
-    setTimeout(() => triggerRef.current?.focus(), 0);
-  };
-
   return (
     <div className={cn("relative", className)}>
       <Button
@@ -80,7 +78,15 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
         aria-expanded={open}
         aria-controls="status-filter-listbox"
         ref={triggerRef}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!open) {
+            const idx = options.findIndex((o) => o.key === value);
+            setActiveIndex(idx >= 0 ? idx : 0);
+            setOpen(true);
+          } else {
+            setOpen(false);
+          }
+        }}
       >
         {toLabel(value)}
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
@@ -102,7 +108,12 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
               closeAndFocusTrigger();
               return;
             }
-            if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+            if (
+              e.key === "ArrowDown" ||
+              e.key === "ArrowUp" ||
+              e.key === "Home" ||
+              e.key === "End"
+            ) {
               e.preventDefault();
               const max = options.length - 1;
               let next = activeIndex;
@@ -147,7 +158,12 @@ export function StatusFilter({ value, onChange, className }: StatusFilterProps) 
               >
                 <span>{opt.label}</span>
                 {value === opt.key ? (
-                  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="currentColor"
+                  >
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 ) : null}

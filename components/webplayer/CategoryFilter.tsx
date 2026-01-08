@@ -109,15 +109,17 @@ export function CategoryFilter<T>({
   }, [filtered]);
 
   const [open, setOpen] = useState(false);
+  const openFilters = () => {
+    setDraft(selected);
+    setOpen(true);
+  };
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const triggerBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveRef = useRef<HTMLElement | null>(null);
   const wasOpenRef = useRef(false);
 
-  useEffect(() => {
-    if (open) setDraft(selected);
-  }, [open, selected]);
+  // Removed setState from effect: draft is initialized when opening via openFilters()
 
   useEffect(() => {
     if (!open) return;
@@ -183,7 +185,7 @@ export function CategoryFilter<T>({
             buttonClassName ??
             "rounded-full border-white text-white hover:bg-white/10 hover:text-white"
           }
-          onClick={() => setOpen(true)}
+          onClick={openFilters}
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-controls="filters-drawer"

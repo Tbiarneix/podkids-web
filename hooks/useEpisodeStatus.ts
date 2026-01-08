@@ -13,17 +13,20 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
 
   const [statuses, setStatuses] = useState<
     Record<number, { status: AppEpisodeStatus; progress?: number | null }>
-  >({});
-
-  useEffect(() => {
+  >(() => {
     try {
-      if (!podcastId) return;
-      const raw = sessionStorage.getItem(sessionStatusesKey(podcastId));
-      if (!raw) return;
+      if (!podcastId) return {};
+      const raw =
+        typeof window !== "undefined"
+          ? sessionStorage.getItem(sessionStatusesKey(podcastId))
+          : null;
+      if (!raw) return {};
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object") setStatuses(parsed);
-    } catch {}
-  }, [podcastId]);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  });
 
   useEffect(() => {
     try {
@@ -146,6 +149,7 @@ export function useEpisodeStatus(podcastId?: number | null, episodes: EpisodeLik
   useEffect(() => {
     const id = current?.id ? Number(current.id) : null;
     if (!id) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional optimistic UI when current changes
     setOptimistic(id, (p) => ({
       ...(p ?? { progress: 0, status: "unlistened" }),
       status: p?.status === "unlistened" ? "listening" : (p?.status ?? "listening"),

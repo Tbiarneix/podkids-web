@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -40,8 +40,7 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
     const coverSrc = direct
       ? `/api/image-proxy?src=${encodeURIComponent(direct)}`
       : "/images/Logo.webp";
-    const [subscribed, setSubscribed] = useState<boolean>(isSubscribed);
-    useEffect(() => setSubscribed(isSubscribed), [isSubscribed]);
+    const subscribed = isSubscribed;
 
     const content = (
       <div
@@ -75,7 +74,6 @@ const PodcastCard = React.forwardRef<HTMLDivElement, PodcastCardProps>(
           onClick={(e) => {
             e.preventDefault();
             const next = !subscribed;
-            setSubscribed(next);
             onSubscribe?.(next);
           }}
         >

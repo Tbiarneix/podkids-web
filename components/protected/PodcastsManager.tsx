@@ -130,7 +130,9 @@ export default function PodcastsManager() {
             aria-labelledby="add-podcast-title"
           >
             <div className="mb-4 flex shrink-0 items-start justify-between">
-              <h2 id="add-podcast-title" className="text-2xl font-bold">Ajouter un podcast</h2>
+              <h2 id="add-podcast-title" className="text-2xl font-bold">
+                Ajouter un podcast
+              </h2>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Fermer"

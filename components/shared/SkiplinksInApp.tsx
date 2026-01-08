@@ -56,9 +56,9 @@ export default function SkiplinksInApp() {
       (document.querySelector('button[aria-label="Lecture"]') as HTMLElement | null);
     const target =
       playBtn ||
-      (document.querySelector('[role="slider"][aria-label="Position de lecture"]') as
-        | HTMLElement
-        | null);
+      (document.querySelector(
+        '[role="slider"][aria-label="Position de lecture"]',
+      ) as HTMLElement | null);
     if (target) {
       const prevTabIndex = target.getAttribute("tabindex");
       if (prevTabIndex === null) target.setAttribute("tabindex", "0");
